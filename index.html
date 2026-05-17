@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,10 +8,10 @@
         :root {
             --bit-blue-primary: #1E50FF;              
             --bit-blue-hover: #0033E6;                
-            --bit-blue-active: #0026B3;               
-            --bit-text-menu: #FFFFFF;                 
-            --bit-bg-main: #EDF1F7;                          
-            --bit-bg-card: #FFFFFF;                          
+            --bit-blue-active: #0026B3;                
+            --bit-text-menu: #FFFFFF;                  
+            --bit-bg-main: #EDF1F7;                                      
+            --bit-bg-card: #FFFFFF;                                      
             --bit-border-light: #E0E0E0;
             --bit-text-dark: #1F2D3D;
             --bit-text-light: #606266;
@@ -257,11 +255,11 @@
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand"><span class="brand-text-space">Ultra</span><span>KH</span></div>
         <ul class="sidebar-menu">
-            <li class="sidebar-item" data-target="notifications" id="nav-notifications"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><span>Notifications (<span id="notifBadgeCount">0</span>)</span></a></li>
-            <li class="sidebar-item active" data-target="home" id="nav-home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><span>Home</span></a></li>
-            <li class="sidebar-item" data-target="message" id="nav-message"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><span>Chat</span></a></li>
-            <li class="sidebar-item" data-target="profile" id="nav-profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Profile</span></a></li>
-            <li class="sidebar-item" data-target="auth" id="nav-auth"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div><span>Accounts</span></a></li>
+            <li class="sidebar-item" data-target="page-notifications" id="nav-notifications"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><span>Notifications (<span id="notifBadgeCount">0</span>)</span></a></li>
+            <li class="sidebar-item active" data-target="page-home" id="nav-home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><span>Home</span></a></li>
+            <li class="sidebar-item" data-target="page-message" id="nav-message"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><span>Chat</span></a></li>
+            <li class="sidebar-item" data-target="page-profile" id="nav-profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Profile</span></a></li>
+            <li class="sidebar-item" data-target="page-auth" id="nav-auth"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div><span>Accounts</span></a></li>
             <li class="sidebar-item" style="margin-top:auto;" onclick="triggerSignOut()"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div><span>Sign Out</span></a></li>
         </ul>
     </aside>
@@ -277,11 +275,13 @@
                 <div class="top-bar-profile-wrap">
                     <div style="width:24px; height:24px; background: #E0E0E0; border-radius:50%;"></div>
                     <div><span id="topBarUserHandle">Admin</span></div>
+                }
                 </div>
             </div>
         </header>
 
         <div class="container" id="mainContainer">
+            <!-- PAGE: HOME -->
             <div class="page-view active" id="page-home">
                 <div class="home-layout">
                     <div class="home-main-feed">
@@ -325,9 +325,9 @@
                                 <div class="welcome-hashtags">#UltraKH #Community #Welcome #StayConnected</div>
                             </div>
                         </div>
-                                                
+                                                 
                         <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 12px;">Active System Operators (<span id="metUserCount">2</span>)</h3>
+                            <h3 style="margin-bottom: 12px;">Active System Operators (<span id="metUserCount">0</span>)</h3>
                             <table class="user-directory-table">
                                 <thead>
                                     <tr>
@@ -346,6 +346,7 @@
                 </div>
             </div>
 
+            <!-- PAGE: NOTIFICATIONS -->
             <div class="page-view" id="page-notifications">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -356,6 +357,7 @@
                 </div>
             </div>
 
+            <!-- PAGE: PROFILE -->
             <div class="page-view" id="page-profile">
                 <div class="split-view-layout">
                     <div class="card left-form-panel">
@@ -381,6 +383,7 @@
                 </div>
             </div>
 
+            <!-- PAGE: CHAT -->
             <div class="page-view" id="page-message">
                 <div class="chat-layout">
                     <div class="chat-sidebar">
@@ -414,6 +417,7 @@
                 </div>
             </div>
 
+            <!-- PAGE: ACCOUNTS (AUTH) -->
             <div class="page-view" id="page-auth">
                 <div class="split-view-layout" style="justify-content: center; align-items: center; min-height: 400px;">
                     <div class="card left-form-panel" id="authSignUpBox" style="width: 100%; max-width: 400px;">
@@ -448,466 +452,133 @@
                             <button type="submit" class="btn-submit">Sign In</button>
                         </form>
                         <p style="margin-top: 20px; text-align: center; font-size: 13px; color: var(--bit-text-light);">
-                            Need an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signup')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Sign Up now</a>
+                            Don't have an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signup')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Sign Up here</a>
                         </p>
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 
-    <script>
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    <!-- --- REAL-TIME DATABASE CODE BLOCK & SCRIPTS --- -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        function playSystemSound(frequency, type, duration) {
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.log("Audio contextual playback initialization ignored.");
+        // IMPORTANT: Replace these empty strings with your configuration credentials from the Firebase Console!
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize App Connection
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Document Targets
+        const systemUserTableBody = document.getElementById("systemUserTableBody");
+        const metUserCount = document.getElementById("metUserCount");
+
+        // 1. SIGN UP ACTION (Pushes user entries to the shared cloud database)
+        window.processSignUp = function(event) {
+            event.preventDefault();
+            const username = document.getElementById("signUpUser").value.trim();
+            
+            if (username) {
+                const targetUserRef = ref(database, 'users/' + username);
+                
+                set(targetUserRef, {
+                    username: username,
+                    status: "Online",
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    showToast(`Account @${username} registered globally!`, "success");
+                    document.getElementById("signUpSystemForm").reset();
+                }).catch((err) => {
+                    showToast("Sync Error: " + err.message, "error");
+                });
             }
-        }
+        };
 
-        function triggerSuccessAudio() { playSystemSound(587.33, 'sine', 0.15); setTimeout(() => playSystemSound(880, 'sine', 0.2), 100); }
-        function triggerMessageAudio() { playSystemSound(659.25, 'triangle', 0.1); }
-        function triggerErrorAudio() { playSystemSound(220, 'sawtooth', 0.3); }
-
-        let memoryDatabase = { "Admin": "123456", "Operator_Alpha": "123456" };
-        let memoryActiveUser = "Admin"; 
-        let currentTargetChatUser = "Operator_Alpha";
-        let homeUploadedFileData = null;
-        let chatUploadedFileData = null;
-
-        let memoryPosts = [
-            { id: 1, author: "Admin", text: "Deposit channels are running normally.", tags: ["deposit", "reconciliation"], likes: 4, comments: [], shares: 1, file: null },
-            { id: 2, author: "Operator_Alpha", text: "Third-party gateway channel updated successfully.", tags: ["channels"], likes: 2, comments: [], shares: 0, file: null }
-        ];
-        
-        let memoryChats = [
-            { id: 1, from: "Admin", to: "Operator_Alpha", text: "Please monitor the pending withdrawal requests.", time: "08:30 AM", reactions: {}, file: null },
-            { id: 2, from: "Operator_Alpha", to: "Admin", text: "Acknowledged. All systems clear.", time: "08:32 AM", reactions: {}, file: null }
-        ];
-
-        let memoryNotifications = [
-            { id: 1, text: "System maintenance scheduled for midnight Sunday.", time: "2 hours ago", unread: true },
-            { id: 2, text: "Operator_Alpha shared a new asset log file.", time: "5 hours ago", unread: false }
-        ];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            initAppRoutes();
-            renderFeedPosts();
-            renderActiveOperators();
-            renderNotifications();
-            renderChatFriends();
-            renderChatHistory();
-            setupThemeToggle();
-            updateGlobalUIState();
+        // 2. LIVE REAL-TIME DATA SYNC LISTENER (Triggers instantly across all active connected devices)
+        const userDatabaseRef = ref(database, 'users');
+        onValue(userDatabaseRef, (snapshot) => {
+            const data = snapshot.val();
+            systemUserTableBody.innerHTML = ""; // Clear table layout UI
+            
+            if (data) {
+                const userKeys = Object.keys(data);
+                metUserCount.innerText = userKeys.length; // Live sync counter UI
+                
+                userKeys.forEach((key) => {
+                    const currentUser = data[key];
+                    const elementRow = `
+                        <tr>
+                            <td><strong>@${currentUser.username}</strong></td>
+                            <td><span class="dot-pulse"></span> ${currentUser.status}</td>
+                        </tr>
+                    `;
+                    systemUserTableBody.innerHTML += elementRow;
+                });
+            } else {
+                metUserCount.innerText = "0";
+            }
         });
 
+        // UI Toast Controller Utility
         function showToast(message, type = 'success') {
-            const hub = document.getElementById("toastHub");
-            const card = document.createElement("div");
-            card.className = `toast-card ${type}`;
-            card.innerHTML = `
-                <div class="toast-message">${message}</div>
-                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            const container = document.getElementById("toastHub");
+            const element = document.createElement("div");
+            element.className = `toast-card ${type}`;
+            element.innerHTML = `
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
             `;
-            hub.appendChild(card);
-            if(type === 'success') triggerSuccessAudio(); else triggerErrorAudio();
-            setTimeout(() => card.remove(), 4000);
+            container.appendChild(element);
+            setTimeout(() => { element.remove(); }, 4000);
         }
+    </script>
 
-        function initAppRoutes() {
-            document.querySelectorAll(".sidebar-item[data-target]").forEach(item => {
-                item.addEventListener("click", () => {
-                    const viewId = item.getAttribute("data-target");
-                    if (viewId === "auth" && memoryActiveUser) {
-                        showToast("You are already authenticated.", "error");
-                        return;
-                    }
-                    switchView(viewId);
-                });
-            });
-        }
-
-        function switchView(viewId) {
-            document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
-            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
-            
-            const selectedNav = document.getElementById(`nav-${viewId}`);
-            if(selectedNav) selectedNav.classList.add("active");
-            
-            const selectedPage = document.getElementById(`page-${viewId}`);
-            if(selectedPage) selectedPage.classList.add("active");
-            
-            document.getElementById("breadcrumb").innerText = `Dashboard / ${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`;
-        }
-
-        function updateGlobalUIState() {
-            document.getElementById("topBarUserHandle").innerText = memoryActiveUser || "Guest";
-            document.getElementById("profUserHandle").value = memoryActiveUser || "";
-            const badge = document.getElementById("notifBadgeCount");
-            const unreadCount = memoryNotifications.filter(n => n.unread).length;
-            badge.innerText = unreadCount;
-        }
-
-        function handleHomeFileSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                homeUploadedFileData = {
-                    name: file.name,
-                    type: file.type,
-                    dataUrl: e.target.result
-                };
-                document.getElementById("homeFilePreview").innerText = `📄 ${file.name}`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handlePostPublish(e) {
-            e.preventDefault();
-            const text = document.getElementById("postText").value;
-            const tagsInput = document.getElementById("postTags").value;
-            const tags = tagsInput ? tagsInput.split(",").map(t => t.trim()) : [];
-
-            const newPost = {
-                id: memoryPosts.length + 1,
-                author: memoryActiveUser || "Anonymous",
-                text: text,
-                tags: tags,
-                likes: 0,
-                comments: [],
-                shares: 0,
-                file: homeUploadedFileData
-            };
-
-            memoryPosts.unshift(newPost);
-            document.getElementById("homePublishForm").reset();
-            document.getElementById("homeFilePreview").innerText = "";
-            homeUploadedFileData = null;
-            
-            renderFeedPosts();
-            showToast("Update shared on system stream!");
-        }
-
-        function renderFeedPosts() {
-            const container = document.getElementById("homeFeedStream");
-            container.innerHTML = "";
-            memoryPosts.forEach(post => {
-                let mediaMarkup = "";
-                if (post.file) {
-                    if (post.file.type.startsWith("image/")) {
-                        mediaMarkup = `<img src="${post.file.dataUrl}" class="post-media-attachment" alt="Uploaded Attachment">`;
-                    } else {
-                        mediaMarkup = `<a href="${post.file.dataUrl}" download="${post.file.name}" class="post-file-link">📁 Download ${post.file.name}</a>`;
-                    }
-                }
-
-                const card = document.createElement("div");
-                card.className = "post-card";
-                card.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">@${post.author}</span>
-                        <span class="post-time">Just Now</span>
-                    </div>
-                    <div class="post-content-text">${post.text}</div>
-                    ${mediaMarkup}
-                    <div style="margin-bottom: 12px;">
-                        ${post.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('')}
-                    </div>
-                    <div class="post-actions">
-                        <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes})</button>
-                        <button class="action-trigger-btn" onclick="focusCommentBox(${post.id})">💬 Comment (${post.comments.length})</button>
-                    </div>
-                    <div class="comments-section-wrapper">
-                        <div id="comments-box-${post.id}">
-                            ${post.comments.map(c => `
-                                <div class="comment-item-row">
-                                    <div class="comment-content-bubble">
-                                        <span class="comment-user-title">@${c.user}:</span> ${c.text}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="comment-input-inline-box">
-                            <input type="text" class="form-input" id="com-in-${post.id}" placeholder="Write system response comment...">
-                            <button class="btn-send" style="padding: 6px 14px;" onclick="addComment(${post.id})">Post</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function likePost(id) {
-            const post = memoryPosts.find(p => p.id === id);
-            if (post) { post.likes++; renderFeedPosts(); }
-        }
-
-        function focusCommentBox(id) {
-            document.getElementById(`com-in-${id}`).focus();
-        }
-
-        function addComment(id) {
-            const input = document.getElementById(`com-in-${id}`);
-            if (!input.value.trim()) return;
-            const post = memoryPosts.find(p => p.id === id);
-            if (post) {
-                post.comments.push({ user: memoryActiveUser || "Guest", text: input.value.trim() });
-                input.value = "";
-                renderFeedPosts();
-                showToast("Response comment cataloged.");
-            }
-        }
-
-        function renderActiveOperators() {
-            const tbody = document.getElementById("systemUserTableBody");
-            tbody.innerHTML = "";
-            Object.keys(memoryDatabase).forEach(user => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td style="font-weight:600;">@${user}</td>
-                    <td><span class="dot-pulse"></span> Active Now</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById("metUserCount").innerText = Object.keys(memoryDatabase).length;
-        }
-
-        function renderNotifications() {
-            const container = document.getElementById("notificationStreamBox");
-            container.innerHTML = "";
-            memoryNotifications.forEach(n => {
-                const item = document.createElement("div");
-                item.className = `notification-card-item ${n.unread ? 'unread' : ''}`;
-                item.innerHTML = `
-                    <div>
-                        <div class="notif-text">${n.text}</div>
-                        <div class="notif-time">${n.time}</div>
-                    </div>
-                    ${n.unread ? `<button class="btn-send" style="padding:3px 8px; font-size:11px;" onclick="markNotifRead(${n.id})">Dismiss</button>` : ''}
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function markNotifRead(id) {
-            const n = memoryNotifications.find(notif => notif.id === id);
-            if(n) { n.unread = false; renderNotifications(); updateGlobalUIState(); }
-        }
-
-        function clearAllNotifications() {
-            memoryNotifications = [];
-            renderNotifications();
-            updateGlobalUIState();
-            showToast("Notification stream cleared.");
-        }
-
-        function handleProfileUpdate(e) {
-            e.preventDefault();
-            const newHandle = document.getElementById("profUserHandle").value.trim();
-            if(!newHandle) return;
-            if(newHandle !== memoryActiveUser) {
-                const oldPass = memoryDatabase[memoryActiveUser];
-                delete memoryDatabase[memoryActiveUser];
-                memoryActiveUser = newHandle;
-                memoryDatabase[newHandle] = oldPass;
-                updateGlobalUIState();
-                renderActiveOperators();
-                showToast("Username context updated.");
-            }
-        }
-
-        function setupThemeToggle() {
-            const checkbox = document.getElementById("themeToggleCheckbox");
-            checkbox.addEventListener("change", () => {
-                if(checkbox.checked) document.body.classList.add("dark-mode");
-                else document.body.classList.remove("dark-mode");
-            });
-        }
-
-        function renderChatFriends() {
-            const container = document.getElementById("chatFriendsContainer");
-            container.innerHTML = "";
-            Object.keys(memoryDatabase).forEach(user => {
-                if(user === memoryActiveUser) return;
-                const li = document.createElement("li");
-                li.className = `friend-item ${user === currentTargetChatUser ? 'active' : ''}`;
-                li.innerText = `@${user}`;
-                li.onclick = () => {
-                    currentTargetChatUser = user;
-                    renderChatFriends();
-                    renderChatHistory();
-                };
-                container.appendChild(li);
-            });
-        }
-
-        function renderChatHistory() {
-            const container = document.getElementById("chatMsgContainer");
-            const header = document.getElementById("activeChatUser");
-            if (!currentTargetChatUser) {
-                header.innerText = "Select an operator thread to view history";
-                container.innerHTML = "";
-                return;
-            }
-            header.innerText = `Secure Operator Chat Connection: @${currentTargetChatUser}`;
-            container.innerHTML = "";
-
-            const filteredChats = memoryChats.filter(c => 
-                (c.from === memoryActiveUser && c.to === currentTargetChatUser) ||
-                (c.from === currentTargetChatUser && c.to === memoryActiveUser)
-            );
-
-            filteredChats.forEach(chat => {
-                const isMe = chat.from === memoryActiveUser;
-                const row = document.createElement("div");
-                row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
+    <!-- Standard UI Interface Logic Script Block -->
+    <script>
+        // Tab Layout Menu Switch Router Engine
+        document.querySelectorAll('.sidebar-item[data-target]').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
                 
-                let mediaContent = "";
-                if (chat.file) {
-                    if (chat.file.type.startsWith("image/")) {
-                        mediaContent = `<br><img src="${chat.file.dataUrl}" style="max-width:200px; border-radius:6px; margin-top:5px; display:block;">`;
-                    } else {
-                        mediaContent = `<br><a href="${chat.file.dataUrl}" download="${chat.file.name}" style="color:inherit; font-weight:bold; font-size:12px; display:inline-block; margin-top:5px;">📁 File: ${chat.file.name}</a>`;
-                    }
-                }
-
-                let interactMarkup = "";
-                if (isMe) {
-                    interactMarkup = `
-                        <div class="msg-interact-bar">
-                            <button class="msg-interact-btn msg-delete-btn" onclick="deleteChatMessage(${chat.id})">✕ Delete</button>
-                        </div>
-                    `;
-                }
-
-                row.innerHTML = `
-                    <div class="msg-meta-container">
-                        <span>@${chat.from}</span><span>${chat.time}</span>
-                    </div>
-                    <div class="bubble-wrapper">
-                        <div class="bubble">${chat.text}${mediaContent}</div>
-                    </div>
-                    ${interactMarkup}
-                `;
-                container.appendChild(row);
+                this.classList.add('active');
+                const targetPage = this.getAttribute('data-target');
+                document.getElementById(targetPage).classList.add('active');
+                
+                // Update simple breadcrumb label UI text
+                const pageLabel = this.querySelector('span').innerText.split(' ')[0];
+                document.getElementById('breadcrumb').innerText = `Dashboard / ${pageLabel}`;
             });
-            container.scrollTop = container.scrollHeight;
-        }
+        });
 
-        function deleteChatMessage(chatId) {
-            const index = memoryChats.findIndex(c => c.id === chatId);
-            if (index !== -1) {
-                memoryChats.splice(index, 1);
-                triggerErrorAudio();
-                renderChatHistory();
-                showToast("Message deleted from thread logs.", "error");
-            }
-        }
-
-        function insertEmojiIntoChat(emoji) {
-            document.getElementById("chatInputField").value += emoji;
-        }
-
-        function handleFileAttachmentSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                chatUploadedFileData = {
-                    name: file.name,
-                    type: file.type,
-                    dataUrl: e.target.result
-                };
-                document.getElementById("fileAttachmentPreview").innerHTML = `<span class="attachment-preview-tag">Attached: ${file.name}</span>`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function submitChatMessage() {
-            const input = document.getElementById("chatInputField");
-            const text = input.value.trim();
-            if(!text && !chatUploadedFileData) return;
-
-            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            memoryChats.push({
-                id: memoryChats.length + 1,
-                from: memoryActiveUser,
-                to: currentTargetChatUser,
-                text: text,
-                time: timeString,
-                reactions: {},
-                file: chatUploadedFileData
-            });
-
-            input.value = "";
-            chatUploadedFileData = null;
-            document.getElementById("fileAttachmentPreview").innerText = "";
-            triggerMessageAudio();
-            renderChatHistory();
-        }
-
-        function toggleAuthForms(mode) {
-            if (mode === 'signin') {
-                document.getElementById("authSignUpBox").style.display = "none";
-                document.getElementById("authSignInBox").style.display = "block";
+        // Toggle Sign In vs Sign Up views
+        function toggleAuthForms(view) {
+            if(view === 'signin') {
+                document.getElementById('authSignUpBox').style.display = 'none';
+                document.getElementById('authSignInBox').style.display = 'block';
             } else {
-                document.getElementById("authSignUpBox").style.display = "block";
-                document.getElementById("authSignInBox").style.display = "none";
+                document.getElementById('authSignUpBox').style.display = 'block';
+                document.getElementById('authSignInBox').style.display = 'none';
             }
         }
 
-        function processSignUp(e) {
-            e.preventDefault();
-            const u = document.getElementById("signUpUser").value.trim();
-            const p = document.getElementById("signUpPass").value;
-            if(memoryDatabase[u]) { showToast("Handle already active in directory.", "error"); return; }
-            memoryDatabase[u] = p;
-            memoryActiveUser = u;
-            postAuthInit();
-        }
-
-        function processSignIn(e) {
-            e.preventDefault();
-            const u = document.getElementById("signInUser").value.trim();
-            const p = document.getElementById("signInPass").value;
-            if(memoryDatabase[u] && memoryDatabase[u] === p) {
-                memoryActiveUser = u;
-                postAuthInit();
-            } else {
-                showToast("Invalid security credentials.", "error");
-            }
-        }
-
-        function postAuthInit() {
-            updateGlobalUIState();
-            renderActiveOperators();
-            renderChatFriends();
-            const keys = Object.keys(memoryDatabase).filter(k => k !== memoryActiveUser);
-            currentTargetChatUser = keys.length ? keys[0] : "";
-            renderChatHistory();
-            switchView("home");
-            showToast("Welcome backend operator console online!");
-        }
-
-        function triggerSignOut() {
-            memoryActiveUser = "";
-            updateGlobalUIState();
-            switchView("auth");
-            toggleAuthForms('signin');
-            showToast("Session security context unlinked.");
-        }
+        // Placeholder fallback handlers for empty form UI functions
+        function handlePostPublish(e) { e.preventDefault(); alert("Local Post Published!"); }
+        function handleProfileUpdate(e) { e.preventDefault(); alert("Profile Updated!"); }
+        function processSignIn(e) { e.preventDefault(); alert("Logged In!"); }
+        function triggerSignOut() { alert("Signed Out!"); }
     </script>
 </body>
 </html>
