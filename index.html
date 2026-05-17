@@ -7,12 +7,12 @@
     <title>Ultra KHsite - Enhanced Interface Production</title>
     <style>
         :root {
-            --bit-blue-primary: #1E50FF;  
-            --bit-blue-hover: #0033E6;    
-            --bit-blue-active: #0026B3;   
-            --bit-text-menu: #FFFFFF;     
-            --bit-bg-main: #EDF1F7;              
-            --bit-bg-card: #FFFFFF;              
+            --bit-blue-primary: #1E50FF;              
+            --bit-blue-hover: #0033E6;                
+            --bit-blue-active: #0026B3;               
+            --bit-text-menu: #FFFFFF;                 
+            --bit-bg-main: #EDF1F7;                          
+            --bit-bg-card: #FFFFFF;                          
             --bit-border-light: #E0E0E0;
             --bit-text-dark: #1F2D3D;
             --bit-text-light: #606266;
@@ -66,12 +66,11 @@
             padding: 24px 20px;
             font-size: 24px;
             font-weight: 800; 
-            color: #FFFFFF;    
+            color: #FFFFFF;                
             display: flex;
             align-items: center;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-        }
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);         }
 
         .brand-text-space { margin-right: 8px; }
         .sidebar-menu { list-style: none; padding: 0; flex-grow: 1; display: flex; flex-direction: column; }
@@ -145,7 +144,10 @@
         .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .post-author { font-weight: 700; color: var(--bit-text-dark); }
         .post-time { font-size: 12px; color: var(--bit-text-light); }
-        .post-content-text { color: var(--bit-text-dark); font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
+        .post-content-text { color: var(--bit-text-dark); font-size: 14px; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
+        .post-media-attachment { margin-bottom: 12px; max-width: 100%; border-radius: 6px; max-height: 300px; object-fit: cover; border: 1px solid var(--bit-border-light); }
+        .post-file-link { display: inline-flex; align-items: center; gap: 6px; color: var(--bit-blue-primary); text-decoration: none; font-weight: 600; margin-bottom: 12px; background: rgba(30, 80, 255, 0.05); padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+        .post-file-link:hover { text-decoration: underline; }
         .tag-badge { display: inline-block; background: rgba(30, 80, 255, 0.1); color: var(--bit-blue-primary); padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 5px; font-weight: 600; }
 
         .post-actions { display: flex; align-items: center; border-top: 1px solid var(--bit-border-light); border-bottom: 1px solid var(--bit-border-light); padding: 10px 0; margin-bottom: 12px; gap: 15px; }
@@ -174,7 +176,7 @@
 
         .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; min-width: 0; }
         .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; }
-        .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: rgba(0, 0, 0, 0.02); }
+        .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: rgba(0, 0, 0, 0.02); }
         
         .msg-row { display: flex; flex-direction: column; width: 100%; position: relative; }
         .msg-row.msg-me { align-items: flex-end; }
@@ -186,12 +188,11 @@
         .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; border-bottom-right-radius: 2px; }
         .msg-them .bubble { background: var(--chat-bubble-them); color: var(--chat-text-them); border-bottom-left-radius: 2px; border: 1px solid var(--bit-border-light); }
         
-        .msg-interact-bar { display: flex; gap: 8px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); }
-        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; }
+        .msg-interact-bar { display: flex; gap: 8px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); visibility: hidden; opacity: 0; transition: opacity 0.15s, visibility 0.15s; }
+        .msg-row:hover .msg-interact-bar { visibility: visible; opacity: 1; }
+        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; font-weight: 600; }
         .msg-interact-btn:hover { color: var(--bit-blue-primary); }
-        .msg-delete-btn:hover { color: var(--bit-danger); }
-        .reactions-pill-box { display: flex; gap: 4px; margin-top: 4px; }
-        .react-badge { background: var(--bit-bg-main); border: 1px solid var(--bit-border-light); border-radius: 10px; padding: 1px 6px; font-size: 11px; cursor: pointer; }
+        .msg-delete-btn:hover { color: var(--bit-danger) !important; }
 
         .chat-input-container { border-top: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; flex-direction: column; }
         .chat-input-area { padding: 15px 20px; display: flex; gap: 10px; align-items: center; }
@@ -202,7 +203,7 @@
         .emoji-select-btn { background: rgba(0,0,0,0.04); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; }
         .emoji-select-btn:hover { background: rgba(30,80,255,0.1); }
         
-        .file-attach-label { cursor: pointer; display: flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .file-attach-label { cursor: pointer; display: flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; color: var(--bit-text-dark); transition: background 0.2s; }
         .file-attach-label:hover { background: rgba(30,80,255,0.1); }
         .attachment-preview-tag { display: inline-flex; align-items: center; background: var(--bit-warning); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-top: 4px; }
 
@@ -227,6 +228,13 @@
         .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; }
         @keyframes toastSlideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        .welcome-content-box h4 { margin-top: 12px; font-weight: 700; font-size: 13px; color: var(--bit-text-dark); }
+        .welcome-content-box ul { list-style: none; margin: 8px 0; padding-left: 0; }
+        .welcome-content-box ul li { font-size: 13px; color: var(--bit-text-light); position: relative; padding-left: 14px; margin-bottom: 4px; }
+        .welcome-content-box ul li::before { content: "•"; color: var(--bit-blue-primary); position: absolute; left: 0; font-weight: bold; }
+        .welcome-content-box p { font-size: 13px; color: var(--bit-text-light); line-height: 1.4; margin-bottom: 10px; }
+        .welcome-hashtags { font-size: 12px; font-weight: 600; color: var(--bit-blue-primary); margin-top: 10px; }
+
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; }
@@ -244,7 +252,6 @@
     </style>
 </head>
 <body>
-
     <div class="toast-container" id="toastHub"></div>
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand"><span class="brand-text-space">Ultra</span><span>KH</span></div>
@@ -284,22 +291,40 @@
                                     <textarea class="form-textarea" id="postText" required placeholder="What is happening within your workspace channels?"></textarea>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 12px;">
-                                    <label class="form-label">Add Tags (comma separated)</label>
-                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
+                                    <label class="form-label">Add Tags (comma separated)</label>                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
                                 </div>
-                                <div style="display: flex; justify-content: flex-end;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label class="file-attach-label" for="homeFileInput">
+                                        📎 Add Image / File
+                                        <input type="file" id="homeFileInput" style="display:none;" onchange="handleHomeFileSelected(this)">
+                                    </label>
+                                    <span id="homeFilePreview" style="font-size:12px; color:var(--bit-text-light); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
                                     <button type="submit" class="btn-submit" style="width: auto; padding: 8px 24px;">Publish Post</button>
                                 </div>
                             </form>
                         </div>
                         <div class="feed-container" id="homeFeedStream"></div>
                     </div>
+
                     <div class="home-side-metrics">
                         <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 5px;">Welcome to Ultra KH</h3>
-                            <p style="color: var(--bit-text-light); font-size: 12px;">Your workspace platform channels are active.</p>
+                            <h3 style="margin-bottom: 10px; color: var(--bit-blue-primary);">Welcome to Ultra KH 🚀</h3>
+                            <div class="welcome-content-box">
+                                <p>We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.</p>
+                                <h4>Our Purpose:</h4>
+                                <ul>
+                                    <li>Stay updated with the latest news and content</li>
+                                    <li>Learn and grow together</li>
+                                    <li>Share ideas and experiences</li>
+                                    <li>Connect with the Ultra KH community</li>
+                                </ul>
+                                <p>Thank you for being part of our journey. Your support means everything to us, and we look forward to building an amazing community together.</p>
+                                <p>Follow us and stay connected with Ultra KH.</p>
+                                <strong style="color: var(--bit-text-dark); display:block; margin-top:8px;">The future starts here. 🔥</strong>
+                                <div class="welcome-hashtags">#UltraKH #Community #Welcome #StayConnected</div>
+                            </div>
                         </div>
-                        
+                                                
                         <div class="card" style="padding: 20px;">
                             <h3 style="margin-bottom: 12px;">Active System Operators (<span id="metUserCount">2</span>)</h3>
                             <table class="user-directory-table">
@@ -309,8 +334,7 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="systemUserTableBody">
-                                    </tbody>
+                                <tbody id="systemUserTableBody"></tbody>
                             </table>
                         </div>
 
@@ -457,516 +481,431 @@
 
         let memoryDatabase = { "Admin": "123456", "Operator_Alpha": "123456" };
         let memoryActiveUser = "Admin"; 
+        let currentTargetChatUser = "Operator_Alpha";
+        let homeUploadedFileData = null;
+        let chatUploadedFileData = null;
+
         let memoryPosts = [
-            { id: 1, author: "Admin", text: "Deposit channels are running normally.", tags: ["deposit", "reconciliation"], likes: 4, comments: [], shares: 1 },
-            { id: 2, author: "Operator_Alpha", text: "Third-party gateway channel updated successfully.", tags: ["channels"], likes: 2, comments: [], shares: 0 }
+            { id: 1, author: "Admin", text: "Deposit channels are running normally.", tags: ["deposit", "reconciliation"], likes: 4, comments: [], shares: 1, file: null },
+            { id: 2, author: "Operator_Alpha", text: "Third-party gateway channel updated successfully.", tags: ["channels"], likes: 2, comments: [], shares: 0, file: null }
         ];
+        
         let memoryChats = [
             { id: 1, from: "Admin", to: "Operator_Alpha", text: "Please monitor the pending withdrawal requests.", time: "08:30 AM", reactions: {}, file: null },
             { id: 2, from: "Operator_Alpha", to: "Admin", text: "Acknowledged. All systems clear.", time: "08:32 AM", reactions: {}, file: null }
         ];
+
         let memoryNotifications = [
-            { id: 1, user: "Admin", text: "System connection initialized securely.", time: "Just now", unread: true }
+            { id: 1, text: "System maintenance scheduled for midnight Sunday.", time: "2 hours ago", unread: true },
+            { id: 2, text: "Operator_Alpha shared a new asset log file.", time: "5 hours ago", unread: false }
         ];
 
-        function safeGet(key, fallback) {
-            try { return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : fallback; } 
-            catch(e) { return fallback; }
-        }
-
-        function safeSet(key, val) {
-            try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
-        }
-
-        let userDatabase = safeGet('users', memoryDatabase);
-        let currentSessionUser = safeGet('activeUser', "Admin");
-        let selectedActiveChatPartner = "";
-        let appPosts = safeGet('appPosts', memoryPosts);
-        let chatMessages = safeGet('chatMessages', memoryChats);
-        let appNotifications = safeGet('appNotifications', memoryNotifications);
-        let activeSelectedFileBase64 = null;
-
         document.addEventListener("DOMContentLoaded", () => {
-            initNavigation();
-            initThemeEngine();
-            
-            if(currentSessionUser === "LoggedOut") {
-                switchPage('auth');
-                toggleAuthForms('signin');
-            } else {
-                switchPage('home'); 
-            }
-            syncUIContext();
-            renderUserDirectory();
-
-            setInterval(() => {
-                userDatabase = safeGet('users', userDatabase);
-                appPosts = safeGet('appPosts', appPosts);
-                chatMessages = safeGet('chatMessages', chatMessages);
-                appNotifications = safeGet('appNotifications', appNotifications);
-                
-                updateSystemBadges();
-                renderUserDirectory();
-            }, 1000);
+            initAppRoutes();
+            renderFeedPosts();
+            renderActiveOperators();
+            renderNotifications();
+            renderChatFriends();
+            renderChatHistory();
+            setupThemeToggle();
+            updateGlobalUIState();
         });
 
-        function showToast(message, type = 'info') {
-            const hub = document.getElementById('toastHub');
-            if(!hub) return;
-            const toast = document.createElement('div');
-            toast.className = `toast-card ${type}`;
-            toast.innerHTML = `<span class="toast-message">${message}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
-            hub.appendChild(toast);
-            
-            if(type === 'error') triggerErrorAudio();
-            else if(type === 'success') triggerSuccessAudio();
-            
-            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+        function showToast(message, type = 'success') {
+            const hub = document.getElementById("toastHub");
+            const card = document.createElement("div");
+            card.className = `toast-card ${type}`;
+            card.innerHTML = `
+                <div class="toast-message">${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            hub.appendChild(card);
+            if(type === 'success') triggerSuccessAudio(); else triggerErrorAudio();
+            setTimeout(() => card.remove(), 4000);
         }
 
-        function pushSystemNotification(text) {
-            appNotifications.push({
-                id: Date.now(),
-                user: currentSessionUser,
-                text: text,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                unread: true
-            });
-            safeSet('appNotifications', appNotifications);
-            updateSystemBadges();
-        }
-
-        function updateSystemBadges() {
-            const unreadCount = appNotifications.filter(n => n.unread).length;
-            const badge = document.getElementById('notifBadgeCount');
-            if(badge) badge.textContent = unreadCount;
-        }
-
-        function initNavigation() {
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const target = item.getAttribute('data-target');
-                    if (!target) return;
-                    
-                    if(currentSessionUser === "LoggedOut" && target !== 'auth') {
-                        showToast("Please sign up or sign in to open workspace modules.", "error");
-                        switchPage('auth');
+        function initAppRoutes() {
+            document.querySelectorAll(".sidebar-item[data-target]").forEach(item => {
+                item.addEventListener("click", () => {
+                    const viewId = item.getAttribute("data-target");
+                    if (viewId === "auth" && memoryActiveUser) {
+                        showToast("You are already authenticated.", "error");
                         return;
                     }
-                    switchPage(target);
+                    switchView(viewId);
                 });
             });
         }
 
-        function switchPage(target) {
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-
-            const activeNav = document.getElementById(`nav-${target}`);
-            if (activeNav) activeNav.classList.add('active');
-
-            const activePage = document.getElementById(`page-${target}`);
-            if (activePage) activePage.classList.add('active');
-
-            document.getElementById('breadcrumb').textContent = `Dashboard / ${target.charAt(0).toUpperCase() + target.slice(1)}`;
+        function switchView(viewId) {
+            document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
             
-            if(target === 'home') renderHomeFeed();
-            if(target === 'message') { renderFriendsSidebar(); loadChatHistory(); }
-            if(target === 'notifications') renderNotificationsFeed();
+            const selectedNav = document.getElementById(`nav-${viewId}`);
+            if(selectedNav) selectedNav.classList.add("active");
             
-            renderUserDirectory();
+            const selectedPage = document.getElementById(`page-${viewId}`);
+            if(selectedPage) selectedPage.classList.add("active");
+            
+            document.getElementById("breadcrumb").innerText = `Dashboard / ${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`;
         }
 
-        function syncUIContext() {
-            const sidebar = document.getElementById('appSidebar');
-            if(currentSessionUser === "LoggedOut") {
-                document.getElementById('topBarUserHandle').textContent = "Guest Mode";
-                document.getElementById('profUserHandle').value = "";
-                sidebar.style.opacity = "0.6";
-            } else {
-                document.getElementById('topBarUserHandle').textContent = currentSessionUser;
-                document.getElementById('profUserHandle').value = currentSessionUser;
-                sidebar.style.opacity = "1";
-            }
-            updateSystemBadges();
-            renderUserDirectory();
+        function updateGlobalUIState() {
+            document.getElementById("topBarUserHandle").innerText = memoryActiveUser || "Guest";
+            document.getElementById("profUserHandle").value = memoryActiveUser || "";
+            const badge = document.getElementById("notifBadgeCount");
+            const unreadCount = memoryNotifications.filter(n => n.unread).length;
+            badge.innerText = unreadCount;
         }
 
-        function renderUserDirectory() {
-            const tableBody = document.getElementById('systemUserTableBody');
-            const countWidget = document.getElementById('metUserCount');
-            if (!tableBody) return;
-            
-            const totalUsers = Object.keys(userDatabase).length;
-            if(countWidget) countWidget.textContent = totalUsers;
-            
-            tableBody.innerHTML = ''; 
-            
-            Object.keys(userDatabase).forEach(username => {
-                const isCurrent = (username === currentSessionUser);
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td style="font-weight: 600; color: var(--bit-text-dark);">
-                        @${username} ${isCurrent ? '<span style="font-size:10px; background:var(--bit-blue-primary); color:white; padding:1px 5px; border-radius:10px; margin-left:3px;">You</span>' : ''}
-                    </td>
-                    <td>
-                        <span style="display:inline-flex; align-items:center; font-size:12px; color:var(--bit-text-light);">
-                            <span class="dot-pulse" style="background-color: ${isCurrent ? 'var(--bit-success)' : 'var(--bit-warning)'}; margin-right:5px;"></span>
-                            ${isCurrent ? 'Active' : 'Registered'}
-                        </span>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function initThemeEngine() {
-            const checkbox = document.getElementById('themeToggleCheckbox');
-            if(checkbox) {
-                checkbox.addEventListener('change', () => {
-                    document.body.classList.toggle('dark-mode', checkbox.checked);
-                });
-            }
-        }
-
-        /* --- HOME CHANNEL ENGINE --- */
-        function renderHomeFeed() {
-            const stream = document.getElementById('homeFeedStream');
-            if(!stream) return;
-            stream.innerHTML = '';
-
-            appPosts.slice().reverse().forEach(post => {
-                const card = document.createElement('div');
-                card.className = 'post-card';
-                let tagsMarkup = (post.tags || []).map(t => `<span class="tag-badge">#${t}</span>`).join('');
-                let commentsMarkup = (post.comments || []).map(c => `
-                    <div class="comment-item-row">
-                        <div class="comment-content-bubble">
-                            <div class="comment-user-title">@${c.user}</div>
-                            <div>${c.text}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                card.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">@${post.author}</span>
-                        <span class="post-time">ID: ${post.id}</span>
-                    </div>
-                    <div class="post-content-text">${post.text}</div>
-                    <div style="margin-bottom:12px;">${tagsMarkup}</div>
-                    <div class="post-actions">
-                        <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
-                        <button class="action-trigger-btn" onclick="sharePost(${post.id})">🔗 Share (${post.shares || 0})</button>
-                    </div>
-                    <div class="comments-section-wrapper">
-                        ${commentsMarkup}
-                        <div class="comment-input-inline-box">
-                            <input type="text" class="form-input" placeholder="Write a team comment..." id="cmt-input-${post.id}">
-                            <button class="btn-send" style="padding:4px 12px;" onclick="addComment(${post.id})">Reply</button>
-                        </div>
-                    </div>
-                `;
-                stream.appendChild(card);
-            });
+        function handleHomeFileSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                homeUploadedFileData = {
+                    name: file.name,
+                    type: file.type,
+                    dataUrl: e.target.result
+                };
+                document.getElementById("homeFilePreview").innerText = `📄 ${file.name}`;
+            };
+            reader.readAsDataURL(file);
         }
 
         function handlePostPublish(e) {
             e.preventDefault();
-            const text = document.getElementById('postText').value;
-            const tagsInput = document.getElementById('postTags').value;
-            const tags = tagsInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
+            const text = document.getElementById("postText").value;
+            const tagsInput = document.getElementById("postTags").value;
+            const tags = tagsInput ? tagsInput.split(",").map(t => t.trim()) : [];
 
-            appPosts.push({ id: Date.now(), author: currentSessionUser, text: text, tags: tags, likes: 0, comments: [], shares: 0 });
-            safeSet('appPosts', appPosts);
+            const newPost = {
+                id: memoryPosts.length + 1,
+                author: memoryActiveUser || "Anonymous",
+                text: text,
+                tags: tags,
+                likes: 0,
+                comments: [],
+                shares: 0,
+                file: homeUploadedFileData
+            };
+
+            memoryPosts.unshift(newPost);
+            document.getElementById("homePublishForm").reset();
+            document.getElementById("homeFilePreview").innerText = "";
+            homeUploadedFileData = null;
             
-            pushSystemNotification(`New operational update posted by @${currentSessionUser}`);
-            document.getElementById('homePublishForm').reset();
-            renderHomeFeed();
-            showToast("Workspace log published!", "success");
+            renderFeedPosts();
+            showToast("Update shared on system stream!");
+        }
+
+        function renderFeedPosts() {
+            const container = document.getElementById("homeFeedStream");
+            container.innerHTML = "";
+            memoryPosts.forEach(post => {
+                let mediaMarkup = "";
+                if (post.file) {
+                    if (post.file.type.startsWith("image/")) {
+                        mediaMarkup = `<img src="${post.file.dataUrl}" class="post-media-attachment" alt="Uploaded Attachment">`;
+                    } else {
+                        mediaMarkup = `<a href="${post.file.dataUrl}" download="${post.file.name}" class="post-file-link">📁 Download ${post.file.name}</a>`;
+                    }
+                }
+
+                const card = document.createElement("div");
+                card.className = "post-card";
+                card.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author">@${post.author}</span>
+                        <span class="post-time">Just Now</span>
+                    </div>
+                    <div class="post-content-text">${post.text}</div>
+                    ${mediaMarkup}
+                    <div style="margin-bottom: 12px;">
+                        ${post.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('')}
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes})</button>
+                        <button class="action-trigger-btn" onclick="focusCommentBox(${post.id})">💬 Comment (${post.comments.length})</button>
+                    </div>
+                    <div class="comments-section-wrapper">
+                        <div id="comments-box-${post.id}">
+                            ${post.comments.map(c => `
+                                <div class="comment-item-row">
+                                    <div class="comment-content-bubble">
+                                        <span class="comment-user-title">@${c.user}:</span> ${c.text}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="comment-input-inline-box">
+                            <input type="text" class="form-input" id="com-in-${post.id}" placeholder="Write system response comment...">
+                            <button class="btn-send" style="padding: 6px 14px;" onclick="addComment(${post.id})">Post</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         function likePost(id) {
-            appPosts = appPosts.map(p => p.id === id ? { ...p, likes: (p.likes || 0) + 1 } : p);
-            safeSet('appPosts', appPosts);
-            renderHomeFeed();
-            playSystemSound(700, 'sine', 0.05);
+            const post = memoryPosts.find(p => p.id === id);
+            if (post) { post.likes++; renderFeedPosts(); }
         }
 
-        function sharePost(id) {
-            appPosts = appPosts.map(p => {
-                if(p.id === id) {
-                    showToast(`Internal Link copied for log record ID: ${id}`, "success");
-                    return { ...p, shares: (p.shares || 0) + 1 };
-                }
-                return p;
-            });
-            safeSet('appPosts', appPosts);
-            renderHomeFeed();
+        function focusCommentBox(id) {
+            document.getElementById(`com-in-${id}`).focus();
         }
 
         function addComment(id) {
-            const input = document.getElementById(`cmt-input-${id}`);
-            if(!input || !input.value.trim()) return;
-
-            appPosts = appPosts.map(p => {
-                if(p.id === id) {
-                    return { ...p, comments: [...(p.comments || []), { user: currentSessionUser, text: input.value.trim() }] };
-                }
-                return p;
-            });
-            safeSet('appPosts', appPosts);
-            input.value = '';
-            renderHomeFeed();
-            playSystemSound(600, 'sine', 0.08);
+            const input = document.getElementById(`com-in-${id}`);
+            if (!input.value.trim()) return;
+            const post = memoryPosts.find(p => p.id === id);
+            if (post) {
+                post.comments.push({ user: memoryActiveUser || "Guest", text: input.value.trim() });
+                input.value = "";
+                renderFeedPosts();
+                showToast("Response comment cataloged.");
+            }
         }
 
-        /* --- NOTIFICATIONS ENGINE --- */
-        function renderNotificationsFeed() {
-            const box = document.getElementById('notificationStreamBox');
-            if(!box) return;
-            box.innerHTML = '';
-
-            if(appNotifications.length === 0) {
-                box.innerHTML = `<div style="text-align:center; padding:20px; color:var(--bit-text-light);">No notifications logs.</div>`;
-                return;
-            }
-
-            appNotifications.slice().reverse().forEach(n => {
-                const row = document.createElement('div');
-                row.className = `notification-card-item ${n.unread ? 'unread' : ''}`;
-                row.innerHTML = `<div><div class="notif-text">${n.text}</div><div class="notif-time">${n.time}</div></div>`;
-                box.appendChild(row);
-                n.unread = false; 
+        function renderActiveOperators() {
+            const tbody = document.getElementById("systemUserTableBody");
+            tbody.innerHTML = "";
+            Object.keys(memoryDatabase).forEach(user => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:600;">@${user}</td>
+                    <td><span class="dot-pulse"></span> Active Now</td>
+                `;
+                tbody.appendChild(tr);
             });
-            safeSet('appNotifications', appNotifications);
-            updateSystemBadges();
+            document.getElementById("metUserCount").innerText = Object.keys(memoryDatabase).length;
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById("notificationStreamBox");
+            container.innerHTML = "";
+            memoryNotifications.forEach(n => {
+                const item = document.createElement("div");
+                item.className = `notification-card-item ${n.unread ? 'unread' : ''}`;
+                item.innerHTML = `
+                    <div>
+                        <div class="notif-text">${n.text}</div>
+                        <div class="notif-time">${n.time}</div>
+                    </div>
+                    ${n.unread ? `<button class="btn-send" style="padding:3px 8px; font-size:11px;" onclick="markNotifRead(${n.id})">Dismiss</button>` : ''}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function markNotifRead(id) {
+            const n = memoryNotifications.find(notif => notif.id === id);
+            if(n) { n.unread = false; renderNotifications(); updateGlobalUIState(); }
         }
 
         function clearAllNotifications() {
-            appNotifications = [];
-            safeSet('appNotifications', appNotifications);
-            renderNotificationsFeed();
+            memoryNotifications = [];
+            renderNotifications();
+            updateGlobalUIState();
+            showToast("Notification stream cleared.");
         }
 
-        /* --- MESSAGES CHAT ENGINE --- */
-        function renderFriendsSidebar() {
-            const container = document.getElementById('chatFriendsContainer');
-            if(!container) return;
-            container.innerHTML = '';
-
-            const users = Object.keys(userDatabase).filter(u => u !== currentSessionUser);
-            if(users.length === 0) {
-                container.innerHTML = `<div style="padding:15px; font-size:12px; color:var(--bit-text-light);">No other operators online.</div>`;
-                return;
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            const newHandle = document.getElementById("profUserHandle").value.trim();
+            if(!newHandle) return;
+            if(newHandle !== memoryActiveUser) {
+                const oldPass = memoryDatabase[memoryActiveUser];
+                delete memoryDatabase[memoryActiveUser];
+                memoryActiveUser = newHandle;
+                memoryDatabase[newHandle] = oldPass;
+                updateGlobalUIState();
+                renderActiveOperators();
+                showToast("Username context updated.");
             }
+        }
 
-            users.forEach(user => {
-                const li = document.createElement('li');
-                li.className = `friend-item ${user === selectedActiveChatPartner ? 'active' : ''}`;
-                li.innerHTML = `<div class="friend-name">@${user}</div>`;
+        function setupThemeToggle() {
+            const checkbox = document.getElementById("themeToggleCheckbox");
+            checkbox.addEventListener("change", () => {
+                if(checkbox.checked) document.body.classList.add("dark-mode");
+                else document.body.classList.remove("dark-mode");
+            });
+        }
+
+        function renderChatFriends() {
+            const container = document.getElementById("chatFriendsContainer");
+            container.innerHTML = "";
+            Object.keys(memoryDatabase).forEach(user => {
+                if(user === memoryActiveUser) return;
+                const li = document.createElement("li");
+                li.className = `friend-item ${user === currentTargetChatUser ? 'active' : ''}`;
+                li.innerText = `@${user}`;
                 li.onclick = () => {
-                    selectedActiveChatPartner = user;
-                    renderFriendsSidebar();
-                    loadChatHistory();
+                    currentTargetChatUser = user;
+                    renderChatFriends();
+                    renderChatHistory();
                 };
                 container.appendChild(li);
             });
         }
 
-        function loadChatHistory() {
-            const container = document.getElementById('chatMsgContainer');
-            const header = document.getElementById('activeChatUser');
-            if(!container) return;
-
-            if (!selectedActiveChatPartner) {
-                header.textContent = "Select an operator thread to view history";
-                container.innerHTML = '';
+        function renderChatHistory() {
+            const container = document.getElementById("chatMsgContainer");
+            const header = document.getElementById("activeChatUser");
+            if (!currentTargetChatUser) {
+                header.innerText = "Select an operator thread to view history";
+                container.innerHTML = "";
                 return;
             }
+            header.innerText = `Secure Operator Chat Connection: @${currentTargetChatUser}`;
+            container.innerHTML = "";
 
-            header.textContent = `Thread with: @${selectedActiveChatPartner}`;
-            container.innerHTML = '';
-
-            const filtered = chatMessages.filter(m => 
-                (m.from === currentSessionUser && m.to === selectedActiveChatPartner) ||
-                (m.from === selectedActiveChatPartner && m.to === currentSessionUser)
+            const filteredChats = memoryChats.filter(c => 
+                (c.from === memoryActiveUser && c.to === currentTargetChatUser) ||
+                (c.from === currentTargetChatUser && c.to === memoryActiveUser)
             );
 
-            filtered.forEach(m => {
-                const row = document.createElement('div');
-                row.className = `msg-row ${m.from === currentSessionUser ? 'msg-me' : 'msg-them'}`;
+            filteredChats.forEach(chat => {
+                const isMe = chat.from === memoryActiveUser;
+                const row = document.createElement("div");
+                row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
                 
-                let reactHTML = '';
-                if(m.reactions && Object.keys(m.reactions).length > 0) {
-                    reactHTML = `<div class="reactions-pill-box">`;
-                    for(const [emoji, count] of Object.entries(m.reactions)) {
-                        if(count > 0) reactHTML += `<span class="react-badge" onclick="reactToMessage(${m.id}, '${emoji}')">${emoji} ${count}</span>`;
+                let mediaContent = "";
+                if (chat.file) {
+                    if (chat.file.type.startsWith("image/")) {
+                        mediaContent = `<br><img src="${chat.file.dataUrl}" style="max-width:200px; border-radius:6px; margin-top:5px; display:block;">`;
+                    } else {
+                        mediaContent = `<br><a href="${chat.file.dataUrl}" download="${chat.file.name}" style="color:inherit; font-weight:bold; font-size:12px; display:inline-block; margin-top:5px;">📁 File: ${chat.file.name}</a>`;
                     }
-                    reactHTML += `</div>`;
                 }
 
-                let fileHTML = '';
-                if(m.file) {
-                    fileHTML = `<div style="margin-top:6px; padding:6px; background:rgba(0,0,0,0.05); border-radius:4px; font-size:11px;">
-                        📁 <a href="${m.file.data}" download="${m.file.name}" style="color:var(--bit-blue-primary); font-weight:bold; text-decoration:underline;">Download ${m.file.name}</a>
-                    </div>`;
+                let interactMarkup = "";
+                if (isMe) {
+                    interactMarkup = `
+                        <div class="msg-interact-bar">
+                            <button class="msg-interact-btn msg-delete-btn" onclick="deleteChatMessage(${chat.id})">✕ Delete</button>
+                        </div>
+                    `;
                 }
 
                 row.innerHTML = `
-                    <div class="msg-meta-container"><span>${m.from}</span> • <span>${m.time}</span></div>
-                    <div class="bubble-wrapper"><div class="bubble"><div>${m.text}</div>${fileHTML}</div></div>
-                    <div class="msg-interact-bar">
-                        <button class="msg-interact-btn" onclick="reactToMessage(${m.id}, '👍')">👍</button>
-                        <button class="msg-interact-btn" onclick="reactToMessage(${m.id}, '❤️')">❤️</button>
-                        <button class="msg-interact-btn" onclick="reactToMessage(${m.id}, '🔥')">🔥</button>
-                        <button class="msg-interact-btn msg-delete-btn" style="margin-left:8px;" onclick="deleteChatMessage(${m.id})">❌ Delete</button>
+                    <div class="msg-meta-container">
+                        <span>@${chat.from}</span><span>${chat.time}</span>
                     </div>
-                    ${reactHTML}
+                    <div class="bubble-wrapper">
+                        <div class="bubble">${chat.text}${mediaContent}</div>
+                    </div>
+                    ${interactMarkup}
                 `;
                 container.appendChild(row);
             });
             container.scrollTop = container.scrollHeight;
         }
 
-        function insertEmojiIntoChat(emoji) {
-            const input = document.getElementById('chatInputField');
-            if(input) {
-                input.value += emoji;
-                input.focus();
+        function deleteChatMessage(chatId) {
+            const index = memoryChats.findIndex(c => c.id === chatId);
+            if (index !== -1) {
+                memoryChats.splice(index, 1);
+                triggerErrorAudio();
+                renderChatHistory();
+                showToast("Message deleted from thread logs.", "error");
             }
         }
 
-        function handleFileAttachmentSelected(inputElement) {
-            const file = inputElement.files[0];
-            if(!file) return;
-            
+        function insertEmojiIntoChat(emoji) {
+            document.getElementById("chatInputField").value += emoji;
+        }
+
+        function handleFileAttachmentSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                activeSelectedFileBase64 = { name: file.name, data: e.target.result };
-                document.getElementById('fileAttachmentPreview').innerHTML = `<span class="attachment-preview-tag">Attached: ${file.name}</span>`;
+                chatUploadedFileData = {
+                    name: file.name,
+                    type: file.type,
+                    dataUrl: e.target.result
+                };
+                document.getElementById("fileAttachmentPreview").innerHTML = `<span class="attachment-preview-tag">Attached: ${file.name}</span>`;
             };
             reader.readAsDataURL(file);
         }
 
         function submitChatMessage() {
-            const input = document.getElementById('chatInputField');
-            if(!input || (!input.value.trim() && !activeSelectedFileBase64) || !selectedActiveChatPartner) return;
+            const input = document.getElementById("chatInputField");
+            const text = input.value.trim();
+            if(!text && !chatUploadedFileData) return;
 
-            chatMessages.push({
-                id: Date.now(),
-                from: currentSessionUser,
-                to: selectedActiveChatPartner,
-                text: input.value.trim() || "Sent an item mapping channel link.",
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            memoryChats.push({
+                id: memoryChats.length + 1,
+                from: memoryActiveUser,
+                to: currentTargetChatUser,
+                text: text,
+                time: timeString,
                 reactions: {},
-                file: activeSelectedFileBase64
+                file: chatUploadedFileData
             });
 
-            safeSet('chatMessages', chatMessages);
-            
-            input.value = '';
-            activeSelectedFileBase64 = null;
-            document.getElementById('chatFileInput').value = '';
-            document.getElementById('fileAttachmentPreview').innerHTML = '';
-            
+            input.value = "";
+            chatUploadedFileData = null;
+            document.getElementById("fileAttachmentPreview").innerText = "";
             triggerMessageAudio();
-            loadChatHistory();
+            renderChatHistory();
         }
 
-        function reactToMessage(id, emoji) {
-            chatMessages = chatMessages.map(m => {
-                if(m.id === id) {
-                    let rx = m.reactions || {};
-                    rx[emoji] = (rx[emoji] || 0) + 1;
-                    return { ...m, reactions: rx };
-                }
-                return m;
-            });
-            safeSet('chatMessages', chatMessages);
-            loadChatHistory();
-        }
-
-        function deleteChatMessage(id) {
-            chatMessages = chatMessages.filter(m => m.id !== id);
-            safeSet('chatMessages', chatMessages);
-            loadChatHistory();
-            showToast("Message deleted successfully.", "info");
-        }
-
-        /* --- SIGN UP / SIGN IN PORTAL ENGINE --- */
-        function toggleAuthForms(view) {
-            document.getElementById('authSignUpBox').style.display = view === 'signin' ? 'none' : 'block';
-            document.getElementById('authSignInBox').style.display = view === 'signin' ? 'block' : 'none';
+        function toggleAuthForms(mode) {
+            if (mode === 'signin') {
+                document.getElementById("authSignUpBox").style.display = "none";
+                document.getElementById("authSignInBox").style.display = "block";
+            } else {
+                document.getElementById("authSignUpBox").style.display = "block";
+                document.getElementById("authSignInBox").style.display = "none";
+            }
         }
 
         function processSignUp(e) {
             e.preventDefault();
-            const u = document.getElementById('signUpUser').value.trim();
-            const p = document.getElementById('signUpPass').value;
-
-            if(userDatabase[u]) {
-                showToast("Account handle taken!", "error");
-                return;
-            }
-
-            userDatabase[u] = p;
-            safeSet('users', userDatabase);
-            
-            currentSessionUser = u;
-            safeSet('activeUser', currentSessionUser);
-            selectedActiveChatPartner = ""; 
-            
-            syncUIContext();
-            switchPage('home');
-            showToast("Registered and authenticated safely inside core logs!", "success");
-            document.getElementById('signUpSystemForm').reset();
+            const u = document.getElementById("signUpUser").value.trim();
+            const p = document.getElementById("signUpPass").value;
+            if(memoryDatabase[u]) { showToast("Handle already active in directory.", "error"); return; }
+            memoryDatabase[u] = p;
+            memoryActiveUser = u;
+            postAuthInit();
         }
 
         function processSignIn(e) {
             e.preventDefault();
-            const u = document.getElementById('signInUser').value.trim();
-            const p = document.getElementById('signInPass').value;
-
-            if(userDatabase[u] && userDatabase[u] === p) {
-                currentSessionUser = u;
-                safeSet('activeUser', currentSessionUser);
-                selectedActiveChatPartner = ""; 
-                syncUIContext();
-                switchPage('home');
-                showToast("Signed in successfully!", "success");
-                document.getElementById('signInSystemForm').reset();
+            const u = document.getElementById("signInUser").value.trim();
+            const p = document.getElementById("signInPass").value;
+            if(memoryDatabase[u] && memoryDatabase[u] === p) {
+                memoryActiveUser = u;
+                postAuthInit();
             } else {
-                showToast("Invalid credentials configurations!", "error");
+                showToast("Invalid security credentials.", "error");
             }
         }
 
-        function handleProfileUpdate(e) {
-            e.preventDefault();
-            const newHandle = document.getElementById('profUserHandle').value.trim();
-            if(!newHandle || newHandle === currentSessionUser) return;
-
-            userDatabase[newHandle] = userDatabase[currentSessionUser];
-            delete userDatabase[currentSessionUser];
-            currentSessionUser = newHandle;
-            
-            safeSet('users', userDatabase);
-            safeSet('activeUser', currentSessionUser);
-            
-            syncUIContext();
-            showToast("Profile updated!", "success");
+        function postAuthInit() {
+            updateGlobalUIState();
+            renderActiveOperators();
+            renderChatFriends();
+            const keys = Object.keys(memoryDatabase).filter(k => k !== memoryActiveUser);
+            currentTargetChatUser = keys.length ? keys[0] : "";
+            renderChatHistory();
+            switchView("home");
+            showToast("Welcome backend operator console online!");
         }
 
         function triggerSignOut() {
-            currentSessionUser = "LoggedOut"; 
-            safeSet('activeUser', "LoggedOut");
-            selectedActiveChatPartner = "";
-            
-            syncUIContext();
-            switchPage('auth');
-            toggleAuthForms('signin'); 
-            showToast("Successfully logged out from current operator channel workspace.", "info");
+            memoryActiveUser = "";
+            updateGlobalUIState();
+            switchView("auth");
+            toggleAuthForms('signin');
+            showToast("Session security context unlinked.");
         }
     </script>
 </body>
