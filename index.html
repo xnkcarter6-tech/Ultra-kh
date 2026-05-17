@@ -6,7 +6,7 @@
     <title>Ultra KH — Next Gen Social Platform</title>
     <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans & Hanuman (for elegant Khmer typography) -->
+    <!-- Google Fonts: Plus Jakarta Sans & Hanuman -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -119,7 +119,6 @@
             box-shadow: 0 4px 12px rgba(22, 66, 55, 0.03);
         }
 
-        /* Language Toggle Styling */
         .lang-switcher {
             display: flex;
             gap: 8px;
@@ -148,7 +147,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
-        /* Footer Profile Deck Layout */
         .user-footer-wrapper {
             display: flex;
             flex-direction: column;
@@ -183,23 +181,6 @@
             background-position: center;
         }
 
-        .user-meta-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .profile-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .profile-handle {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Sign Out Button Control */
         .btn-signout {
             display: none;
             align-items: center;
@@ -220,7 +201,6 @@
         .btn-signout:hover {
             background: var(--error-red);
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(193, 71, 71, 0.15);
         }
 
         /* --- WORKSPACE STAGE --- */
@@ -271,7 +251,6 @@
             margin: 0 auto;
         }
 
-        /* --- COMPOSER & CARDS --- */
         .canvas-composer {
             background: var(--bg-card);
             border-radius: 16px;
@@ -281,7 +260,7 @@
         }
 
         .interactive-text-box {
-            flex: 1;
+            width: 100%;
             background: transparent;
             border: none;
             outline: none;
@@ -316,6 +295,23 @@
             padding: 24px;
             margin-bottom: 20px;
             border: 1px solid var(--border-subtle);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .node-user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .node-user-handle {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .body-narrative-block {
@@ -364,12 +360,6 @@
             border: 1px solid var(--border-subtle);
             box-shadow: 0 20px 40px rgba(22, 66, 55, 0.1);
             position: relative;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-        }
-
-        .auth-overlay.active .auth-modal {
-            transform: scale(1);
         }
 
         .close-auth {
@@ -396,13 +386,11 @@
             font-weight: 600;
             color: var(--text-secondary);
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
         }
 
         .auth-tab.active {
             color: var(--accent-glow);
-            border-bottom-color: var(--accent-glow);
+            border-bottom: 2px solid var(--accent-glow);
         }
 
         .auth-form {
@@ -437,11 +425,6 @@
             font-size: 14px;
         }
 
-        .input-group input:focus {
-            border-color: var(--border-active);
-            background: var(--bg-card);
-        }
-
         .auth-btn {
             background: var(--accent-glow);
             color: white;
@@ -457,16 +440,12 @@
 <body>
 
     <div class="app-shell">
-        
-        <!-- SIDE NAVIGATION -->
         <nav class="sidebar-nav">
             <div>
                 <a href="#" class="brand-cluster" style="margin-bottom: 30px;">
                     <div class="brand-logo-box">Uᴷᴴ</div>
                     Ultra KH
                 </a>
-
-                <!-- Language Toggle Switch -->
                 <div class="lang-switcher">
                     <button class="lang-btn active" id="btn-en" onclick="switchLang('en')">EN</button>
                     <button class="lang-btn" id="btn-kh" onclick="switchLang('kh')">ខ្មែរ</button>
@@ -479,7 +458,6 @@
                 <div class="nav-pill"><i class="fa-solid fa-people-roof"></i> <span data-key="nav-profile">Profile</span></div>
             </div>
 
-            <!-- Footer Dynamic Account Deck -->
             <div class="user-footer-wrapper">
                 <div class="user-widget" id="userAccountWidget" onclick="handleWidgetClick()">
                     <div class="avatar-smooth" id="userAvatarContainer">
@@ -490,7 +468,6 @@
                         <span class="profile-handle" id="profileHandleDisplay" data-key="user-action-guest">Click to Sign In</span>
                     </div>
                 </div>
-                <!-- Functional Sign Out -->
                 <button class="btn-signout" id="btnSignout" onclick="executeSignOut()">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span data-key="btn-logout">Sign Out</span>
@@ -498,7 +475,6 @@
             </div>
         </nav>
 
-        <!-- MAIN TIMELINE CONTAINER -->
         <main class="workspace-timeline">
             <div class="workspace-top-bar">
                 <span class="view-label" data-key="feed-title">Discover Feed</span>
@@ -509,142 +485,205 @@
             </div>
 
             <div class="scroll-canvas">
-                
-                <!-- Post Composer Box -->
                 <div class="canvas-composer">
-                    <div class="composer-split" style="display: flex; gap: 16px;">
-                        <textarea class="interactive-text-box" id="composer-text" placeholder="What ideas are you designing today?" rows="1"></textarea>
-                    </div>
+                    <textarea class="interactive-text-box" id="composer-text" placeholder="What ideas are you designing today?" rows="2"></textarea>
                     <div class="composer-bottom-bar">
-                        <div style="display: flex; gap: 14px; color: var(--text-secondary);">
-                            <i class="fa-regular fa-image"></i>
-                            <i class="fa-solid fa-link"></i>
-                        </div>
-                        <button class="btn-premium-action" data-key="btn-publish">Publish</button>
+                        <div style="display: flex; gap: 14px; color: var(--text-secondary);"><i class="fa-regular fa-image"></i></div>
+                        <button class="btn-premium-action" onclick="executePublishPost()" data-key="btn-publish">Publish</button>
                     </div>
                 </div>
 
-                <!-- Post Node 1 -->
-                <div class="stream-card-node">
-                    <div class="body-narrative-block" data-key="post-one">
-                        Welcome to Ultra KH. This platform blends high performance with rich cultural typography, keeping your feed fluid, intuitive, and nature-focused.
-                    </div>
-                    <div class="node-interaction-dock">
-                        <div class="dock-trigger"><i class="fa-regular fa-heart"></i> 4.2k</div>
-                        <div class="dock-trigger"><i class="fa-regular fa-comment"></i> 188</div>
-                    </div>
-                </div>
-
+                <!-- Live Post Stream -->
+                <div id="postsContainer"></div>
             </div>
         </main>
     </div>
 
-    <!-- AUTHENTICATION DIALOG (SIGN IN / SIGN UP) -->
+    <!-- AUTHENTICATION DIALOG -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-modal">
             <button class="close-auth" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
-            
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tabSignin" onclick="toggleAuthTab('signin')" data-key="tab-signin">Sign In</div>
                 <div class="auth-tab" id="tabSignup" onclick="toggleAuthTab('signup')" data-key="tab-signup">Sign Up</div>
             </div>
 
-            <!-- Sign In Form -->
             <form class="auth-form active" id="formSignin" onsubmit="executeSignIn(event)">
-                <div class="input-group">
-                    <label data-key="lbl-email">Email Address</label>
-                    <input type="email" placeholder="name@example.com" required>
-                </div>
-                <div class="input-group">
-                    <label data-key="lbl-password">Password</label>
-                    <input type="password" placeholder="••••••••" required>
-                </div>
+                <div class="input-group"><label data-key="lbl-email">Email Address</label><input type="email" id="loginEmail" required></div>
+                <div class="input-group"><label data-key="lbl-password">Password</label><input type="password" id="loginPassword" required></div>
                 <button class="auth-btn" type="submit" data-key="btn-signin">Sign In</button>
             </form>
 
-            <!-- Sign Up Form -->
-            <form class="auth-form" id="formSignup" onsubmit="executeSignIn(event)">
-                <div class="input-group">
-                    <label data-key="lbl-name">Full Name</label>
-                    <input type="text" placeholder="John Doe" id="signUpNameInput" required>
-                </div>
-                <div class="input-group">
-                    <label data-key="lbl-email">Email Address</label>
-                    <input type="email" placeholder="name@example.com" required>
-                </div>
-                <div class="input-group">
-                    <label data-key="lbl-password">Password</label>
-                    <input type="password" placeholder="••••••••" required>
-                </div>
+            <form class="auth-form" id="formSignup" onsubmit="executeSignUp(event)">
+                <div class="input-group"><label data-key="lbl-name">Full Name</label><input type="text" id="signUpName" required></div>
+                <div class="input-group"><label data-key="lbl-email">Email Address</label><input type="email" id="signUpEmail" required></div>
+                <div class="input-group"><label data-key="lbl-password">Password</label><input type="password" id="signUpPassword" required></div>
                 <button class="auth-btn" type="submit" data-key="btn-signup">Create Account</button>
             </form>
         </div>
     </div>
 
-    <!-- RUNTIME ARCHITECTURE SCRIPT -->
+    <!-- WIRE UP FIREBASE MODULES -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // ==========================================
+        // STEP 2: PASTE YOUR FIREBASE CONFIG HERE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserObject = null;
+
+        // Listen for Realtime Auth Changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserObject = user;
+                isLoggedIn = true;
+                activeUser.name = user.displayName || "Ultra Member";
+                activeUser.handle = "@" + (user.displayName || "user").toLowerCase().replace(/\s+/g, '');
+            } else {
+                currentUserObject = null;
+                isLoggedIn = false;
+            }
+            updateProfileUIState();
+        });
+
+        // Sign Up Execution
+        window.executeSignUp = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signUpName').value;
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+                alert("Account created successfully!");
+                closeAuthModal();
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        // Sign In Execution
+        window.executeSignIn = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                closeAuthModal();
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        // Sign Out Execution
+        window.executeSignOut = async () => {
+            await signOut(auth);
+        };
+
+        // Publish Post to Database
+        window.executePublishPost = async () => {
+            if (!currentUserObject) {
+                alert("Please sign in to publish a post!");
+                openAuthModal();
+                return;
+            }
+            const postText = document.getElementById('composer-text').value.trim();
+            if (!postText) return;
+
+            try {
+                await push(ref(db, 'posts'), {
+                    body: postText,
+                    author: currentUserObject.displayName || "Anonymous",
+                    handle: "@" + currentUserObject.displayName.toLowerCase().replace(/\s+/g, ''),
+                    timestamp: serverTimestamp()
+                });
+                document.getElementById('composer-text').value = '';
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        // Stream and Display Realtime Posts
+        onValue(ref(db, 'posts'), (snapshot) => {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+            const data = snapshot.val();
+            if (!data) return;
+
+            // Turn object into sorted array (newest posts first)
+            const sortedPosts = Object.values(data).reverse();
+
+            sortedPosts.forEach(post => {
+                const node = document.createElement('div');
+                node.className = 'stream-card-node';
+                node.innerHTML = `
+                    <div class="node-header">
+                        <div class="avatar-smooth" style="width:28px; height:28px; font-size:11px; background:#cbdad5;"><i class="fa-solid fa-user"></i></div>
+                        <div>
+                            <div class="node-user-name">${post.author}</div>
+                            <div class="node-user-handle">${post.handle}</div>
+                        </div>
+                    </div>
+                    <div class="body-narrative-block">${post.body}</div>
+                    <div class="node-interaction-dock">
+                        <div><i class="fa-regular fa-heart"></i> 0</div>
+                    </div>
+                `;
+                container.appendChild(node);
+            });
+        });
+    </script>
+
+    <!-- GENERAL INTERFACE CONTROLS -->
     <script>
-        // State variables
         let currentLang = 'en';
         let isLoggedIn = false;
-        let activeUser = { name: 'Liam Carter', handle: '@liamc' };
+        let activeUser = { name: '', handle: '' };
 
         const langData = {
             en: {
-                "nav-home": "Home",
-                "nav-msg": "Messages",
-                "nav-profile": "Profile",
-                "user-status-guest": "Guest Account",
-                "user-action-guest": "Click to Sign In",
-                "feed-title": "Discover Feed",
-                "btn-publish": "Publish",
-                "btn-logout": "Sign Out",
-                "search-holder": "Search spaces...",
-                "compose-holder": "What ideas are you designing today?",
-                "post-one": "Welcome to Ultra KH. This platform blends high performance with rich cultural typography, keeping your feed fluid, intuitive, and nature-focused.",
-                "tab-signin": "Sign In",
-                "tab-signup": "Sign Up",
-                "lbl-email": "Email Address",
-                "lbl-password": "Password",
-                "lbl-name": "Full Name",
-                "btn-signin": "Sign In",
-                "btn-signup": "Create Account"
+                "nav-home": "Home", "nav-msg": "Messages", "nav-profile": "Profile",
+                "user-status-guest": "Guest Account", "user-action-guest": "Click to Sign In",
+                "feed-title": "Discover Feed", "btn-publish": "Publish", "btn-logout": "Sign Out",
+                "tab-signin": "Sign In", "tab-signup": "Sign Up", "lbl-email": "Email Address",
+                "lbl-password": "Password", "lbl-name": "Full Name", "btn-signin": "Sign In", "btn-signup": "Create Account"
             },
             kh: {
-                "nav-home": "ទំព័រដើម",
-                "nav-msg": "សារកម្សាន្ត",
-                "nav-profile": "ប្រវត្តិរូប",
-                "user-status-guest": "គណនីភ្ញៀវ",
-                "user-action-guest": "ចុចទីនេះដើម្បីចូលប្រព័ន្ធ",
-                "feed-title": "ព័ត៌មានថ្មីៗ",
-                "btn-publish": "ផ្សព្វផ្សាយ",
-                "btn-logout": "ចាកចេញ",
-                "search-holder": "ស្វែងរកទីនេះ...",
-                "compose-holder": "តើអ្នកមានគំនិតច្នៃប្រឌិតអ្វីខ្លះថ្ងៃនេះ?",
-                "post-one": "សូមស្វាគមន៍មកកាន់ Ultra KH។ កម្មវិធីនេះបង្កើតឡើងដោយការរួមបញ្ចូលគ្នារវាងបច្ចេកវិទ្យាទំនើប និងអក្សរសិល្ប៍ខ្មែរ ដើម្បីធ្វើឲ្យការប្រើប្រាស់កាន់តែមានភាពរលូន និងមានផាសុកភាពខ្ពស់។",
-                "tab-signin": "ចូលប្រព័ន្ធ",
-                "tab-signup": "ចុះឈ្មោះ",
-                "lbl-email": "អាសយដ្ឋានអ៊ីមែល",
-                "lbl-password": "លេខកូដសម្ងាត់",
-                "lbl-name": "ឈ្មោះពេញ",
-                "btn-signin": "ចូលគណនី",
-                "btn-signup": "បង្កើតគណនីថ្មី"
+                "nav-home": "ទំព័រដើម", "nav-msg": "សារកម្សាន្ត", "nav-profile": "ប្រវត្តិរូប",
+                "user-status-guest": "គណនីភ្ញៀវ", "user-action-guest": "ចុចទីនេះដើម្បីចូលប្រព័ន្ធ",
+                "feed-title": "ព័ត៌មានថ្មីៗ", "btn-publish": "ផ្សព្វផ្សាយ", "btn-logout": "ចាកចេញ",
+                "tab-signin": "ចូលប្រព័ន្ធ", "tab-signup": "ចុះឈ្មោះ", "lbl-email": "អាសយដ្ឋានអ៊ីមែល",
+                "lbl-password": "លេខកូដសម្ងាត់", "lbl-name": "ឈ្មោះពេញ", "btn-signin": "ចូលគណនី", "btn-signup": "បង្កើតគណនីថ្មី"
             }
         };
 
         function switchLang(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            if(lang === 'en') document.getElementById('btn-en').classList.add('active');
-            if(lang === 'kh') document.getElementById('btn-kh').classList.add('active');
-
+            document.getElementById(`btn-${lang}`).classList.add('active');
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
                 if(langData[lang][key]) el.textContent = langData[lang][key];
             });
-
-            document.getElementById('search-bar').placeholder = langData[lang]['search-holder'];
-            document.getElementById('composer-text').placeholder = langData[lang]['compose-holder'];
-            
             updateProfileUIState();
         }
 
@@ -660,56 +699,28 @@
                 handleEl.removeAttribute('data-key');
                 nameEl.textContent = activeUser.name;
                 handleEl.textContent = activeUser.handle;
-                
                 guestIcon.style.display = 'none';
-                avatarBox.style.backgroundImage = "url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80')";
+                avatarBox.style.backgroundImage = "url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80')";
                 signoutBtn.style.display = 'flex';
             } else {
                 nameEl.setAttribute('data-key', 'user-status-guest');
                 handleEl.setAttribute('data-key', 'user-action-guest');
                 nameEl.textContent = langData[currentLang]['user-status-guest'];
                 handleEl.textContent = langData[currentLang]['user-action-guest'];
-                
                 avatarBox.style.backgroundImage = 'none';
                 guestIcon.style.display = 'block';
                 signoutBtn.style.display = 'none';
             }
         }
 
-        function handleWidgetClick() {
-            if (!isLoggedIn) openAuthModal();
-        }
-
-        function executeSignIn(e) {
-            e.preventDefault();
-            const inputName = document.getElementById('signUpNameInput').value.trim();
-            if(inputName) {
-                activeUser.name = inputName;
-                activeUser.handle = '@' + inputName.toLowerCase().replace(/\s+/g, '');
-            } else {
-                activeUser.name = "Liam Carter";
-                activeUser.handle = "@liamc";
-            }
-            isLoggedIn = true;
-            updateProfileUIState();
-            closeAuthModal();
-        }
-
-        function executeSignOut() {
-            isLoggedIn = false;
-            document.getElementById('signUpNameInput').value = '';
-            updateProfileUIState();
-        }
-
+        function handleWidgetClick() { if (!isLoggedIn) openAuthModal(); }
         function openAuthModal() { document.getElementById('authOverlay').classList.add('active'); }
         function closeAuthModal() { document.getElementById('authOverlay').classList.remove('active'); }
-
         function toggleAuthTab(type) {
             document.getElementById('tabSignin').classList.remove('active');
             document.getElementById('tabSignup').classList.remove('active');
             document.getElementById('formSignin').classList.remove('active');
             document.getElementById('formSignup').classList.remove('active');
-
             if(type === 'signin') {
                 document.getElementById('tabSignin').classList.add('active');
                 document.getElementById('formSignin').classList.add('active');
