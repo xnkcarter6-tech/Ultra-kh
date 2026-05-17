@@ -275,24 +275,23 @@
                 <div class="top-bar-profile-wrap">
                     <div style="width:24px; height:24px; background: #E0E0E0; border-radius:50%;"></div>
                     <div><span id="topBarUserHandle">Admin</span></div>
-                }
                 </div>
             </div>
         </header>
 
         <div class="container" id="mainContainer">
-            <!-- PAGE: HOME -->
             <div class="page-view active" id="page-home">
                 <div class="home-layout">
                     <div class="home-main-feed">
                         <div class="card" style="padding: 20px;">
                             <h3 style="margin-bottom: 12px;">Publish an Update</h3>
-                            <form id="homePublishForm" onsubmit="handlePostPublish(event)">
+                            <form id="homePublishForm">
                                 <div class="form-group" style="margin-bottom: 12px;">
                                     <textarea class="form-textarea" id="postText" required placeholder="What is happening within your workspace channels?"></textarea>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 12px;">
-                                    <label class="form-label">Add Tags (comma separated)</label>                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
+                                    <label class="form-label">Add Tags (comma separated)</label>
+                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
                                 </div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <label class="file-attach-label" for="homeFileInput">
@@ -346,7 +345,6 @@
                 </div>
             </div>
 
-            <!-- PAGE: NOTIFICATIONS -->
             <div class="page-view" id="page-notifications">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -357,7 +355,6 @@
                 </div>
             </div>
 
-            <!-- PAGE: PROFILE -->
             <div class="page-view" id="page-profile">
                 <div class="split-view-layout">
                     <div class="card left-form-panel">
@@ -365,7 +362,7 @@
                         <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
                             <div class="form-group">
                                 <label class="form-label">Active Operator Username</label>
-                                <input type="text" class="form-input" id="profUserHandle" required>
+                                <input type="text" class="form-input" id="profUserHandle" required value="Admin">
                             </div>
                             <button type="submit" class="btn-submit">Save Changes</button>
                         </form>
@@ -383,7 +380,6 @@
                 </div>
             </div>
 
-            <!-- PAGE: CHAT -->
             <div class="page-view" id="page-message">
                 <div class="chat-layout">
                     <div class="chat-sidebar">
@@ -417,7 +413,6 @@
                 </div>
             </div>
 
-            <!-- PAGE: ACCOUNTS (AUTH) -->
             <div class="page-view" id="page-auth">
                 <div class="split-view-layout" style="justify-content: center; align-items: center; min-height: 400px;">
                     <div class="card left-form-panel" id="authSignUpBox" style="width: 100%; max-width: 400px;">
@@ -461,10 +456,9 @@
         </div>
     </main>
 
-    <!-- --- REAL-TIME DATABASE CODE BLOCK & SCRIPTS --- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // IMPORTANT: Replace these empty strings with your configuration credentials from the Firebase Console!
         const firebaseConfig = {
@@ -484,6 +478,20 @@
         // Document Targets
         const systemUserTableBody = document.getElementById("systemUserTableBody");
         const metUserCount = document.getElementById("metUserCount");
+        const homeFeedStream = document.getElementById("homeFeedStream");
+
+        // UI Toast Controller Utility
+        function showToast(message, type = 'success') {
+            const container = document.getElementById("toastHub");
+            const element = document.createElement("div");
+            element.className = `toast-card ${type}`;
+            element.innerHTML = `
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(element);
+            setTimeout(() => { element.remove(); }, 4000);
+        }
 
         // 1. SIGN UP ACTION (Pushes user entries to the shared cloud database)
         window.processSignUp = function(event) {
@@ -499,6 +507,8 @@
                     timestamp: new Date().toISOString()
                 }).then(() => {
                     showToast(`Account @${username} registered globally!`, "success");
+                    document.getElementById("topBarUserHandle").innerText = username;
+                    document.getElementById("profUserHandle").value = username;
                     document.getElementById("signUpSystemForm").reset();
                 }).catch((err) => {
                     showToast("Sync Error: " + err.message, "error");
@@ -506,15 +516,43 @@
             }
         };
 
-        // 2. LIVE REAL-TIME DATA SYNC LISTENER (Triggers instantly across all active connected devices)
+        // 2. LIVE REAL-TIME DATABASE PUBLISHING FOR POST FEED
+        document.getElementById("homePublishForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const postText = document.getElementById("postText").value.trim();
+            const postTags = document.getElementById("postTags").value.trim();
+            const userHandle = document.getElementById("topBarUserHandle").innerText || "Admin";
+
+            if (!postText) return;
+
+            const postsRef = ref(database, 'posts');
+            const newPostRef = push(postsRef);
+            const tagsArray = postTags ? postTags.split(',').map(tag => tag.trim()) : [];
+
+            set(newPostRef, {
+                author: userHandle,
+                content: postText,
+                tags: tagsArray,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                showToast("Post updated to Firebase feed!", "success");
+                document.getElementById("homePublishForm").reset();
+                document.getElementById("homeFilePreview").innerText = "";
+            }).catch((err) => {
+                showToast("Publish Error: " + err.message, "error");
+            });
+        });
+
+        // 3. LIVE SYSTEM SYNC LISTENER (Users Panel)
         const userDatabaseRef = ref(database, 'users');
         onValue(userDatabaseRef, (snapshot) => {
             const data = snapshot.val();
-            systemUserTableBody.innerHTML = ""; // Clear table layout UI
+            systemUserTableBody.innerHTML = "";
             
             if (data) {
                 const userKeys = Object.keys(data);
-                metUserCount.innerText = userKeys.length; // Live sync counter UI
+                metUserCount.innerText = userKeys.length;
                 
                 userKeys.forEach((key) => {
                     const currentUser = data[key];
@@ -531,21 +569,48 @@
             }
         });
 
-        // UI Toast Controller Utility
-        function showToast(message, type = 'success') {
-            const container = document.getElementById("toastHub");
-            const element = document.createElement("div");
-            element.className = `toast-card ${type}`;
-            element.innerHTML = `
-                <span class="toast-message">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-            `;
-            container.appendChild(element);
-            setTimeout(() => { element.remove(); }, 4000);
-        }
+        // 4. LIVE FEED POSTS DATA LISTENER
+        const postsDatabaseRef = ref(database, 'posts');
+        onValue(postsDatabaseRef, (snapshot) => {
+            const data = snapshot.val();
+            homeFeedStream.innerHTML = "";
+            
+            if (data) {
+                const postKeys = Object.keys(data).reverse(); // Newest first
+                
+                postKeys.forEach((key) => {
+                    const post = data[key];
+                    let tagsHTML = "";
+                    if (post.tags && Array.isArray(post.tags)) {
+                        post.tags.forEach(tag => {
+                            if(tag) tagsHTML += `<span class="tag-badge">#${tag}</span>`;
+                        });
+                    }
+
+                    const postDate = new Date(post.timestamp).toLocaleString();
+
+                    const postCard = `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <span class="post-author">@${post.author}</span>
+                                <span class="post-time">${postDate}</span>
+                            </div>
+                            <div class="post-content-text">${post.content}</div>
+                            <div style="margin-bottom: 12px;">${tagsHTML}</div>
+                            <div class="post-actions">
+                                <button class="action-trigger-btn">👍 Like</button>
+                                <button class="action-trigger-btn">💬 Comment</button>
+                            </div>
+                        </div>
+                    `;
+                    homeFeedStream.innerHTML += postCard;
+                });
+            } else {
+                homeFeedStream.innerHTML = `<p style="text-align:center; color:var(--bit-text-light); padding:20px;">No posts published yet. Be the first!</p>`;
+            }
+        });
     </script>
 
-    <!-- Standard UI Interface Logic Script Block -->
     <script>
         // Tab Layout Menu Switch Router Engine
         document.querySelectorAll('.sidebar-item[data-target]').forEach(item => {
@@ -574,11 +639,30 @@
             }
         }
 
+        // Profile updates local display handles
+        function handleProfileUpdate(e) { 
+            e.preventDefault(); 
+            const newHandle = document.getElementById("profUserHandle").value.trim();
+            if(newHandle) {
+                document.getElementById("topBarUserHandle").innerText = newHandle;
+                alert("Local profile operator handle changed to @" + newHandle); 
+            }
+        }
+
+        // UI File attachments placeholder feedback hooks
+        function handleHomeFileSelected(input) {
+            if(input.files && input.files[0]) {
+                document.getElementById("homeFilePreview").innerText = "Selected: " + input.files[0].name;
+            }
+        }
+
         // Placeholder fallback handlers for empty form UI functions
-        function handlePostPublish(e) { e.preventDefault(); alert("Local Post Published!"); }
-        function handleProfileUpdate(e) { e.preventDefault(); alert("Profile Updated!"); }
         function processSignIn(e) { e.preventDefault(); alert("Logged In!"); }
         function triggerSignOut() { alert("Signed Out!"); }
+        function clearAllNotifications() { document.getElementById("notificationStreamBox").innerHTML = ""; }
+        function insertEmojiIntoChat(e) { document.getElementById("chatInputField").value += e; }
+        function handleFileAttachmentSelected(i) { if(i.files[0]) document.getElementById("fileAttachmentPreview").innerText = i.files[0].name; }
+        function submitChatMessage() { alert("Message feature requires chat integration block."); }
     </script>
 </body>
 </html>
