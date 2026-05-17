@@ -51,6 +51,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* --- NAVIGATION / SIDEBAR RESILIENCE --- */
         .sidebar {
             width: 250px;
             background-color: var(--bit-blue-primary);
@@ -58,6 +59,7 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            z-index: 100;
         }
 
         .sidebar-brand {
@@ -114,7 +116,7 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .top-bar-right { display: flex; align-items: center; gap: 20px; color: var(--bit-text-light); }
+        .top-bar-right { display: flex; align-items: center; gap: 15px; color: var(--bit-text-light); }
         
         .lang-select {
             padding: 4px 8px; border: 1px solid var(--bit-border-light); border-radius: 4px;
@@ -122,11 +124,14 @@
             cursor: pointer; outline: none; font-size: 13px;
         }
 
+        .top-bar-profile-wrap { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+
         .container { padding: 25px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; }
         .card { background: var(--bit-bg-card); border-radius: 8px; border: 1px solid var(--bit-border-light); padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: background-color 0.3s, border-color 0.3s; }
         .page-view { display: none; height: 100%; }
         .page-view.active { display: block; }
 
+        /* --- RESPONSIVE SPLIT VIEWS --- */
         .split-view-layout { display: flex; gap: 25px; height: 100%; align-items: flex-start; }
         .left-form-panel { width: 350px; flex-shrink: 0; }
         .right-display-panel { flex-grow: 1; }
@@ -142,9 +147,9 @@
 
         .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--bit-border-light); }
 
-        /* Home Feed Layout */
+        /* --- HOME WORKSPACE FEED RESPONSIVENESS --- */
         .home-layout { display: flex; gap: 25px; align-items: flex-start; }
-        .home-main-feed { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
+        .home-main-feed { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; width: 100%; }
         .home-side-metrics { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
         .feed-container { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }
         
@@ -159,7 +164,7 @@
 
         .tag-badge { display: inline-block; background: rgba(30, 80, 255, 0.1); color: var(--bit-blue-primary); padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 5px; font-weight: 600; }
 
-        .post-actions { display: flex; align-items: center; gap: 24px; border-top: 1px solid var(--bit-border-light); border-bottom: 1px solid var(--bit-border-light); padding: 10px 0; margin-bottom: 12px; }
+        .post-actions { display: flex; align-items: center; gap: 24px; border-top: 1px solid var(--bit-border-light); border-bottom: 1px solid var(--bit-border-light); padding: 10px 0; margin-bottom: 12px; justify-content: space-between; }
         .action-trigger-btn { background: transparent; border: none; color: var(--bit-text-light); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: color 0.2s; }
         .action-trigger-btn:hover { color: var(--bit-blue-primary); }
 
@@ -176,7 +181,7 @@
         .metric-widget-status { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; color: var(--bit-text-dark); margin-top: 8px; }
         .dot-pulse { width: 8px; height: 8px; background-color: var(--bit-success); border-radius: 50%; margin-right: 6px; display: inline-block; }
 
-        /* Chat Layout Components */
+        /* --- CHAT MOBILE WORKSPACE CONSTRAINTS --- */
         .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; }
         .chat-sidebar { width: 280px; border-right: 1px solid var(--bit-border-light); display: flex; flex-direction: column; }
         .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); }
@@ -185,7 +190,7 @@
         .friend-item.active { background: rgba(30, 80, 255, 0.08); }
         .friend-name { font-weight: 600; color: var(--bit-text-dark); font-size: 13px; }
 
-        .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; }
+        .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; min-width: 0; }
         .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; }
         .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: rgba(0, 0, 0, 0.02); }
         
@@ -194,7 +199,7 @@
         .msg-row.msg-them { align-items: flex-start; }
         .msg-meta-container { font-size: 11px; color: var(--bit-text-light); margin-bottom: 3px; display: flex; gap: 6px; align-items: center; }
         
-        .bubble-wrapper { display: flex; align-items: center; gap: 8px; max-width: 70%; position: relative; }
+        .bubble-wrapper { display: flex; align-items: center; gap: 8px; max-width: 85%; position: relative; }
         .msg-me .bubble-wrapper { flex-direction: row-reverse; }
         .bubble { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; word-wrap: break-word; position: relative; }
         .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; border-bottom-right-radius: 2px; }
@@ -226,7 +231,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 100%;
+            width: 90%;
             max-width: 420px;
             pointer-events: none;
         }
@@ -250,6 +255,117 @@
         .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; font-size: 14px; }
         @keyframes toastSlideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toastSlideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-30px); opacity: 0; } }
+
+        /* ==========================================================================
+           ### MOBILE MEDIA QUERIES ENGINE (768px and down) ###
+           ========================================================================== */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Stack sidebar on top/bottom of view */
+            }
+
+            /* Convert sidebar to sleek top/bottom navigation bar block */
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .sidebar-brand {
+                padding: 15px 20px;
+                font-size: 18px;
+                border-bottom: none;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 0;
+            }
+
+            .sidebar-item a {
+                padding: 15px 15px;
+                font-size: 12px;
+                flex-direction: column;
+                gap: 4px;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar-icon {
+                margin-right: 0;
+                width: 20px;
+                height: 20px;
+            }
+
+            .sidebar-item a span {
+                display: none; /* Hide label string text to optimize space layout on ultra-small viewport screens */
+            }
+
+            .sidebar-item.active::before {
+                left: 0; right: 0; bottom: 0; top: auto;
+                width: auto; height: 3px;
+            }
+
+            .top-bar {
+                padding: 0 15px;
+                height: 50px;
+            }
+
+            #breadcrumb {
+                font-size: 12px;
+            }
+
+            .top-bar-profile-wrap span {
+                display: none; /* Strip unneeded headers on mobile */
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            /* Collapse Layout Panels Into Fluid Vertical Rows */
+            .home-layout, .split-view-layout, .chat-layout {
+                flex-direction: column;
+                height: auto;
+                gap: 15px;
+            }
+
+            .home-side-metrics, .left-form-panel, .chat-sidebar {
+                width: 100%;
+                flex-shrink: initial;
+            }
+
+            .post-media-item {
+                max-width: 100%; /* Media fills columns safely */
+            }
+
+            /* Compact messaging viewport adjustment workflows */
+            .chat-layout {
+                height: calc(100vh - 120px); /* Fill screen cleanly underneath header bars */
+            }
+            .chat-sidebar {
+                max-height: 140px;
+                overflow-y: auto;
+            }
+            .friend-item {
+                padding: 10px 15px;
+            }
+            .chat-window {
+                height: 300px;
+                flex-grow: 1;
+            }
+            .bubble-wrapper {
+                max-width: 95%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -270,8 +386,8 @@
                     <option value="kh">ភាសាខ្មែរ</option>
                 </select>
                 <div class="top-bar-profile-wrap" id="userProfile">
-                    <div class="avatar-placeholder" id="topBarUserAvatar" style="width:28px; height:28px; background: #E0E0E0;"></div>
-                    <div><span data-i18n="user_prefix">User:</span> <span id="topBarUserHandle">admin_kh</span></div>
+                    <div class="avatar-placeholder" id="topBarUserAvatar" style="width:24px; height:24px; background: #E0E0E0; border-radius:50%;"></div>
+                    <div><span id="topBarUserHandle">admin_kh</span></div>
                 </div>
             </div>
         </header>
@@ -532,7 +648,7 @@
                     <div class="post-actions">
                         <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes})</button>
                         <button class="action-trigger-btn" onclick="focusCommentInput(${post.id})">💬 Comment</button>
-                        <button class="action-trigger-btn" onclick="sharePostSim(${post.id})">🔗 Share Link</button>
+                        <button class="action-trigger-btn" onclick="sharePostSim(${post.id})">🔗 Share</button>
                     </div>
 
                     <div class="comments-section-wrapper">
@@ -623,7 +739,7 @@
                 if(user === currentSessionUser) return;
                 const li = document.createElement('li');
                 li.className = `friend-item ${user === selectedActiveChatPartner ? 'active' : ''}`;
-                li.innerHTML = `<div class="avatar-placeholder" style="width:30px;height:30px;background:#E0E0E0"></div><span class="friend-name">${user}</span>`;
+                li.innerHTML = `<div class="avatar-placeholder" style="width:30px;height:30px;background:#E0E0E0;border-radius:50%;"></div><span class="friend-name">${user}</span>`;
                 li.onclick = () => { selectedActiveChatPartner = user; renderFriendsSidebar(); loadChatHistory(); };
                 container.appendChild(li);
             });
@@ -634,7 +750,7 @@
             const header = document.getElementById('activeChatUser');
             if(!box) return;
 
-            header.textContent = `Direct Channel Session with: ${selectedActiveChatPartner}`;
+            header.textContent = `Direct Thread: ${selectedActiveChatPartner}`;
             box.innerHTML = "";
 
             const targetMessages = chatMessages.filter(m => (m.from === currentSessionUser && m.to === selectedActiveChatPartner) || (m.from === selectedActiveChatPartner && m.to === currentSessionUser));
@@ -713,7 +829,6 @@
             showToast("Message trace deleted.", "warning");
         }
 
-        /* FIXED INTERNALS CONTROLLER */
         function toggleAuthForms(view) {
             const regBox = document.getElementById('authRegisterBox');
             const loginBox = document.getElementById('authLoginBox');
@@ -721,7 +836,6 @@
             else { regBox.style.display = 'block'; loginBox.style.display = 'none'; }
         }
 
-        // FIX: Removed browser popup alerts and wired input fields straight into database state maps
         function processRegistration(e) {
             e.preventDefault();
             const u = document.getElementById('regUser').value.trim();
@@ -730,15 +844,10 @@
             
             userDatabase[u] = p;
             localStorage.setItem('users', JSON.stringify(userDatabase));
-            
-            // Render seamless notification update toast directly in UI layout
             showToast("Success! Account registered. Redirecting to login panel...", "success");
             
-            // Clean fields and toggle layout context
             document.getElementById('registerSystemForm').reset();
             toggleAuthForms('login');
-            
-            // Autofill user name field on login card layout to eliminate input mismatches
             document.getElementById('loginUser').value = u;
         }
 
@@ -770,19 +879,26 @@
             const handleText = document.getElementById('topBarUserHandle');
             const sidebarMenu = document.querySelector('.sidebar-menu');
 
+            // SVG Icons mapped inside mobile view cleanly
+            const homeIcon = `<div class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>`;
+            const profileIcon = `<div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`;
+            const chatIcon = `<div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>`;
+            const lockIcon = `<div class="sidebar-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            const powerIcon = `<div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>`;
+
             if (currentSessionUser) {
                 handleText.textContent = currentSessionUser;
                 sidebarMenu.innerHTML = `
-                    <li class="sidebar-item active" data-target="home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div><span>Home</span></a></li>
-                    <li class="sidebar-item" data-target="profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Profile</span></a></li>
-                    <li class="sidebar-item" data-target="message"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><span>Message</span></a></li>
-                    <li class="sidebar-item" data-target="logout"><a href="javascript:void(0)" style="color:var(--bit-danger);"><div class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div><span>Logout</span></a></li>
+                    <li class="sidebar-item active" data-target="home"><a href="javascript:void(0)">${homeIcon}<span>Home</span></a></li>
+                    <li class="sidebar-item" data-target="profile"><a href="javascript:void(0)">${profileIcon}<span>Profile</span></a></li>
+                    <li class="sidebar-item" data-target="message"><a href="javascript:void(0)">${chatIcon}<span>Message</span></a></li>
+                    <li class="sidebar-item" data-target="logout"><a href="javascript:void(0)" style="color:var(--bit-danger);">${powerIcon}<span>Logout</span></a></li>
                 `;
             } else {
-                handleText.textContent = "Guest Access Mode";
+                handleText.textContent = "Guest Mode";
                 sidebarMenu.innerHTML = `
-                    <li class="sidebar-item active" data-target="home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div><span>Home</span></a></li>
-                    <li class="sidebar-item" data-target="register"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div><span>Auth Portal</span></a></li>
+                    <li class="sidebar-item active" data-target="home"><a href="javascript:void(0)">${homeIcon}<span>Home</span></a></li>
+                    <li class="sidebar-item" data-target="register"><a href="javascript:void(0)">${lockIcon}<span>Portal</span></a></li>
                 `;
             }
             initNavigation();
