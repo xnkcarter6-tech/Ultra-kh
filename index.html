@@ -337,186 +337,239 @@
                 </div>
             </div>
         </div>
-    </main>
+ </main>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // IMPORTANT: Paste your exact configuration keys directly into here!
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your exact verified configuration keys
 const firebaseConfig = {
-  apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-  authDomain: "ultra-kh.firebaseapp.com",
-  databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-  projectId: "ultra-kh",
-  storageBucket: "ultra-kh.firebasestorage.app",
-  messagingSenderId: "414518365494",
-  appId: "1:414518365494:web:accf5fa772831d1459b797",
-  measurementId: "G-6RXJMQF7HZ"
+    apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
+    authDomain: "ultra-kh.firebaseapp.com",
+    databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
+    projectId: "ultra-kh",
+    storageBucket: "ultra-kh.firebasestorage.app",
+    messagingSenderId: "414518365494",
+    appId: "1:414518365494:web:accf5fa772831d1459b797",
+    measurementId: "G-6RXJMQF7HZ"
 };
 
-        // Initialize Firebase Connection
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+// Initialize Firebase Connection
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
-        // DOM Targets
-        const systemUserTableBody = document.getElementById("systemUserTableBody");
-        const metUserCount = document.getElementById("metUserCount");
-        const homeFeedStream = document.getElementById("homeFeedStream");
-        const liveStatusIndicator = document.getElementById("liveStatusIndicator");
+// DOM Targets
+const systemUserTableBody = document.getElementById("systemUserTableBody");
+const metUserCount = document.getElementById("metUserCount");
+const homeFeedStream = document.getElementById("homeFeedStream");
+const liveStatusIndicator = document.getElementById("liveStatusIndicator");
+const chatMessagesBox = document.querySelector(".chat-messages-box");
+const chatInput = document.querySelector(".chat-input");
+const btnSend = document.querySelector(".btn-send");
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById("toastHub");
-            const element = document.createElement("div");
-            element.className = `toast-card ${type}`;
-            element.innerHTML = `<span class="toast-message">${message}</span>`;
-            container.appendChild(element);
-            setTimeout(() => { element.remove(); }, 3500);
-        }
+function showToast(message, type = 'success') {
+    const container = document.getElementById("toastHub");
+    if (!container) return;
+    const element = document.createElement("div");
+    element.className = `toast-card ${type}`;
+    element.innerHTML = `<span class="toast-message">${message}</span>`;
+    container.appendChild(element);
+    setTimeout(() => { element.remove(); }, 3500);
+}
 
-        // Live Publishing Event Handler
-        document.getElementById("homePublishForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            const postText = document.getElementById("postText").value.trim();
-            const postTags = document.getElementById("postTags").value.trim();
-            const userHandle = document.getElementById("topBarUserHandle").innerText;
+// Live Publishing Event Handler (Home Feed)
+document.getElementById("homePublishForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const postText = document.getElementById("postText").value.trim();
+    const postTags = document.getElementById("postTags").value.trim();
+    const userHandle = document.getElementById("topBarUserHandle").innerText;
 
-            if (!postText) return;
+    if (!postText) return;
 
-            const postsRef = ref(database, 'posts');
-            const newPostRef = push(postsRef);
-            const tagsArray = postTags ? postTags.split(',').map(t => t.trim()) : [];
+    const postsRef = ref(database, 'posts');
+    const newPostRef = push(postsRef);
+    const tagsArray = postTags ? postTags.split(',').map(t => t.trim()) : [];
 
-            set(newPostRef, {
-                author: userHandle,
-                content: postText,
-                tags: tagsArray,
-                timestamp: new Date().toISOString()
-            }).then(() => {
-                showToast("Post updated to Firebase feed!", "success");
-                document.getElementById("homePublishForm").reset();
-            }).catch((err) => {
-                showToast("Error: " + err.message, "error");
-            });
+    set(newPostRef, {
+        author: userHandle,
+        content: postText,
+        tags: tagsArray,
+        timestamp: new Date().toISOString()
+    }).then(() => {
+        showToast("Post updated to Firebase feed!", "success");
+        document.getElementById("homePublishForm").reset();
+    }).catch((err) => {
+        showToast("Error: " + err.message, "error");
+    });
+});
+
+// Global Account Registration
+document.getElementById("signUpSystemForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const username = document.getElementById("signUpUser").value.trim();
+    
+    if (username) {
+        const targetUserRef = ref(database, 'users/' + username);
+        set(targetUserRef, {
+            username: username,
+            status: "Online",
+            timestamp: new Date().toISOString()
+        }).then(() => {
+            showToast(`@${username} registered!`, "success");
+            document.getElementById("topBarUserHandle").innerText = username;
+            document.getElementById("profUserHandle").value = username;
+            document.getElementById("signUpSystemForm").reset();
+        }).catch((err) => {
+            showToast("Sync Error: " + err.message, "error");
         });
+    }
+});
 
-        // Global Account Registration Operator Sync Add
-        document.getElementById("signUpSystemForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const username = document.getElementById("signUpUser").value.trim();
-            
-            if (username) {
-                const targetUserRef = ref(database, 'users/' + username);
-                set(targetUserRef, {
-                    username: username,
-                    status: "Online",
-                    timestamp: new Date().toISOString()
-                }).then(() => {
-                    showToast(`@${username} registered!`, "success");
-                    document.getElementById("topBarUserHandle").innerText = username;
-                    document.getElementById("profUserHandle").value = username;
-                    document.getElementById("signUpSystemForm").reset();
-                }).catch((err) => {
-                    showToast("Sync Error: " + err.message, "error");
-                });
+// Cloud Connection Indicator
+const connectionRef = ref(database, '.info/connected');
+onValue(connectionRef, (snap) => {
+    if (snap.val() === true) {
+        liveStatusIndicator.innerHTML = `
+            <span class="dot-pulse" style="background-color: var(--bit-success);"></span>
+            <span style="color: var(--bit-success); font-weight: bold;">Operational / Connected</span>
+        `;
+    } else {
+        liveStatusIndicator.innerHTML = `
+            <span class="dot-pulse" style="background-color: var(--bit-danger);"></span>
+            <span style="color: var(--bit-danger);">Offline / Disconnected</span>
+        `;
+    }
+});
+
+// Active Operators Stream
+const userDatabaseRef = ref(database, 'users');
+onValue(userDatabaseRef, (snapshot) => {
+    const data = snapshot.val();
+    systemUserTableBody.innerHTML = "";
+    if (data) {
+        const userKeys = Object.keys(data);
+        metUserCount.innerText = userKeys.length;
+        userKeys.forEach((key) => {
+            const currentUser = data[key];
+            systemUserTableBody.innerHTML += `
+                <tr>
+                    <td><strong>@${currentUser.username}</strong></td>
+                    <td><span class="dot-pulse" style="background-color: var(--bit-success);"></span> ${currentUser.status || 'Online'}</td>
+                </tr>
+            `;
+        });
+    } else {
+        metUserCount.innerText = "0";
+        systemUserTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--bit-text-light);">No operators registered yet.</td></tr>`;
+    }
+});
+
+// Updates Feed Stream
+const postsDatabaseRef = ref(database, 'posts');
+onValue(postsDatabaseRef, (snapshot) => {
+    const data = snapshot.val();
+    homeFeedStream.innerHTML = "";
+    if (data) {
+        Object.keys(data).reverse().forEach((key) => {
+            const post = data[key];
+            let tagsHTML = "";
+            if (post.tags && Array.isArray(post.tags)) {
+                post.tags.forEach(t => { if(t) tagsHTML += `<span class="tag-badge">#${t}</span>`; });
             }
+            const postDate = new Date(post.timestamp).toLocaleString();
+            homeFeedStream.innerHTML += `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span class="post-author">@${post.author}</span>
+                        <span class="post-time">${postDate}</span>
+                    </div>
+                    <div class="post-content-text">${post.content}</div>
+                    <div style="margin-bottom: 12px;">${tagsHTML}</div>
+                </div>
+            `;
         });
+    } else {
+        homeFeedStream.innerHTML = `<p style="text-align:center; color:var(--bit-text-light); padding:20px;">No updates published yet.</p>`;
+    }
+});
 
-        // Cloud handshaking listener status indicator updater
-        const connectionRef = ref(database, '.info/connected');
-        onValue(connectionRef, (snap) => {
-            if (snap.val() === true) {
-                liveStatusIndicator.innerHTML = `
-                    <span class="dot-pulse" style="background-color: var(--bit-success);"></span>
-                    <span style="color: var(--bit-success); font-weight: bold;">Operational / Connected</span>
-                `;
-            } else {
-                liveStatusIndicator.innerHTML = `
-                    <span class="dot-pulse" style="background-color: var(--bit-danger);"></span>
-                    <span style="color: var(--bit-danger);">Offline / Disconnected</span>
-                `;
-            }
-        });
+// ==========================================
+// REAL-TIME CHAT ENGINE FUNCTIONALITY
+// ==========================================
+function sendChatMessage() {
+    const messageText = chatInput.value.trim();
+    const currentUser = document.getElementById("topBarUserHandle").innerText;
 
-        // Continuous users table listener stream
-        const userDatabaseRef = ref(database, 'users');
-        onValue(userDatabaseRef, (snapshot) => {
-            const data = snapshot.val();
-            systemUserTableBody.innerHTML = "";
+    if (!messageText) return;
+
+    const chatRef = ref(database, 'messages');
+    const newMessageRef = push(chatRef);
+
+    set(newMessageRef, {
+        sender: currentUser,
+        text: messageText,
+        timestamp: new Date().toISOString()
+    }).then(() => {
+        chatInput.value = "";
+    }).catch((err) => {
+        showToast("Chat Error: " + err.message, "error");
+    });
+}
+
+if (btnSend) { btnSend.addEventListener("click", sendChatMessage); }
+if (chatInput) {
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendChatMessage();
+    });
+}
+
+const chatDatabaseRef = ref(database, 'messages');
+onValue(chatDatabaseRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!chatMessagesBox) return;
+    
+    chatMessagesBox.innerHTML = `<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Channel initialized</div>`;
+    
+    if (data) {
+        const currentUser = document.getElementById("topBarUserHandle").innerText;
+
+        Object.keys(data).forEach((key) => {
+            const msg = data[key];
+            const isMe = msg.sender === currentUser;
             
-            if (data) {
-                const userKeys = Object.keys(data);
-                metUserCount.innerText = userKeys.length;
-                
-                userKeys.forEach((key) => {
-                    const currentUser = data[key];
-                    systemUserTableBody.innerHTML += `
-                        <tr>
-                            <td><strong>@${currentUser.username}</strong></td>
-                            <td><span class="dot-pulse" style="background-color: var(--bit-success);"></span> ${currentUser.status || 'Online'}</td>
-                        </tr>
-                    `;
-                });
-            } else {
-                metUserCount.innerText = "0";
-                systemUserTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--bit-text-light);">No operators registered yet.</td></tr>`;
-            }
-        });
+            const bubbleBg = isMe ? 'var(--chat-bubble-me, #007bff)' : 'var(--chat-bubble-them, #e9ecef)';
+            const textColor = isMe ? '#FFFFFF' : 'var(--chat-text-them, #000000)';
+            const alignSide = isMe ? 'flex-end' : 'flex-start';
+            const deleteBtn = isMe ? `<span class="delete-msg" data-key="${key}" style="color:var(--bit-danger); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;">Delete</span>` : '';
 
-        // Continuous updates feed data listener stream
-        const postsDatabaseRef = ref(database, 'posts');
-        onValue(postsDatabaseRef, (snapshot) => {
-            const data = snapshot.val();
-            homeFeedStream.innerHTML = "";
-            
-            if (data) {
-                Object.keys(data).reverse().forEach((key) => {
-                    const post = data[key];
-                    let tagsHTML = "";
-                    if (post.tags && Array.isArray(post.tags)) {
-                        post.tags.forEach(t => { if(t) tagsHTML += `<span class="tag-badge">#${t}</span>`; });
-                    }
-                    const postDate = new Date(post.timestamp).toLocaleString();
-
-                    homeFeedStream.innerHTML += `
-                        <div class="post-card">
-                            <div class="post-header">
-                                <span class="post-author">@${post.author}</span>
-                                <span class="post-time">${postDate}</span>
-                            </div>
-                            <div class="post-content-text">${post.content}</div>
-                            <div style="margin-bottom: 12px;">${tagsHTML}</div>
+            chatMessagesBox.innerHTML += `
+                <div style="display: flex; flex-direction: column; align-items: ${alignSide}; width: 100%; margin-bottom: 10px;">
+                    <div style="font-size: 11px; color: var(--bit-text-light); margin-bottom: 2px;">@${msg.sender}</div>
+                    <div style="display: flex; align-items: center; max-width: 75%;">
+                        <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
+                            ${msg.text}
                         </div>
-                    `;
-                });
-            } else {
-                homeFeedStream.innerHTML = `<p style="text-align:center; color:var(--bit-text-light); padding:20px;">No updates published yet.</p>`;
-            }
+                        ${deleteBtn}
+                    </div>
+                </div>
+            `;
         });
-    </script>
+        chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+    }
+});
 
-    <script>
-        document.querySelectorAll('.sidebar-item[data-target]').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-                document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById(this.getAttribute('data-target')).classList.add('active');
-                
-                const pageLabel = this.querySelector('span').innerText.split(' ')[0];
-                document.getElementById('breadcrumb').innerText = `Dashboard / ${pageLabel}`;
+document.body.addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-msg')) {
+        const msgKey = e.target.getAttribute('data-key');
+        if (confirm("Delete this message permanently?")) {
+            const msgRef = ref(database, 'messages/' + msgKey);
+            remove(msgRef).then(() => {
+                showToast("Message deleted.", "success");
             });
-        });
-
-        document.getElementById("profileUpdateForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const val = document.getElementById("profUserHandle").value.trim();
-            if(val) document.getElementById("topBarUserHandle").innerText = val;
-        });
-
-        function triggerSignOut() { alert("Operator Logged Out Local Session."); }
-    </script>
+        }
+    }
+});
+</script>
 </body>
 </html>
