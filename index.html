@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra KHsite</title>
+    <title>Ultra KHsite - Production</title>
     <style>
         :root {
             --bit-blue-primary: #1E50FF;  
@@ -160,15 +161,8 @@
         .comment-user-title { font-weight: 700; color: var(--bit-text-dark); }
         .comment-input-inline-box { display: flex; gap: 10px; margin-top: 10px; }
 
-        .metrics-grid-vertical { display: flex; flex-direction: column; gap: 15px; }
-        .metric-widget-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; min-height: 100px; }
-        .metric-widget-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--bit-text-light); letter-spacing: 0.5px; margin-bottom: 8px; }
-        .metric-widget-value { font-size: 28px; font-weight: 800; color: var(--bit-blue-primary); }
-        .metric-widget-status { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; margin-top: 8px; }
-        .dot-pulse { width: 8px; height: 8px; background-color: var(--bit-success); border-radius: 50%; margin-right: 6px; display: inline-block; }
-
         /* --- CHAT VIEW --- */
-        .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; }
+        .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; min-height: 450px; }
         .chat-sidebar { width: 280px; border-right: 1px solid var(--bit-border-light); display: flex; flex-direction: column; }
         .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); }
         .friends-list { list-style: none; overflow-y: auto; flex-grow: 1; }
@@ -194,6 +188,13 @@
         .chat-input-area { padding: 15px 20px; display: flex; gap: 10px; align-items: center; }
         .chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
         .btn-send { background: var(--bit-blue-primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+        .metrics-grid-vertical { display: flex; flex-direction: column; gap: 15px; }
+        .metric-widget-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; min-height: 100px; }
+        .metric-widget-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--bit-text-light); letter-spacing: 0.5px; margin-bottom: 8px; }
+        .metric-widget-value { font-size: 28px; font-weight: 800; color: var(--bit-blue-primary); }
+        .metric-widget-status { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; margin-top: 8px; }
+        .dot-pulse { width: 8px; height: 8px; background-color: var(--bit-success); border-radius: 50%; margin-right: 6px; display: inline-block; }
 
         /* Notification Toast Container */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 420px; pointer-events: none; }
@@ -374,25 +375,31 @@
     </main>
 
     <script>
-        // FIXED LOGIC: Read active database if existing, do not drop or wipe database variables on load
-        let userDatabase = JSON.parse(localStorage.getItem('users')) || {};
-        let currentSessionUser = localStorage.getItem('activeUser') || null;
-        let selectedActiveChatPartner = "";
-
-        let appPosts = JSON.parse(localStorage.getItem('appPosts')) || [
-            { id: 1, author: "System", text: "Storage initialized. Ready for registration profiles.", tags: ["system"], likes: 0, comments: [] }
-        ];
-        if(!localStorage.getItem('appPosts')) {
-            localStorage.setItem('appPosts', JSON.stringify(appPosts));
+        // CRITICAL FALLBACKS: Setup default fallback entities if localStorage layout is brand new
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify({ "Admin": "123456", "Operator_Alpha": "123456" }));
+        }
+        if (!localStorage.getItem('appPosts')) {
+            localStorage.setItem('appPosts', JSON.stringify([
+                { id: 1, author: "System", text: "Storage initialized. Ready for registration profiles.", tags: ["system"], likes: 2, comments: [] }
+            ]));
+        }
+        if (!localStorage.getItem('chatMessages')) {
+            localStorage.setItem('chatMessages', JSON.stringify([
+                { id: 1, from: "Admin", to: "Operator_Alpha", text: "Welcome to the real-time operational dashboard.", time: "08:30 AM" }
+            ]));
         }
 
-        let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        let userDatabase = JSON.parse(localStorage.getItem('users'));
+        let currentSessionUser = localStorage.getItem('activeUser') || null;
+        let selectedActiveChatPartner = "";
+        let appPosts = JSON.parse(localStorage.getItem('appPosts'));
+        let chatMessages = JSON.parse(localStorage.getItem('chatMessages'));
 
         document.addEventListener("DOMContentLoaded", () => {
             initNavigation();
             initThemeEngine();
             
-            // Layout View Routing rules
             if (!currentSessionUser) {
                 switchPage('register');
                 toggleAuthForms('register');
@@ -402,20 +409,25 @@
             
             syncUIContext();
 
-            // Real-time loop sync wrapper
+            // FIX: Background interval listener that resets only on deep changes to avoid input focus bugs
             setInterval(() => {
-                const updatedPosts = JSON.parse(localStorage.getItem('appPosts'));
-                const updatedChats = JSON.parse(localStorage.getItem('chatMessages'));
-                const updatedUsers = JSON.parse(localStorage.getItem('users'));
+                const freshUsers = JSON.parse(localStorage.getItem('users'));
+                const freshPosts = JSON.parse(localStorage.getItem('appPosts'));
+                const freshChats = JSON.parse(localStorage.getItem('chatMessages'));
+
+                if (freshUsers) userDatabase = freshUsers;
                 
-                if (updatedUsers) userDatabase = updatedUsers;
-                if (updatedPosts && JSON.stringify(updatedPosts) !== JSON.stringify(appPosts)) {
-                    appPosts = updatedPosts;
-                    renderHomeFeed();
+                if (freshPosts && JSON.stringify(freshPosts) !== JSON.stringify(appPosts)) {
+                    appPosts = freshPosts;
+                    if (document.getElementById('page-home').classList.contains('active')) {
+                        renderHomeFeed();
+                    }
                 }
-                if (updatedChats && JSON.stringify(updatedChats) !== JSON.stringify(chatMessages)) {
-                    chatMessages = updatedChats;
-                    loadChatHistory();
+                if (freshChats && JSON.stringify(freshChats) !== JSON.stringify(chatMessages)) {
+                    chatMessages = freshChats;
+                    if (document.getElementById('page-message').classList.contains('active')) {
+                        loadChatHistory();
+                    }
                 }
                 document.getElementById('metUserCount').textContent = Object.keys(userDatabase).length;
             }, 1000);
@@ -431,14 +443,13 @@
         }
 
         function initNavigation() {
-            const items = document.querySelectorAll('.sidebar-item');
-            items.forEach(item => {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const target = item.getAttribute('data-target');
                     if (!target) return;
                     
                     if (!currentSessionUser && target !== 'register') {
-                        showToast("Access Denied. Please register an account first.", "error");
+                        showToast("Access Denied. Please register or login first.", "error");
                         return;
                     }
                     switchPage(target);
@@ -447,12 +458,8 @@
         }
 
         function switchPage(target) {
-            const items = document.querySelectorAll('.sidebar-item');
-            const views = document.querySelectorAll('.page-view');
-            const breadcrumb = document.getElementById('breadcrumb');
-
-            items.forEach(i => i.classList.remove('active'));
-            views.forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
 
             const activeNav = document.getElementById(`nav-${target}`);
             if (activeNav) activeNav.classList.add('active');
@@ -460,7 +467,7 @@
             const activePage = document.getElementById(`page-${target}`);
             if (activePage) activePage.classList.add('active');
 
-            breadcrumb.textContent = `Dashboard / ${target.charAt(0).toUpperCase() + target.slice(1)}`;
+            document.getElementById('breadcrumb').textContent = `Dashboard / ${target.charAt(0).toUpperCase() + target.slice(1)}`;
             
             if(target === 'home') renderHomeFeed();
             if(target === 'message') { renderFriendsSidebar(); loadChatHistory(); }
@@ -482,7 +489,7 @@
         /* --- HOME CHANNEL ENGINE --- */
         function renderHomeFeed() {
             const stream = document.getElementById('homeFeedStream');
-            if(!stream || !currentSessionUser) return;
+            if(!stream) return;
             stream.innerHTML = '';
 
             appPosts.slice().reverse().forEach(post => {
@@ -500,7 +507,7 @@
 
                 card.innerHTML = `
                     <div class="post-header">
-                        <span class="post-author">${post.author}</span>
+                        <span class="post-author">@${post.author}</span>
                         <span class="post-time">ID: ${post.id}</span>
                     </div>
                     <div class="post-content-text">${post.text}</div>
@@ -576,7 +583,7 @@
             users.forEach(user => {
                 const li = document.createElement('li');
                 li.className = `friend-item ${user === selectedActiveChatPartner ? 'active' : ''}`;
-                li.innerHTML = `<div class="friend-name">${user}</div>`;
+                li.innerHTML = `<div class="friend-name">@${user}</div>`;
                 li.onclick = () => {
                     selectedActiveChatPartner = user;
                     renderFriendsSidebar();
@@ -589,7 +596,12 @@
         function loadChatHistory() {
             const container = document.getElementById('chatMsgContainer');
             const header = document.getElementById('activeChatUser');
-            if(!container || !selectedActiveChatPartner) return;
+            if(!container) return;
+
+            if (!selectedActiveChatPartner) {
+                header.textContent = "Select an operator thread to view history";
+                return;
+            }
 
             header.textContent = `Thread with: @${selectedActiveChatPartner}`;
             container.innerHTML = '';
@@ -628,7 +640,7 @@
             loadChatHistory();
         }
 
-        /* --- AUTH ENGINE --- */
+        /* --- AUTH SYSTEM --- */
         function toggleAuthForms(view) {
             document.getElementById('authRegisterBox').style.display = view === 'login' ? 'none' : 'block';
             document.getElementById('authLoginBox').style.display = view === 'login' ? 'block' : 'none';
