@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultra KH — Next Gen Social Platform</title>
-    <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans & Hanuman -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -61,6 +59,7 @@
             justify-content: space-between;
             background: rgba(247, 250, 248, 0.6);
             backdrop-filter: blur(20px);
+            flex-shrink: 0;
         }
 
         .brand-cluster {
@@ -179,6 +178,7 @@
             justify-content: center;
             background-size: cover;
             background-position: center;
+            flex-shrink: 0;
         }
 
         .btn-signout {
@@ -208,6 +208,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            height: 100vh;
         }
 
         .workspace-top-bar {
@@ -217,6 +218,7 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
         }
 
         .view-label {
@@ -233,8 +235,15 @@
             margin: 0 auto;
         }
 
+        /* Make message sheet expand to use full width gracefully */
+        .scroll-canvas.wide-layout {
+            max-width: 100% !important;
+            padding: 0 !important;
+        }
+
         .view-sheet {
             display: none;
+            height: 100%;
         }
 
         .view-sheet.active {
@@ -311,7 +320,6 @@
             margin-bottom: 18px;
         }
 
-        /* Empty State Clean Card */
         .empty-placeholder-card {
             background: rgba(255,255,255,0.5);
             border: 1px dashed var(--border-subtle);
@@ -319,6 +327,132 @@
             padding: 40px;
             text-align: center;
             color: var(--text-secondary);
+        }
+
+        /* --- SPLIT MESSAGES WORKSPACE --- */
+        .chat-split-container {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - 72px);
+            background: var(--bg-main);
+        }
+
+        .chat-users-panel {
+            width: 280px;
+            border-right: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.4);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-search-header {
+            padding: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .user-session-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(22, 66, 55, 0.03);
+            transition: background 0.2s;
+        }
+
+        .user-session-row:hover, .user-session-row.active {
+            background: var(--bg-card);
+        }
+
+        .user-session-row .session-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-session-row .session-handle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .chat-window-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+        }
+
+        .chat-messages-stream {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg-bubble-node {
+            max-width: 65%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14.5px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .msg-bubble-node.incoming {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-bubble-node.outgoing {
+            background: var(--accent-glow);
+            color: #ffffff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #ffffff;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            background: var(--bg-input);
+            border: none;
+            outline: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .btn-send-message {
+            background: var(--accent-glow);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-send-message:hover {
+            opacity: 0.9;
         }
 
         /* --- AUTH MODAL SYSTEM --- */
@@ -472,9 +606,8 @@
                 <span class="view-label" id="currentViewTitle" data-key="feed-title">Discover Feed</span>
             </div>
 
-            <div class="scroll-canvas">
+            <div class="scroll-canvas" id="mainScrollCanvas">
                 
-                <!-- HOME SHEET -->
                 <div id="sheet-home" class="view-sheet active">
                     <div class="canvas-composer">
                         <textarea class="interactive-text-box" id="composer-text" placeholder="What ideas are you designing today?" rows="2"></textarea>
@@ -483,19 +616,31 @@
                             <button class="btn-premium-action" onclick="executePublishPost()" data-key="btn-publish">Publish</button>
                         </div>
                     </div>
-                    <!-- Live Dynamic Post Container -->
                     <div id="postsContainer"></div>
                 </div>
 
-                <!-- MESSAGES SHEET -->
                 <div id="sheet-messages" class="view-sheet">
-                    <div class="empty-placeholder-card">
-                        <i class="fa-regular fa-comments" style="font-size: 32px; margin-bottom: 12px; color: var(--accent-glow)"></i>
-                        <p data-key="msg-empty">Your direct conversations will securely load here.</p>
+                    <div class="chat-split-container">
+                        <div class="chat-users-panel">
+                            <div class="panel-search-header" data-key="panel-members-title">Active Members</div>
+                            <div id="chatUsersListContainer"></div>
+                        </div>
+
+                        <div class="chat-window-pane">
+                            <div class="chat-messages-stream" id="chatMessagesStream">
+                                <div class="empty-placeholder-card" style="margin: auto; border: none;" id="chatWindowPlaceholder">
+                                    <i class="fa-regular fa-comments" style="font-size: 32px; margin-bottom: 12px; color: var(--accent-glow)"></i>
+                                    <p data-key="msg-empty">Select an active member to securely chat.</p>
+                                </div>
+                            </div>
+                            <div class="chat-input-footer">
+                                <input type="text" class="chat-input-field" id="chatInputField" placeholder="Type a secure message..." disabled>
+                                <button class="btn-send-message" id="btnSendMessage" onclick="executeSendDirectMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- PROFILE SHEET -->
                 <div id="sheet-profile" class="view-sheet">
                     <div class="empty-placeholder-card" style="text-align: left;">
                         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
@@ -513,7 +658,6 @@
         </main>
     </div>
 
-    <!-- AUTHENTICATION DIALOG -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-modal">
             <button class="close-auth" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -537,33 +681,29 @@
         </div>
     </div>
 
-    <!-- WIRE UP FIREBASE MODULES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ==========================================
-        // PASTE YOUR REAL FIREBASE CONFIG OBJECT HERE
-        // ==========================================
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-  authDomain: "ultra-kh.firebaseapp.com",
-  databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-  projectId: "ultra-kh",
-  storageBucket: "ultra-kh.firebasestorage.app",
-  messagingSenderId: "414518365494",
-  appId: "1:414518365494:web:accf5fa772831d1459b797",
-  measurementId: "G-6RXJMQF7HZ"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
+            authDomain: "ultra-kh.firebaseapp.com",
+            databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
+            projectId: "ultra-kh",
+            storageBucket: "ultra-kh.firebasestorage.app",
+            messagingSenderId: "414518365494",
+            appId: "1:414518365494:web:accf5fa772831d1459b797",
+            measurementId: "G-6RXJMQF7HZ"
+        };
 
-        // Initialize App Context
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
         let currentUserObject = null;
+        let selectedReceiverId = null;
+        let currentMessagesListenerRef = null;
 
         // Monitor Account States Securely
         onAuthStateChanged(auth, (user) => {
@@ -572,11 +712,23 @@ const firebaseConfig = {
                 isLoggedIn = true;
                 activeUser.name = user.displayName || "Member";
                 activeUser.handle = "@" + (user.displayName || "user").toLowerCase().replace(/\s+/g, '');
+                
+                // Write/Sync user profile index node in database so others can chat with them
+                set(ref(db, 'users/' + user.uid), {
+                    uid: user.uid,
+                    displayName: activeUser.name,
+                    handle: activeUser.handle
+                });
+                
+                loadActiveMembersPanel();
             } else {
                 currentUserObject = null;
                 isLoggedIn = false;
                 activeUser.name = '';
                 activeUser.handle = '';
+                selectedReceiverId = null;
+                document.getElementById('chatUsersListContainer').innerHTML = '';
+                resetChatPane();
             }
             updateProfileUIState();
         });
@@ -639,7 +791,7 @@ const firebaseConfig = {
                 });
                 document.getElementById('composer-text').value = '';
             } catch (err) {
-                alert("Database write rejected! Please check your Firebase Database Rules configuration. Info: " + err.message);
+                alert("Database write rejected! Info: " + err.message);
             }
         };
 
@@ -670,9 +822,129 @@ const firebaseConfig = {
                 container.appendChild(card);
             });
         });
+
+        // Load Real-time User List for Messages Layout Panel
+        function loadActiveMembersPanel() {
+            onValue(ref(db, 'users'), (snapshot) => {
+                const container = document.getElementById('chatUsersListContainer');
+                container.innerHTML = '';
+                const users = snapshot.val();
+                if (!users) return;
+
+                Object.values(users).forEach(user => {
+                    // Skip showing yourself in the DM directory list
+                    if (currentUserObject && user.uid === currentUserObject.uid) return;
+
+                    const row = document.createElement('div');
+                    row.className = `user-session-row ${selectedReceiverId === user.uid ? 'active' : ''}`;
+                    row.id = `user-row-${user.uid}`;
+                    row.innerHTML = `
+                        <div class="avatar-smooth" style="width:32px; height:32px; font-size:12px;"><i class="fa-solid fa-user"></i></div>
+                        <div>
+                            <div class="session-name">${user.displayName}</div>
+                            <div class="session-handle">${user.handle}</div>
+                        </div>
+                    `;
+                    row.onclick = () => startPrivateChatSession(user.uid);
+                    container.appendChild(row);
+                });
+            });
+        }
+
+        // Initialize Messaging Channel Window Between 2 Users
+        function startPrivateChatSession(receiverId) {
+            if (!currentUserObject) return;
+            selectedReceiverId = receiverId;
+
+            // Update UI Active row selection colors
+            document.querySelectorAll('.user-session-row').forEach(r => r.classList.remove('active'));
+            const activeRow = document.getElementById(`user-row-${receiverId}`);
+            if (activeRow) activeRow.classList.add('active');
+
+            // Unfreeze form input elements 
+            document.getElementById('chatInputField').disabled = false;
+            document.getElementById('btnSendMessage').disabled = false;
+            document.getElementById('chatInputField').focus();
+
+            // Clear old streams before loading new updates
+            const stream = document.getElementById('chatMessagesStream');
+            stream.innerHTML = '';
+
+            // Compute deterministic Chat Room Path String (UID_UID sorted alphabetically)
+            const chatRoomId = currentUserObject.uid < receiverId 
+                ? `${currentUserObject.uid}_${receiverId}` 
+                : `${receiverId}_${currentUserObject.uid}`;
+
+            // Sync with Chat Session Stream Node Reference
+            if (currentMessagesListenerRef) {
+                // detach previous live session hooks
+            }
+
+            onValue(ref(db, `messages/${chatRoomId}`), (snapshot) => {
+                stream.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    stream.innerHTML = `
+                        <div class="empty-placeholder-card" style="margin: auto; border: none;">
+                            <p data-key="chat-new-start">Say hello! Secure conversation started.</p>
+                        </div>`;
+                    return;
+                }
+
+                Object.values(data).forEach(msg => {
+                    const bubble = document.createElement('div');
+                    const isMe = msg.senderId === currentUserObject.uid;
+                    bubble.className = `msg-bubble-node ${isMe ? 'outgoing' : 'incoming'}`;
+                    bubble.textContent = msg.text;
+                    stream.appendChild(bubble);
+                });
+
+                // Smooth Scroll down to latest chat bubble node element
+                stream.scrollTop = stream.scrollHeight;
+            });
+        }
+
+        // Dispatch Message Payload Event
+        window.executeSendDirectMessage = async () => {
+            const input = document.getElementById('chatInputField');
+            const messageText = input.value.trim();
+            if (!messageText || !currentUserObject || !selectedReceiverId) return;
+
+            const chatRoomId = currentUserObject.uid < selectedReceiverId 
+                ? `${currentUserObject.uid}_${selectedReceiverId}` 
+                : `${selectedReceiverId}_${currentUserObject.uid}`;
+
+            try {
+                await push(ref(db, `messages/${chatRoomId}`), {
+                    senderId: currentUserObject.uid,
+                    receiverId: selectedReceiverId,
+                    text: messageText,
+                    timestamp: serverTimestamp()
+                });
+                input.value = '';
+            } catch (err) {
+                alert("Message dispatch failed: " + err.message);
+            }
+        };
+
+        // Fire message submission on hitting enter key
+        document.getElementById('chatInputField').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') executeSendDirectMessage();
+        });
+
+        function resetChatPane() {
+            document.getElementById('chatInputField').disabled = true;
+            document.getElementById('chatInputField').value = '';
+            document.getElementById('btnSendMessage').disabled = true;
+            document.getElementById('chatMessagesStream').innerHTML = `
+                <div class="empty-placeholder-card" style="margin: auto; border: none;" id="chatWindowPlaceholder">
+                    <i class="fa-regular fa-comments" style="font-size: 32px; margin-bottom: 12px; color: var(--accent-glow)"></i>
+                    <p data-key="msg-empty">Select an active member to securely chat.</p>
+                </div>`;
+        }
     </script>
 
-    <!-- RUNTIME INTERFACE ENGINE -->
     <script>
         let currentLang = 'en';
         let isLoggedIn = false;
@@ -686,8 +958,9 @@ const firebaseConfig = {
                 "tab-signin": "Sign In", "tab-signup": "Sign Up", "lbl-email": "Email Address",
                 "lbl-password": "Password", "lbl-name": "Full Name", "btn-signin": "Sign In", "btn-signup": "Create Account",
                 "view-msg-title": "Messages Workspace", "view-profile-title": "Account Profile Overview",
-                "msg-empty": "Your direct conversations will securely load here.",
-                "profile-empty": "Sign in to view your complete digital profile insights."
+                "msg-empty": "Select an active member to securely chat.",
+                "profile-empty": "Sign in to view your complete digital profile insights.",
+                "panel-members-title": "Active Members"
             },
             kh: {
                 "nav-home": "ទំព័រដើម", "nav-msg": "សារកម្សាន្ត", "nav-profile": "ប្រវត្តិរូប",
@@ -696,8 +969,9 @@ const firebaseConfig = {
                 "tab-signin": "ចូលប្រព័ន្ធ", "tab-signup": "ចុះឈ្មោះ", "lbl-email": "អាសយដ្ឋានអ៊ីមែល",
                 "lbl-password": "លេខកូដសម្ងាត់", "lbl-name": "ឈ្មោះពេញ", "btn-signin": "ចូលគណនី", "btn-signup": "បង្កើតគណនីថ្មី",
                 "view-msg-title": "ប្រអប់សារកម្សាន្ត", "view-profile-title": "ព័ត៌មានប្រវត្តិរូបផ្ទាល់ខ្លួន",
-                "msg-empty": "សារទំនាក់ទំនងផ្ទាល់ខ្លួនរបស់អ្នកនឹងបង្ហាញនៅទីនេះ។",
-                "profile-empty": "សូមចូលប្រព័ន្ធដើម្បីមើលគណនីពេញលេញរបស់អ្នក។"
+                "msg-empty": "សូមជ្រើសរើសសមាជិកដើម្បីផ្ញើសារទំនាក់ទំនងផ្ទាល់ខ្លួន។",
+                "profile-empty": "សូមចូលប្រព័ន្ធដើម្បីមើលគណនីពេញលេញរបស់អ្នក។",
+                "panel-members-title": "សមាជិកសកម្ម"
             }
         };
 
@@ -709,14 +983,20 @@ const firebaseConfig = {
             document.getElementById(`sheet-${targetId}`).classList.add('active');
             document.getElementById(`nav-${targetId}`).classList.add('active');
 
+            const canvas = document.getElementById('mainScrollCanvas');
             const titleEl = document.getElementById('currentViewTitle');
+            
             if (targetId === 'home') {
+                canvas.classList.remove('wide-layout');
                 titleEl.setAttribute('data-key', 'feed-title');
                 titleEl.textContent = langData[currentLang]['feed-title'];
             } else if (targetId === 'messages') {
+                // Wide layout lets split panels touch screen borders cleanly
+                canvas.classList.add('wide-layout');
                 titleEl.setAttribute('data-key', 'view-msg-title');
                 titleEl.textContent = langData[currentLang]['view-msg-title'];
             } else if (targetId === 'profile') {
+                canvas.classList.remove('wide-layout');
                 titleEl.setAttribute('data-key', 'view-profile-title');
                 titleEl.textContent = langData[currentLang]['view-profile-title'];
             }
@@ -740,7 +1020,6 @@ const firebaseConfig = {
             const guestIcon = document.getElementById('guestAvatarIcon');
             const signoutBtn = document.getElementById('btnSignout');
 
-            // Sheet Profile Specific Elements
             const pName = document.getElementById('sheetProfileName');
             const pHandle = document.getElementById('sheetProfileHandle');
             const pAvatar = document.getElementById('sheetProfileAvatar');
