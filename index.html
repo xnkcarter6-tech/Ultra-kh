@@ -541,6 +541,48 @@ if (chatInput) {
     });
 }
 
+// ==========================================
+// UPGRADED CHAT ENGINE (REPLIES & VOICE)
+// ==========================================
+let selectedReplyTarget = null; // Holds target message details for thread reply
+
+// Trigger Send Actions
+function sendChatMessage() {
+    const messageText = chatInput.value.trim();
+    const currentUser = document.getElementById("topBarUserHandle").innerText;
+
+    if (!messageText) return;
+
+    const chatRef = ref(database, 'messages');
+    const newMessageRef = push(chatRef);
+
+    const messagePayload = {
+        sender: currentUser,
+        text: messageText,
+        timestamp: new Date().toISOString()
+    };
+
+    // If replying to someone, attach the reference data
+    if (selectedReplyTarget) {
+        messagePayload.replyTo = selectedReplyTarget;
+    }
+
+    set(newMessageRef, messagePayload).then(() => {
+        chatInput.value = "";
+        clearReplyContext(); // Clear reply banner after sending
+    }).catch((err) => {
+        showToast("Chat Error: " + err.message, "error");
+    });
+}
+
+if (btnSend) { btnSend.addEventListener("click", sendChatMessage); }
+if (chatInput) {
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendChatMessage();
+    });
+}
+
+// Listen for incoming chat messages in real-time
 const chatDatabaseRef = ref(database, 'messages');
 onValue(chatDatabaseRef, (snapshot) => {
     const data = snapshot.val();
@@ -555,19 +597,37 @@ onValue(chatDatabaseRef, (snapshot) => {
             const msg = data[key];
             const isMe = msg.sender === currentUser;
             
-            const bubbleBg = isMe ? 'var(--chat-bubble-me, #007bff)' : 'var(--chat-bubble-them, #e9ecef)';
-            const textColor = isMe ? '#FFFFFF' : 'var(--chat-text-them, #000000)';
+            const bubbleBg = isMe ? 'var(--chat-bubble-me, #1E50FF)' : 'var(--chat-bubble-them, #F1F3F5)';
+            const textColor = isMe ? '#FFFFFF' : 'var(--chat-text-them, #1F2D3D)';
             const alignSide = isMe ? 'flex-end' : 'flex-start';
+            
             const deleteBtn = isMe ? `<span class="delete-msg" data-key="${key}" style="color:var(--bit-danger); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;">Delete</span>` : '';
+            const replyBtn = `<span class="reply-trigger" data-sender="${msg.sender}" data-text="${msg.text.replace(/"/g, '&quot;')}" style="color:var(--bit-blue-primary); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;">Reply</span>`;
+
+            // Build Reply context block if message quotes another message
+            let replyContextHTML = "";
+            if (msg.replyTo) {
+                replyContextHTML = `
+                    <div style="background: rgba(0,0,0,0.05); border-left: 3px solid var(--bit-blue-primary); padding: 4px 8px; font-size: 11px; margin-bottom: 4px; border-radius: 4px; max-width: 100%;">
+                        <strong>@${msg.replyTo.user}</strong>: ${msg.replyTo.quote}
+                    </div>
+                `;
+            }
 
             chatMessagesBox.innerHTML += `
                 <div style="display: flex; flex-direction: column; align-items: ${alignSide}; width: 100%; margin-bottom: 10px;">
                     <div style="font-size: 11px; color: var(--bit-text-light); margin-bottom: 2px;">@${msg.sender}</div>
-                    <div style="display: flex; align-items: center; max-width: 75%;">
-                        <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
-                            ${msg.text}
+                    <div style="display: flex; flex-direction: column; align-items: ${alignSide}; max-width: 75%;">
+                        ${replyContextHTML}
+                        <div style="display: flex; align-items: center; width: 100%;">
+                            <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
+                                ${msg.text}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                ${replyBtn}
+                                ${deleteBtn}
+                            </div>
                         </div>
-                        ${deleteBtn}
                     </div>
                 </div>
             `;
@@ -576,17 +636,69 @@ onValue(chatDatabaseRef, (snapshot) => {
     }
 });
 
+// Event Catch Engine for Replies and Deletes
 document.body.addEventListener('click', function(e) {
+    // Handle Delete Event
     if (e.target.classList.contains('delete-msg')) {
         const msgKey = e.target.getAttribute('data-key');
         if (confirm("Delete this message permanently?")) {
             const msgRef = ref(database, 'messages/' + msgKey);
-            remove(msgRef).then(() => {
-                showToast("Message deleted.", "success");
-            });
+            remove(msgRef).then(() => { showToast("Message deleted.", "success"); });
         }
     }
+
+    // Handle Reply Target Click Event
+    if (e.target.classList.contains('reply-trigger')) {
+        const targetUser = e.target.getAttribute('data-sender');
+        const targetText = e.target.getAttribute('data-text');
+        
+        selectedReplyTarget = { user: targetUser, quote: targetText };
+        
+        // Show active reply context UI box directly over the input bar
+        let replyBanner = document.getElementById("chatReplyBanner");
+        if (!replyBanner) {
+            replyBanner = document.createElement("div");
+            replyBanner.id = "chatReplyBanner";
+            replyBanner.style = "background:var(--bit-bg-main); padding:6px 12px; font-size:12px; border-left:4px solid var(--bit-blue-primary); display:flex; justify-content:space-between; align-items:center;";
+            document.querySelector(".chat-input-area").insertBefore(replyBanner, document.querySelector(".chat-input-area").firstChild);
+        }
+        replyBanner.innerHTML = `<span>Replying to <strong>@${targetUser}</strong>: "${targetText.substring(0, 20)}..."</span><span id="closeReplyBtn" style="cursor:pointer; font-weight:bold; color:var(--bit-danger);">×</span>`;
+        chatInput.focus();
+    }
+
+    // Clear Reply Context Trigger
+    if (e.target.id === 'closeReplyBtn') { clearReplyContext(); }
 });
-</script>
-</body>
-</html>
+
+function clearReplyContext() {
+    selectedReplyTarget = null;
+    const replyBanner = document.getElementById("chatReplyBanner");
+    if (replyBanner) replyBanner.remove();
+}
+
+// ==========================================
+// EMOJI DRAWER TOGGLE & SELECTION LOGIC
+// ==========================================
+const btnEmojiToggle = document.getElementById("btnEmojiToggle");
+const emojiDrawer = document.getElementById("emojiDrawer");
+
+if (btnEmojiToggle && emojiDrawer && chatInput) {
+    btnEmojiToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        emojiDrawer.style.display = (emojiDrawer.style.display === "none" || emojiDrawer.style.display === "") ? "grid" : "none";
+    });
+
+    emojiDrawer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("emoji-select")) {
+            chatInput.value += e.target.innerText;
+            chatInput.focus();
+            emojiDrawer.style.display = "none";
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!emojiDrawer.contains(e.target) && !btnEmojiToggle.contains(e.target)) {
+            emojiDrawer.style.display = "none";
+        }
+    });
+}
