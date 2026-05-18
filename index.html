@@ -63,7 +63,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Verified active keys matching your Google credentials console profile
+        // Verified working credentials directly from your console
         const firebaseConfig = {            
             apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",            
             authDomain: "ultra-kh.firebaseapp.com",            
@@ -84,7 +84,7 @@
         const feedContainer = document.getElementById('feed-container');
         const btnPublish = document.getElementById('btn-publish');
 
-        // Targets your open rule layout directly
+        // Targets your open rule path node directly
         const databaseFeedRef = ref(db, 'feed');
 
         function displayAlert(msg, errorMode = true) {            
@@ -97,7 +97,7 @@
             alertBanner.style.display = 'block';        
         }
 
-        // Initialize App Connection Syncing
+        // Live Connection Sync Verification
         const connectedRef = ref(db, ".info/connected");            
         onValue(connectedRef, (snap) => {                
             if (snap.val() === true) {                    
@@ -109,7 +109,7 @@
             }            
         });
 
-        // Load the live database broadcast updates directly
+        // Pull database feeds instantly onto workspace card
         onValue(databaseFeedRef, (snapshot) => {            
             if (!snapshot.exists()) {                
                 feedContainer.className = "text-sm text-gray-400 text-center py-8 border border-dashed border-gray-100 rounded-lg";                
@@ -134,10 +134,10 @@
             feedContainer.innerHTML = htmlPayload;        
         }, (err) => {            
             feedContainer.className = "text-sm text-red-500 text-center py-8 font-medium";            
-            feedContainer.textContent = `Database connection failed: ${err.message}`;        
+            feedContainer.textContent = `Database syncing error: ${err.message}`;        
         });
 
-        // Publish action handler
+        // Handle text feed postings
         btnPublish.addEventListener('click', async () => {            
             const bodyContent = updateTextArea.value.trim();            
             if (!bodyContent) return displayAlert("Cannot process empty text posts.");
