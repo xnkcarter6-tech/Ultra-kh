@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,6 +219,30 @@
             .chat-window { height: 350px; }
         }
     </style>
+
+    <!-- LOAD GOOGLE FIREBASE CORE SDK MODULES VIA CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 1. Paste your Firebase Web Config configuration properties here:
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Make database functions accessible to legacy window elements
+        window.dbReferences = { db, ref, set };
+    </script>
 </head>
 <body>
     <div class="toast-container" id="toastHub"></div>
@@ -324,7 +347,7 @@
                             <div id="chatReplyPreviewContext" class="reply-preview-bar" style="display: none;">
                                 <span id="replyPreviewText">Replying to message...</span>
                                 <button onclick="cancelReplyContext()" style="background:none; border:none; cursor:pointer; font-weight:bold; color:var(--bit-text-light);">×</button>
-                            </div>                                                        
+                            </div>                                                                                
                             <div class="chat-controls-row">
                                 <label class="chat-control-icon-btn" for="chatFileInputField">
                                     📎 file
@@ -344,21 +367,12 @@
     </main>
 
     <script>
-        let memoryDatabase = { "Admin": "123456", "Demo": "654321" };
         let currentSessionUser = "Admin"; 
         let selectedActiveChatPartner = "Demo";
         
-        function safeGet(key, fallback) {
-            try { return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : fallback; } 
-            catch(e) { return fallback; }
-        }
-        function safeSet(key, val) {
-            try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
-        }
-
-        let userDatabase = safeGet('users', memoryDatabase);
-        let appPosts = safeGet('appPosts', []);
-        let chatMessages = safeGet('chatMessages', []);
+        let userDatabase = { "Admin": "123456", "Demo": "654321" };
+        let appPosts = [];
+        let chatMessages = [];
                 
         let activeSelectedFileBase64 = null;
         let activeHomePostFileBase64 = null;
@@ -370,16 +384,42 @@
             switchPage('home'); 
             syncUIContext();
 
-            setInterval(() => {
-                userDatabase = safeGet('users', userDatabase);
-                appPosts = safeGet('appPosts', appPosts);
-                chatMessages = safeGet('chatMessages', chatMessages);
-                const userCountEl = document.getElementById("metUserCount");
-                if (userCountEl) userCountEl.innerText = Object.keys(userDatabase).length;
-                renderFeed();
-                renderChatHistory();
-            }, 5000);
+            // Wait 1 second to ensure Firebase reference finishes loading
+            setTimeout(() => {
+                if (window.dbReferences) {
+                    const { db, ref, onValue } = window.dbReferences;
+
+                    // Listen in real-time for users array change
+                    onValue(ref(db, 'users'), (snapshot) => {
+                        if(snapshot.exists()) {
+                            userDatabase = snapshot.val();
+                            const userCountEl = document.getElementById("metUserCount");
+                            if (userCountEl) userCountEl.innerText = Object.keys(userDatabase).length;
+                        }
+                    });
+
+                    // Listen in real-time for posts data updates
+                    onValue(ref(db, 'appPosts'), (snapshot) => {
+                        appPosts = snapshot.exists() ? snapshot.val() : [];
+                        renderFeed();
+                    });
+
+                    // Listen in real-time for live chat data streams
+                    onValue(ref(db, 'chatMessages'), (snapshot) => {
+                        chatMessages = snapshot.exists() ? snapshot.val() : [];
+                        renderChatHistory();
+                    });
+                }
+            }, 1000);
         });
+
+        // Push data helpers directly out to Firebase cluster
+        function cloudPush(nodePath, dataValue) {
+            if (window.dbReferences) {
+                const { db, ref, set } = window.dbReferences;
+                set(ref(db, nodePath), dataValue);
+            }
+        }
 
         function initNavigation() {
             document.querySelectorAll(".sidebar-item[data-target]").forEach(item => {
@@ -396,7 +436,7 @@
 
             const targetPage = document.getElementById(`page-${pageId}`);
             const targetNav = document.getElementById(`nav-${pageId}`);
-                        
+                                    
             if(targetPage) targetPage.classList.add("active");
             if(targetNav) targetNav.classList.add("active");
 
@@ -442,7 +482,9 @@
             const profInput = document.getElementById("profUserHandle");
             if(profInput) profInput.value = currentSessionUser;
             renderFeed();
-            renderChatFriends();
+            // Optional/Empty items safely referenced inside script context execution
+            const friendsCont = document.getElementById("chatFriendsContainer");
+            if (friendsCont) friendsCont.innerHTML = `<li class="friend-item active"><span class="friend-name">Demo Workspace Channel</span></li>`;
             renderChatHistory();
         }
 
@@ -453,9 +495,9 @@
             delete userDatabase[currentSessionUser];
             currentSessionUser = val;
             userDatabase[val] = "123456";
-            safeSet('users', userDatabase);
+            cloudPush('users', userDatabase);
             syncUIContext();
-            showToast("Signature configurations saved.", "success");
+            showToast("Signature configurations saved globally.", "success");
         }
 
         function handleHomePostFileSelected(input) {
@@ -480,15 +522,14 @@
                 text: text,
                 likes: 0,
                 shares: 0,
-                file: activeHomePostFileBase64
+                file: activeHomePostFileBase64 || null
             };
 
             appPosts.unshift(newPost);
-            safeSet('appPosts', appPosts);
+            cloudPush('appPosts', appPosts);
             document.getElementById("homePublishForm").reset();
             activeHomePostFileBase64 = null;
             document.getElementById("homeFilePreviewText").innerText = "";
-            renderFeed();
         }
 
         function renderFeed() {
@@ -516,148 +557,47 @@
 
         function likePost(id) {
             appPosts = appPosts.map(p => p.id === id ? {...p, likes: (p.likes||0)+1} : p);
-            safeSet('appPosts', appPosts);
-            renderFeed();
+            cloudPush('appPosts', appPosts);
         }
 
         function deletePost(id) {
             appPosts = appPosts.filter(p => p.id !== id);
-            safeSet('appPosts', appPosts);
-            renderFeed();
+            cloudPush('appPosts', appPosts);
         }
 
-        function renderChatFriends() {
-            const container = document.getElementById("chatFriendsContainer");
-            if(!container) return;
-            container.innerHTML = "";
-            Object.keys(userDatabase).forEach(user => {
-                if(user === currentSessionUser) return;
-                const li = document.createElement("li");
-                li.className = `friend-item ${selectedActiveChatPartner === user ? 'active' : ''}`;
-                li.innerHTML = `<span class="friend-name">User ID: ${user}</span>`;
-                li.onclick = () => { selectedActiveChatPartner = user; renderChatFriends(); renderChatHistory(); };
-                container.appendChild(li);
-            });
-            const header = document.getElementById("activeChatUser");
-            if(header) header.innerText = selectedActiveChatPartner ? selectedActiveChatPartner : "Select a partner";
-        }
-
-        function handleChatFileSelection(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                activeSelectedFileBase64 = { name: file.name, data: e.target.result };
-                document.getElementById("chatControlStatusAppendText").innerText = `📎 ${file.name}`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function setReplyContext(msgId, partialText) {
-            activeReplyTargetId = msgId;
-            const previewBar = document.getElementById("chatReplyPreviewContext");
-            const previewText = document.getElementById("replyPreviewText");
-            if(previewBar && previewText) {
-                previewText.innerText = `Replying to: "${partialText.substring(0, 25)}..."`;
-                previewBar.style.display = "flex";
-            }
-        }
-
-        function cancelReplyContext() {
-            activeReplyTargetId = null;
-            const previewBar = document.getElementById("chatReplyPreviewContext");
-            if(previewBar) previewBar.style.display = "none";
-        }
-
-        function reactToMessage(msgId, reactionEmoji) {
-            chatMessages = chatMessages.map(m => m.id === msgId ? { ...m, reaction: m.reaction === reactionEmoji ? null : reactionEmoji } : m);
-            safeSet('chatMessages', chatMessages);
-            renderChatHistory();
-        }
-
-        function removeChatMessage(msgId) {
-            chatMessages = chatMessages.filter(m => m.id !== msgId);
-            safeSet('chatMessages', chatMessages);
-            renderChatHistory();
-        }
-
-        function likeChatMessage(msgId) {
-            chatMessages = chatMessages.map(m => m.id === msgId ? { ...m, likes: (m.likes || 0) + 1 } : m);
-            safeSet('chatMessages', chatMessages);
-            renderChatHistory();
-        }
-
+        // Live Chat Operations Framework
         function submitChatMessage() {
-            if(!selectedActiveChatPartner) { showToast("Select an operational recipient first.", "error"); return; }
-            const input = document.getElementById("chatInputField");
-            const text = input.value.trim();
-
-            if(!text && !activeSelectedFileBase64) return;
+            const inputField = document.getElementById("chatInputField");
+            const txt = inputField.value.trim();
+            if(!txt) return;
 
             const msg = {
                 id: Date.now(),
                 sender: currentSessionUser,
-                receiver: selectedActiveChatPartner,
-                text: text,
-                file: activeSelectedFileBase64,
-                replyTo: activeReplyTargetId,
-                reaction: null,
-                likes: 0
+                text: txt,
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
             chatMessages.push(msg);
-            safeSet('chatMessages', chatMessages);
-            
-            input.value = "";
-            activeSelectedFileBase64 = null;
-            cancelReplyContext();
-            document.getElementById("chatControlStatusAppendText").innerText = "";
-            renderChatHistory();
+            cloudPush('chatMessages', chatMessages);
+            inputField.value = "";
         }
 
         function renderChatHistory() {
             const box = document.getElementById("chatMsgContainer");
             if(!box) return;
             box.innerHTML = "";
-
-            const activeHistory = chatMessages.filter(m => 
-                (m.sender === currentSessionUser && m.receiver === selectedActiveChatPartner) ||
-                (m.sender === selectedActiveChatPartner && m.receiver === currentSessionUser)
-            );
-
-            activeHistory.forEach(m => {
+            
+            chatMessages.forEach(m => {
+                const isMe = m.sender === currentSessionUser;
                 const row = document.createElement("div");
-                row.className = `msg-row ${m.sender === currentSessionUser ? 'msg-me' : 'msg-them'}`;
-                
-                let fileMarkup = m.file ? `<br><a href="${m.file.data}" download="${m.file.name}" style="color:var(--bit-blue-primary); font-weight:bold;">💾 Download: ${m.file.name}</a>` : "";
-                
-                let parentContextMarkup = "";
-                if(m.replyTo) {
-                    const originalMsg = chatMessages.find(parent => parent.id === m.replyTo);
-                    if(originalMsg) {
-                        parentContextMarkup = `<span class="inline-reply-context">↩️ Replying to: "${originalMsg.text.substring(0,20)}..."</span>`;
-                    }
-                }
-
-                let reactionMarkup = m.reaction ? `<div class="reaction-badge">${m.reaction}</div>` : "";
-                let likeCountMarkup = m.likes > 0 ? `<span style="font-size:11px; margin-left:4px; color:var(--bit-blue-primary);">👍 ${m.likes}</span>` : "";
-                
+                row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
                 row.innerHTML = `
-                    <div class="msg-meta-container"><span>${m.sender}</span></div>
+                    <div class="msg-meta-container"><span>${m.sender}</span> <span>${m.timestamp}</span></div>
                     <div class="bubble-wrapper">
-                        <div class="bubble">
-                            ${parentContextMarkup}
-                            ${m.text} 
-                            ${fileMarkup}
-                        </div>
+                        <div class="bubble">${m.text}</div>
                     </div>
-                    <div class="msg-interact-bar">
-                        <button class="msg-interact-btn" onclick="likeChatMessage(${m.id})">👍 Like${likeCountMarkup}</button>
-                        <button class="msg-interact-btn" onclick="setReplyContext(${m.id}, '${m.text.replace(/'/g, "\\'")}')">↩️ Reply</button>
-                        <button class="msg-interact-btn" onclick="reactToMessage(${m.id}, '❤️')">❤️ React</button>
-                        <button class="msg-interact-btn msg-delete-btn" onclick="removeChatMessage(${m.id})">🗑️ Remove</button>
-                        ${reactionMarkup}
-                    </div>`;
+                `;
                 box.appendChild(row);
             });
             box.scrollTop = box.scrollHeight;
