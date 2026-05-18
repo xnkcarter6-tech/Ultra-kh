@@ -219,30 +219,25 @@
             .chat-window { height: 350px; }
         }
     </style>
-
     <!-- LOAD GOOGLE FIREBASE CORE SDK MODULES VIA CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 1. Paste your Firebase Web Config configuration properties here:
-     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-  authDomain: "ultra-kh.firebaseapp.com",
-  databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-  projectId: "ultra-kh",
-  storageBucket: "ultra-kh.firebasestorage.app",
-  messagingSenderId: "414518365494",
-  appId: "1:414518365494:web:accf5fa772831d1459b797",
-  measurementId: "G-6RXJMQF7HZ"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
+            authDomain: "ultra-kh.firebaseapp.com",
+            databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
+            projectId: "ultra-kh",
+            storageBucket: "ultra-kh.firebasestorage.app",
+            messagingSenderId: "414518365494",
+            appId: "1:414518365494:web:accf5fa772831d1459b797",
+            measurementId: "G-6RXJMQF7HZ"
+        };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Make database functions accessible to legacy window elements
         window.dbReferences = { db, ref, set };
     </script>
 </head>
@@ -313,7 +308,6 @@ const firebaseConfig = {
                     <div class="card right-display-panel">
                         <h3 style="margin-bottom: 5px; font-size: 14px; text-transform: uppercase;">Interface Environment</h3>
                         <div style="font-size: 12px; color: var(--bit-text-light); margin-bottom: 15px;">Select a display palette layout framework for your workstation.</div>
-                        
                         <div class="bg-preset-grid">
                             <div class="bg-option-card selected" id="preset-default" onclick="setWorkspaceTheme('default')">
                                 <div class="bg-preview-swatch" style="background: #EDF1F7;"></div>
@@ -343,13 +337,13 @@ const firebaseConfig = {
                         <ul class="friends-list" id="chatFriendsContainer"></ul>
                     </div>
                     <div class="chat-window">
-                        <div class="chat-window-header" id="activeChatUser">Demo</div>
+                        <div class="chat-window-header" id="activeChatUser">Demo Workspace Channel</div>
                         <div class="chat-messages-box" id="chatMsgContainer"></div>
                         <div class="chat-input-container">
                             <div id="chatReplyPreviewContext" class="reply-preview-bar" style="display: none;">
                                 <span id="replyPreviewText">Replying to message...</span>
                                 <button onclick="cancelReplyContext()" style="background:none; border:none; cursor:pointer; font-weight:bold; color:var(--bit-text-light);">×</button>
-                            </div>                                                                                
+                            </div>                                                                                                            
                             <div class="chat-controls-row">
                                 <label class="chat-control-icon-btn" for="chatFileInputField">
                                     📎 file
@@ -358,7 +352,7 @@ const firebaseConfig = {
                                 <span id="chatControlStatusAppendText" style="font-size:12px; color:var(--bit-text-light);"></span>
                             </div>
                             <div class="chat-input-area">
-                                <input type="text" class="chat-input" id="chatInputField" placeholder="Type a message...">
+                                <input type="text" class="chat-input" id="chatInputField" placeholder="Type a message..." onkeydown="if(event.key === 'Enter') submitChatMessage()">
                                 <button class="btn-send" onclick="submitChatMessage()">send</button>
                             </div>
                         </div>
@@ -371,11 +365,11 @@ const firebaseConfig = {
     <script>
         let currentSessionUser = "Admin"; 
         let selectedActiveChatPartner = "Demo";
-        
+                
         let userDatabase = { "Admin": "123456", "Demo": "654321" };
         let appPosts = [];
         let chatMessages = [];
-                
+                        
         let activeSelectedFileBase64 = null;
         let activeHomePostFileBase64 = null;
         let activeReplyTargetId = null;
@@ -386,12 +380,10 @@ const firebaseConfig = {
             switchPage('home'); 
             syncUIContext();
 
-            // Wait 1 second to ensure Firebase reference finishes loading
             setTimeout(() => {
                 if (window.dbReferences) {
                     const { db, ref, onValue } = window.dbReferences;
 
-                    // Listen in real-time for users array change
                     onValue(ref(db, 'users'), (snapshot) => {
                         if(snapshot.exists()) {
                             userDatabase = snapshot.val();
@@ -400,13 +392,11 @@ const firebaseConfig = {
                         }
                     });
 
-                    // Listen in real-time for posts data updates
                     onValue(ref(db, 'appPosts'), (snapshot) => {
                         appPosts = snapshot.exists() ? snapshot.val() : [];
                         renderFeed();
                     });
 
-                    // Listen in real-time for live chat data streams
                     onValue(ref(db, 'chatMessages'), (snapshot) => {
                         chatMessages = snapshot.exists() ? snapshot.val() : [];
                         renderChatHistory();
@@ -415,7 +405,6 @@ const firebaseConfig = {
             }, 1000);
         });
 
-        // Push data helpers directly out to Firebase cluster
         function cloudPush(nodePath, dataValue) {
             if (window.dbReferences) {
                 const { db, ref, set } = window.dbReferences;
@@ -438,13 +427,19 @@ const firebaseConfig = {
 
             const targetPage = document.getElementById(`page-${pageId}`);
             const targetNav = document.getElementById(`nav-${pageId}`);
-                                    
+                                                
             if(targetPage) targetPage.classList.add("active");
             if(targetNav) targetNav.classList.add("active");
 
             const breadcrumb = document.getElementById("breadcrumb");
             if(breadcrumb) {
                 breadcrumb.innerText = pageId === 'home' ? 'Home' : pageId === 'message' ? 'Chat' : 'Preferences';
+            }
+            if(pageId === 'message') {
+                setTimeout(() => {
+                    const box = document.getElementById("chatMsgContainer");
+                    if(box) box.scrollTop = box.scrollHeight;
+                }, 50);
             }
         }
 
@@ -459,13 +454,13 @@ const firebaseConfig = {
                 document.body.classList.add(`theme-${themeName}`);
             }
             localStorage.setItem("workspaceThemePreset", themeName);
-            
+                        
             document.querySelectorAll(".bg-option-card").forEach(card => card.classList.remove("selected"));
             const activeCard = document.getElementById(`preset-${themeName}`);
             if (activeCard) activeCard.classList.add("selected");
-            
+                        
             if (triggerToast) {
-                showToast(`Switched matrix layer background template to ${themeName}.`, "success");
+                showToast(`Switched workspace palette layout to ${themeName}.`, "success");
             }
         }
 
@@ -484,7 +479,7 @@ const firebaseConfig = {
             const profInput = document.getElementById("profUserHandle");
             if(profInput) profInput.value = currentSessionUser;
             renderFeed();
-            // Optional/Empty items safely referenced inside script context execution
+            
             const friendsCont = document.getElementById("chatFriendsContainer");
             if (friendsCont) friendsCont.innerHTML = `<li class="friend-item active"><span class="friend-name">Demo Workspace Channel</span></li>`;
             renderChatHistory();
@@ -538,12 +533,12 @@ const firebaseConfig = {
             const stream = document.getElementById("homeFeedStream");
             if(!stream) return;
             stream.innerHTML = "";
-            if (appPosts.length === 0) return;
+            if (!appPosts || appPosts.length === 0) return;
 
             appPosts.forEach(post => {
                 const card = document.createElement("div");
                 card.className = "post-card";
-                let fileMarkup = post.file ? `<div style="margin: 12px 0; padding:10px; background:rgba(0,0,0,0.03); border-radius:6px;"><a href="${post.file.data}" download="${post.file.name}" style="color:var(--bit-blue-primary); text-decoration:none;">💾 ${post.file.name}</a></div>` : "";
+                let fileMarkup = post.file ? `<div style="margin: 12px 0; padding:10px; background:rgba(0,0,0,0.03); border-radius:6px;"><a href="${post.file.data}" download="${post.file.name}" style="color:var(--bit-blue-primary); text-decoration:none; font-weight:600;">💾 Download: ${post.file.name}</a></div>` : "";
 
                 card.innerHTML = `
                     <div class="post-header"><span class="post-author">@${post.author}</span></div>
@@ -567,42 +562,69 @@ const firebaseConfig = {
             cloudPush('appPosts', appPosts);
         }
 
-        // Live Chat Operations Framework
+        /* LIVE CHAT INTERACTION ENGINE */
         function submitChatMessage() {
             const inputField = document.getElementById("chatInputField");
             const txt = inputField.value.trim();
-            if(!txt) return;
+            if(!txt && !activeSelectedFileBase64) return;
 
             const msg = {
                 id: Date.now(),
                 sender: currentSessionUser,
                 text: txt,
+                file: activeSelectedFileBase64 || null,
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
             chatMessages.push(msg);
             cloudPush('chatMessages', chatMessages);
+            
             inputField.value = "";
+            cancelReplyContext();
         }
 
         function renderChatHistory() {
             const box = document.getElementById("chatMsgContainer");
             if(!box) return;
             box.innerHTML = "";
+            if(!chatMessages) return;
             
             chatMessages.forEach(m => {
                 const isMe = m.sender === currentSessionUser;
                 const row = document.createElement("div");
                 row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
+                
+                let fileSnippet = m.file ? `<div style="margin-top:5px; font-size:12px;"><a href="${m.file.data}" download="${m.file.name}" style="color:${isMe ? '#FFF':'var(--bit-blue-primary)'}; font-weight:bold;">📎 File: ${m.file.name}</a></div>` : "";
+                
                 row.innerHTML = `
                     <div class="msg-meta-container"><span>${m.sender}</span> <span>${m.timestamp}</span></div>
                     <div class="bubble-wrapper">
-                        <div class="bubble">${m.text}</div>
+                        <div class="bubble">
+                            <div>${m.text}</div>
+                            ${fileSnippet}
+                        </div>
                     </div>
                 `;
                 box.appendChild(row);
             });
             box.scrollTop = box.scrollHeight;
+        }
+
+        function handleChatFileSelection(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                activeSelectedFileBase64 = { name: file.name, data: e.target.result };
+                document.getElementById("chatControlStatusAppendText").innerText = `File attachment ready: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function cancelReplyContext() {
+            activeSelectedFileBase64 = null;
+            document.getElementById("chatControlStatusAppendText").innerText = "";
+            document.getElementById("chatFileInputField").value = "";
         }
     </script>
 </body>
