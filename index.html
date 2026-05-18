@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra KH Firebase Chat</title>
+<title>Ultra KH Firebase Chat FIXED</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -11,16 +11,38 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#eef2ff}
-.top{background:#1E50FF;color:#fff;padding:10px;display:flex;justify-content:space-between}
+
+.top{
+  background:#1E50FF;
+  color:white;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+}
+
 .container{display:flex;height:100vh}
-.sidebar{width:200px;background:#1E50FF;color:#fff;padding:10px}
+
+.sidebar{
+  width:200px;
+  background:#1E50FF;
+  color:white;
+  padding:10px;
+}
+
 .main{flex:1;padding:10px}
-.card{background:#fff;padding:10px;border-radius:10px;margin-bottom:10px}
+
+.card{background:white;padding:10px;border-radius:10px;margin-bottom:10px}
+
 .post{border:1px solid #ddd;padding:10px;margin-top:10px;border-radius:8px}
+
 .msg{padding:6px;margin:5px 0;background:#dbeafe;border-radius:6px}
-.me{background:#1E50FF;color:#fff;text-align:right}
+
+.me{background:#1E50FF;color:white;text-align:right}
+
 input,button{padding:8px;margin:5px;width:100%}
-button{background:#1E50FF;color:#fff;border:none;cursor:pointer}
+
+button{background:#1E50FF;color:white;border:none;cursor:pointer}
+
 .hidden{display:none}
 </style>
 </head>
@@ -32,58 +54,54 @@ button{background:#1E50FF;color:#fff;border:none;cursor:pointer}
   <div id="user"></div>
 </div>
 
+<!-- AUTH -->
 <div id="auth" class="card" style="width:300px;margin:80px auto;">
   <h3>Login</h3>
   <input id="email" placeholder="Email">
   <input id="pass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
   <button onclick="signup()">Register</button>
+  <button onclick="login()">Login</button>
 </div>
 
+<!-- APP -->
 <div id="app" class="container hidden">
 
-<div class="sidebar">
-  <h3>Menu</h3>
-  <button onclick="show('home')">Home</button>
-  <button onclick="show('chat')">Chat</button>
-  <button onclick="logout()">Logout</button>
-</div>
-
-<div class="main">
-
-<!-- HOME -->
-<div id="home">
-  <div class="card">
-    <input id="postInput" placeholder="What's happening?">
-    <button onclick="post()">Post</button>
+  <div class="sidebar">
+    <h3>Menu</h3>
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('chat')">Chat</button>
+    <button onclick="logout()">Logout</button>
   </div>
-  <div id="feed"></div>
-</div>
 
-<!-- CHAT -->
-<div id="chat" class="hidden">
-  <div class="card">
-    <input id="msg" placeholder="Message">
-    <button onclick="send()">Send</button>
+  <div class="main">
+
+    <!-- HOME -->
+    <div id="home">
+      <div class="card">
+        <input id="postInput" placeholder="What's happening?">
+        <button onclick="post()">Post</button>
+      </div>
+      <div id="feed"></div>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chat" class="hidden">
+      <div class="card">
+        <input id="msg" placeholder="Message">
+        <button onclick="send()">Send</button>
+      </div>
+      <div id="chatBox"></div>
+    </div>
+
   </div>
-  <div id="chatBox"></div>
-</div>
-
-</div>
 </div>
 
 <script>
-
-/* 🔥 FIREBASE CONFIG (REPLACE THIS) */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-  authDomain: "ultra-kh.firebaseapp.com",
-  databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-  projectId: "ultra-kh",
-  storageBucket: "ultra-kh.firebasestorage.app",
-  messagingSenderId: "414518365494",
-  appId: "1:414518365494:web:accf5fa772831d1459b797",
-  measurementId: "G-6RXJMQF7HZ"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_ID",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -91,32 +109,41 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* STATE */
-let currentUser=null;
+/* ELEMENTS */
+const email = document.getElementById("email");
+const pass = document.getElementById("pass");
+const postInput = document.getElementById("postInput");
+const feed = document.getElementById("feed");
+const msg = document.getElementById("msg");
+const chatBox = document.getElementById("chatBox");
+const userText = document.getElementById("user");
 
 /* AUTH */
 function signup(){
-  auth.createUserWithEmailAndPassword(email.value, pass.value);
+  auth.createUserWithEmailAndPassword(email.value, pass.value)
+  .catch(e=>alert(e.message));
 }
 
 function login(){
-  auth.signInWithEmailAndPassword(email.value, pass.value);
+  auth.signInWithEmailAndPassword(email.value, pass.value)
+  .catch(e=>alert(e.message));
 }
 
 function logout(){
   auth.signOut();
 }
 
-/* AUTH LISTENER */
+/* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser=user.email;
-    document.getElementById("user").innerText=currentUser;
+    userText.innerText = user.email;
+
     document.getElementById("auth").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
+
     listenPosts();
     listenChat();
-  }else{
+  } else {
     document.getElementById("auth").classList.remove("hidden");
     document.getElementById("app").classList.add("hidden");
   }
@@ -124,17 +151,20 @@ auth.onAuthStateChanged(user=>{
 
 /* NAV */
 function show(page){
-  home.style.display=page==="home"?"block":"none";
-  chat.style.display=page==="chat"?"block":"none";
+  document.getElementById("home").style.display = page==="home"?"block":"none";
+  document.getElementById("chat").style.display = page==="chat"?"block":"none";
 }
 
 /* POSTS */
 function post(){
+  if(!postInput.value) return;
+
   db.collection("posts").add({
-    user:currentUser,
-    text:postInput.value,
-    time:Date.now()
+    user: auth.currentUser.email,
+    text: postInput.value,
+    time: Date.now()
   });
+
   postInput.value="";
 }
 
@@ -143,8 +173,8 @@ function listenPosts(){
   .onSnapshot(snap=>{
     feed.innerHTML="";
     snap.forEach(doc=>{
-      let d=doc.data();
-      feed.innerHTML+=`
+      let d = doc.data();
+      feed.innerHTML += `
         <div class="post">
           <b>${d.user}</b>
           <p>${d.text}</p>
@@ -156,11 +186,14 @@ function listenPosts(){
 
 /* CHAT */
 function send(){
+  if(!msg.value) return;
+
   db.collection("messages").add({
-    user:currentUser,
-    text:msg.value,
-    time:Date.now()
+    user: auth.currentUser.email,
+    text: msg.value,
+    time: Date.now()
   });
+
   msg.value="";
 }
 
@@ -169,16 +202,15 @@ function listenChat(){
   .onSnapshot(snap=>{
     chatBox.innerHTML="";
     snap.forEach(doc=>{
-      let d=doc.data();
-      chatBox.innerHTML+=`
-        <div class="msg ${d.user===currentUser?'me':''}">
+      let d = doc.data();
+      chatBox.innerHTML += `
+        <div class="msg ${d.user===auth.currentUser.email?'me':''}">
           ${d.user}: ${d.text}
         </div>
       `;
     });
   });
 }
-
 </script>
 
 </body>
