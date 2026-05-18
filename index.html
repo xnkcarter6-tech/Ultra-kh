@@ -10,8 +10,8 @@
             --bit-blue-hover: #0033E6;                
             --bit-blue-active: #0026B3;                
             --bit-text-menu: #FFFFFF;                  
-            --bit-bg-main: #EDF1F7;                                      
-            --bit-bg-card: #FFFFFF;                                      
+            --bit-bg-main: #EDF1F7;                                       
+            --bit-bg-card: #FFFFFF;                                       
             --bit-border-light: #E0E0E0;
             --bit-text-dark: #1F2D3D;
             --bit-text-light: #606266;
@@ -159,7 +159,7 @@
         .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; min-width: 0; }
         .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; }
         .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: rgba(0, 0, 0, 0.02); }
-        .chat-input-area { padding: 15px 20px; display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--bit-border-light); }
+        .chat-input-area { padding: 15px 20px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--bit-border-light); }
         .chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
         .btn-send { background: var(--bit-blue-primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
@@ -203,7 +203,7 @@
             <li class="sidebar-item" data-target="page-auth" id="nav-auth">
                 <a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg></div><span>Accounts</span></a>
             </li>
-            <li class="sidebar-item" style="margin-top:auto;" onclick="triggerSignOut()">
+            <li class="sidebar-item" style="margin-top:auto;" id="btnSignOutTrigger">
                 <a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div><span>Sign Out</span></a>
             </li>
         </ul>
@@ -250,7 +250,7 @@
                                 <div class="welcome-hashtags">#UltraKH #Community #StayConnected</div>
                             </div>
                         </div>
-                                                 
+                                                                         
                         <div class="card" style="padding: 20px;">
                             <h3 style="margin-bottom: 12px;">Active Operators (<span id="metUserCount">0</span>)</h3>
                             <table class="user-directory-table">
@@ -300,32 +300,30 @@
                     </div>
                     <div class="chat-window">
                         <div class="chat-window-header">General Chat Stream</div>
-                        <div class="chat-messages-box">
+                        <div class="chat-messages-box" id="chatMessagesBox">
                             <div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Channel initialized</div>
                         </div>
-                       <div class="chat-input-area" style="position: relative;">
-    <div id="emojiDrawer" style="display: none; position: absolute; bottom: 65px; left: 10px; background: var(--bit-bg-card, #fff); border: 1px solid var(--bit-border-light, #ccc); border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; max-width: 220px; display: none; grid-template-columns: repeat(5, 1fr); gap: 6px;">
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">👍</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">🎙️</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">❤️</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">😂</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">🔥</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">👏</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">🚀</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">💯</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">🙏</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">😮</span>
-        <span class="emoji-select" style="cursor:pointer; font-size:18px;">🎉</span>
-    </div>
+                        <div class="chat-input-area" style="position: relative;">
+                            <div id="emojiDrawer" style="display: none; position: absolute; bottom: 100px; left: 10px; background: var(--bit-bg-card, #fff); border: 1px solid var(--bit-border-light, #ccc); border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; max-width: 220px; grid-template-columns: repeat(5, 1fr); gap: 6px;">
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">👍</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">🎙️</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">❤️</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">😂</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">🔥</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">👏</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">🚀</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">💯</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">🙏</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">😮</span>
+                                <span class="emoji-select" style="cursor:pointer; font-size:18px;">🎉</span>
+                            </div>
 
-   <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
-    <button type="button" id="btnEmojiToggle" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0 5px;">😀</button>
-    
-    <button type="button" id="btnVoiceRecord" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0 5px; transition: transform 0.2s;">🎙️</button>
-    
-    <input type="text" class="chat-input" placeholder="Type a message..." style="flex: 1;">
-    <button class="btn-send">Send</button>
-</div>
+                            <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                                <button type="button" id="btnEmojiToggle" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0 5px;">😀</button>
+                                <button type="button" id="btnVoiceRecord" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0 5px; transition: transform 0.2s;">🎙️</button>
+                                <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." style="flex: 1;">
+                                <button class="btn-send" id="btnSend">Send</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -357,75 +355,398 @@
                 </div>
             </div>
         </div>
- </main>
-    </script>
-    // ==========================================
-// ... upper emoji and chat code elements ...
+    </main>
 
-    // ==========================================
-    // VOICE NOTE RECORDING & STREAMING ENGINE
-    // ==========================================
-    const btnVoiceRecord = document.getElementById("btnVoiceRecord");
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let isRecording = false;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    if (btnVoiceRecord) {
-        btnVoiceRecord.addEventListener("click", async () => {
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
+        // Place your unique Firebase configuration payload directly below:
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-                    mediaRecorder.addEventListener("dataavailable", event => {
-                        audioChunks.push(event.data);
-                    });
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
-                    mediaRecorder.addEventListener("stop", () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = () => {
-                            const base64Audio = reader.result;
-                            sendVoiceMessage(base64Audio);
-                        };
-                    });
+        // UI Core Views Navigation Handler
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const pageViews = document.querySelectorAll('.page-view');
+        const breadcrumb = document.getElementById('breadcrumb');
 
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btnVoiceRecord.innerText = "🛑"; 
-                    btnVoiceRecord.style.transform = "scale(1.3)";
-                    showToast("Recording audio...", "info");
-                } catch (err) {
-                    showToast("Microphone access denied or unavailable.", "error");
-                }
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPage = item.getAttribute('data-target');
+                if (!targetPage) return;
+
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                pageViews.forEach(v => v.classList.remove('active'));
+
+                item.classList.add('active');
+                document.getElementById(targetPage).classList.add('active');
+                
+                const pageTitle = item.querySelector('span').innerText;
+                breadcrumb.innerText = `Dashboard / ${pageTitle}`;
+            });
+        });
+
+        // Global Alert Toast Dispatcher
+        window.showToast = function(message, type = "info") {
+            const container = document.getElementById("toastHub");
+            if (!container) return;
+            const toast = document.createElement("div");
+            toast.className = "toast-card";
+            toast.style.borderLeftColor = type === "error" ? "var(--bit-danger)" : type === "success" ? "var(--bit-success)" : "var(--bit-blue-primary)";
+            toast.innerHTML = `<span class="toast-message">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        };
+
+        // Network Status Heartbeat Listener
+        const connectedRef = ref(database, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const indicator = document.getElementById("liveStatusIndicator");
+            if (!indicator) return;
+            if (snap.val() === true) {
+                indicator.innerHTML = `<span class="dot-pulse" style="background-color: var(--bit-success);"></span><span>Operational Live Cloud Connected</span>`;
             } else {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                isRecording = false;
-                btnVoiceRecord.innerText = "🎙️"; 
-                btnVoiceRecord.style.transform = "scale(1)";
-                showToast("Processing audio transmission...", "success");
+                indicator.innerHTML = `<span class="dot-pulse" style="background-color: var(--bit-warning);"></span><span>Reconnecting Stream...</span>`;
             }
         });
-    }
 
-    function sendVoiceMessage(audioDataString) {
-        const currentUser = document.getElementById("topBarUserHandle").innerText;
-        const chatRef = ref(database, 'messages');
-        const newMessageRef = push(chatRef);
+        // Profile / Operator Identity Registration Logic
+        const profileForm = document.getElementById("profileUpdateForm");
+        const signUpForm = document.getElementById("signUpSystemForm");
+        const topBarHandle = document.getElementById("topBarUserHandle");
 
-        set(newMessageRef, {
-            sender: currentUser,
-            text: "[Voice Note]", 
-            audio: audioDataString, 
-            timestamp: new Date().toISOString()
-        }).catch((err) => {
-            showToast("Voice Sync Error: " + err.message, "error");
+        if (profileForm) {
+            profileForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const newHandle = document.getElementById("profUserHandle").value.trim();
+                if (newHandle) {
+                    topBarHandle.innerText = newHandle;
+                    showToast("Profile identity updated locally.", "success");
+                }
+            });
+        }
+
+        if (signUpForm) {
+            signUpForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const globalHandle = document.getElementById("signUpUser").value.trim();
+                if (globalHandle) {
+                    const usersRef = ref(database, 'operators/' + globalHandle);
+                    set(usersRef, { status: "Active online", lastSeen: new Date().toISOString() }).then(() => {
+                        topBarHandle.innerText = globalHandle;
+                        document.getElementById("profUserHandle").value = globalHandle;
+                        showToast(`Global identity registered as @${globalHandle}`, "success");
+                    }).catch(err => showToast(err.message, "error"));
+                }
+            });
+        }
+
+        // Active Operators Sync Stream
+        const operatorsRef = ref(database, 'operators');
+        onValue(operatorsRef, (snapshot) => {
+            const data = snapshot.val();
+            const tableBody = document.getElementById("systemUserTableBody");
+            const countLabel = document.getElementById("metUserCount");
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = "";
+            if (data) {
+                const keys = Object.keys(data);
+                if (countLabel) countLabel.innerText = keys.length;
+                keys.forEach(user => {
+                    tableBody.innerHTML += `<tr><td><strong>@${user}</strong></td><td><span style="color:var(--bit-success); font-weight:600;">● Online</span></td></tr>`;
+                });
+            } else {
+                if (countLabel) countLabel.innerText = "0";
+                tableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--bit-text-light);">No other active operators</td></tr>`;
+            }
         });
-    }
 
-</script>
+        // Live Corporate Feed Logic
+        const publishForm = document.getElementById("homePublishForm");
+        if (publishForm) {
+            publishForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const text = document.getElementById("postText").value.trim();
+                const tags = document.getElementById("postTags").value.split(',').map(t => t.trim()).filter(t => t);
+                
+                const feedRef = ref(database, 'posts');
+                push(feedRef, {
+                    author: topBarHandle.innerText,
+                    content: text,
+                    tags: tags,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    publishForm.reset();
+                    showToast("Announcement published successfully.", "success");
+                }).catch(err => showToast(err.message, "error"));
+            });
+        }
+
+        const postsRef = ref(database, 'posts');
+        onValue(postsRef, (snapshot) => {
+            const data = snapshot.val();
+            const feedStream = document.getElementById("homeFeedStream");
+            if (!feedStream) return;
+            feedStream.innerHTML = "";
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const post = data[key];
+                    const tagsHTML = post.tags ? post.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('') : '';
+                    feedStream.innerHTML += `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <span class="post-author">@${post.author}</span>
+                                <span class="post-time">${new Date(post.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <div class="post-content-text">${post.content}</div>
+                            <div>${tagsHTML}</div>
+                        </div>`;
+                });
+            }
+        });
+
+        // Sign Out Handle
+        window.triggerSignOut = function() {
+            if (confirm("Disconnect session and clear channels?")) {
+                location.reload();
+            }
+        };
+        const btnSignOut = document.getElementById("btnSignOutTrigger");
+        if (btnSignOut) { btnSignOut.addEventListener("click", window.triggerSignOut); }
+
+        // ==========================================
+        // UPGRADED CHAT ENGINE (REPLIES & VOICE)
+        // ==========================================
+        const chatInput = document.getElementById("chatInput");
+        const btnSend = document.getElementById("btnSend");
+        const chatMessagesBox = document.getElementById("chatMessagesBox");
+        let selectedReplyTarget = null;
+
+        function sendChatMessage() {
+            const messageText = chatInput.value.trim();
+            const currentUser = topBarHandle.innerText;
+
+            if (!messageText) return;
+
+            const chatRef = ref(database, 'messages');
+            const newMessageRef = push(chatRef);
+
+            const messagePayload = {
+                sender: currentUser,
+                text: messageText,
+                timestamp: new Date().toISOString()
+            };
+
+            if (selectedReplyTarget) {
+                messagePayload.replyTo = selectedReplyTarget;
+            }
+
+            set(newMessageRef, messagePayload).then(() => {
+                chatInput.value = "";
+                clearReplyContext();
+            }).catch((err) => {
+                showToast("Chat Error: " + err.message, "error");
+            });
+        }
+
+        if (btnSend) { btnSend.addEventListener("click", sendChatMessage); }
+        if (chatInput) {
+            chatInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendChatMessage();
+            });
+        }
+
+        const chatDatabaseRef = ref(database, 'messages');
+        onValue(chatDatabaseRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!chatMessagesBox) return;
+            
+            chatMessagesBox.innerHTML = `<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Channel initialized</div>`;
+            
+            if (data) {
+                const currentUser = topBarHandle.innerText;
+
+                Object.keys(data).forEach((key) => {
+                    const msg = data[key];
+                    const isMe = msg.sender === currentUser;
+                    
+                    const bubbleBg = isMe ? 'var(--chat-bubble-me, #1E50FF)' : 'var(--chat-bubble-them, #F1F3F5)';
+                    const textColor = isMe ? '#FFFFFF' : 'var(--chat-text-them, #1F2D3D)';
+                    const alignSide = isMe ? 'flex-end' : 'flex-start';
+                    
+                    const deleteBtn = isMe ? `<span class="delete-msg" data-key="${key}" style="color:var(--bit-danger); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;">Delete</span>` : '';
+                    const replyBtn = `<span class="reply-trigger" data-sender="${msg.sender}" data-text="${msg.text ? msg.text.replace(/"/g, '&quot;') : ''}" style="color:var(--bit-blue-primary); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;">Reply</span>`;
+
+                    let messageBodyHTML = "";
+                    if (msg.audio) {
+                        messageBodyHTML = `<audio controls src="${msg.audio}" style="max-width: 100%; height: 32px; display: block; margin-top: 4px;"></audio>`;
+                    } else {
+                        messageBodyHTML = msg.text || "";
+                    }
+
+                    let replyContextHTML = "";
+                    if (msg.replyTo) {
+                        replyContextHTML = `
+                            <div style="background: rgba(0,0,0,0.05); border-left: 3px solid var(--bit-blue-primary); padding: 4px 8px; font-size: 11px; margin-bottom: 4px; border-radius: 4px; max-width: 100%;">
+                                <strong>@${msg.replyTo.user}</strong>: ${msg.replyTo.quote}
+                            </div>
+                        `;
+                    }
+
+                    chatMessagesBox.innerHTML += `
+                        <div style="display: flex; flex-direction: column; align-items: ${alignSide}; width: 100%; margin-bottom: 10px;">
+                            <div style="font-size: 11px; color: var(--bit-text-light); margin-bottom: 2px;">@${msg.sender}</div>
+                            <div style="display: flex; flex-direction: column; align-items: ${alignSide}; max-width: 75%;">
+                                ${replyContextHTML}
+                                <div style="display: flex; align-items: center; width: 100%;">
+                                    <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
+                                        ${messageBodyHTML}
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        ${replyBtn}
+                                        ${deleteBtn}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+            }
+        });
+
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-msg')) {
+                const msgKey = e.target.getAttribute('data-key');
+                if (confirm("Delete this message permanently?")) {
+                    const msgRef = ref(database, 'messages/' + msgKey);
+                    remove(msgRef).then(() => { showToast("Message deleted.", "success"); });
+                }
+            }
+
+            if (e.target.classList.contains('reply-trigger')) {
+                const targetUser = e.target.getAttribute('data-sender');
+                const targetText = e.target.getAttribute('data-text');
+                
+                selectedReplyTarget = { user: targetUser, quote: targetText };
+                
+                let replyBanner = document.getElementById("chatReplyBanner");
+                if (!replyBanner) {
+                    replyBanner = document.createElement("div");
+                    replyBanner.id = "chatReplyBanner";
+                    replyBanner.style = "background:var(--bit-bg-main); padding:6px 12px; font-size:12px; border-left:4px solid var(--bit-blue-primary); display:flex; justify-content:space-between; align-items:center;";
+                    document.querySelector(".chat-input-area").insertBefore(replyBanner, document.querySelector(".chat-input-area").firstChild);
+                }
+                replyBanner.innerHTML = `<span>Replying to <strong>@${targetUser}</strong>: "${targetText.substring(0, 20)}..."</span><span id="closeReplyBtn" style="cursor:pointer; font-weight:bold; color:var(--bit-danger);">×</span>`;
+                chatInput.focus();
+            }
+
+            if (e.target.id === 'closeReplyBtn') { clearReplyContext(); }
+        });
+
+        function clearReplyContext() {
+            selectedReplyTarget = null;
+            const replyBanner = document.getElementById("chatReplyBanner");
+            if (replyBanner) replyBanner.remove();
+        }
+
+        // EMOJI DRAWER LOGIC
+        const btnEmojiToggle = document.getElementById("btnEmojiToggle");
+        const emojiDrawer = document.getElementById("emojiDrawer");
+
+        if (btnEmojiToggle && emojiDrawer && chatInput) {
+            btnEmojiToggle.addEventListener("click", (e) => {
+                e.stopPropagation();
+                emojiDrawer.style.display = (emojiDrawer.style.display === "none" || emojiDrawer.style.display === "") ? "grid" : "none";
+            });
+
+            emojiDrawer.addEventListener("click", (e) => {
+                if (e.target.classList.contains("emoji-select")) {
+                    chatInput.value += e.target.innerText;
+                    chatInput.focus();
+                    emojiDrawer.style.display = "none";
+                }
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!emojiDrawer.contains(e.target) && !btnEmojiToggle.contains(e.target)) {
+                    emojiDrawer.style.display = "none";
+                }
+            });
+        }
+
+        // VOICE NOTE ENGINE
+        const btnVoiceRecord = document.getElementById("btnVoiceRecord");
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        if (btnVoiceRecord) {
+            btnVoiceRecord.addEventListener("click", async () => {
+                if (!isRecording) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+
+                        mediaRecorder.addEventListener("dataavailable", event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        mediaRecorder.addEventListener("stop", () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                            const reader = new FileReader();
+                            reader.readAsDataURL(audioBlob);
+                            reader.onloadend = () => {
+                                const base64Audio = reader.result;
+                                sendVoiceMessage(base64Audio);
+                            };
+                        });
+
+                        mediaRecorder.start();
+                        isRecording = true;
+                        btnVoiceRecord.innerText = "🛑"; 
+                        btnVoiceRecord.style.transform = "scale(1.3)";
+                        showToast("Recording audio...", "info");
+                    } catch (err) {
+                        showToast("Microphone access denied or unavailable.", "error");
+                    }
+                } else {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    isRecording = false;
+                    btnVoiceRecord.innerText = "🎙️"; 
+                    btnVoiceRecord.style.transform = "scale(1)";
+                    showToast("Processing audio transmission...", "success");
+                }
+            });
+        }
+
+        function sendVoiceMessage(audioDataString) {
+            const currentUser = topBarHandle.innerText;
+            const chatRef = ref(database, 'messages');
+            const newMessageRef = push(chatRef);
+
+            set(newMessageRef, {
+                sender: currentUser,
+                text: "[Voice Note]", 
+                audio: audioDataString, 
+                timestamp: new Date().toISOString()
+            }).catch((err) => {
+                showToast("Voice Sync Error: " + err.message, "error");
+            });
+        }
+    </script>
 </body>
 </html>
