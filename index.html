@@ -39,7 +39,7 @@
                 <h1 class="text-2xl font-bold mb-8 px-2 tracking-tight">Ultra KH</h1>
                 <nav class="space-y-1" id="main-nav">
                     <button data-target="view-home" class="nav-btn w-full text-left block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner transition">🏠 Home</button>
-                    <button data-target="view-chat" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">💬 Chat Room</button>
+                    <button data-target="view-chat" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">💬 Chat Hub</button>
                     <button data-target="view-profile" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">👤 Profile</button>
                     <button data-target="view-accounts" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">🔑 Accounts</button>
                 </nav>
@@ -52,7 +52,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 p-6 overflow-y-auto bg-gray-50">
+        <main class="flex-1 p-6 overflow-y-auto bg-gray-50 flex flex-col">
             <div id="alert-banner" style="display: none;" class="mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm bg-red-500"></div>
             
             <div id="view-home" class="content-view grid grid-cols-1 lg:grid-cols-3 gap-6">                                                
@@ -84,32 +84,41 @@
                 </div>                                    
             </div>
 
-            <div id="view-chat" class="content-view hidden max-w-4xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-md border border-gray-200 flex flex-col h-[600px] overflow-hidden">
-                    <div class="bg-white border-b border-gray-200 p-4 flex items-center justify-between shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">🌐</div>
-                            <div>
-                                <h2 class="text-sm font-bold text-gray-900 tracking-tight">Global Operations Chat</h2>
-                                <p class="text-[11px] text-green-600 font-medium flex items-center gap-1">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span> Live Synced Terminal
-                                </p>
+            <div id="view-chat" class="content-view hidden flex-1 max-w-5xl w-full mx-auto flex gap-4 h-[600px]">
+                <div class="w-64 bg-white border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-sm">
+                    <div class="p-3 border-b border-gray-100 bg-gray-50/70">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Communication Nodes</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-2 space-y-1" id="chat-channels-list">
+                        <button id="channel-global" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold bg-blue-50 text-blue-700 flex items-center justify-between transition">
+                            <span>🌐 Global Room</span>
+                        </button>
+                        <div class="pt-3 pb-1 px-2 border-t border-gray-100 mt-2">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Private Operators</span>
+                        </div>
+                        <div id="pm-operators-directory" class="space-y-1">
                             </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                    <div class="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-gray-900 tracking-tight" id="active-chat-title">Global Room</h2>
+                            <p class="text-[10px] text-gray-400 font-mono" id="active-chat-target-node">Path: chat_messages</p>
                         </div>
                     </div>
                     
-                    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4 scroll-smooth flex flex-col"></div>
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3 text-sm scroll-smooth flex flex-col"></div>
                     
-                    <div class="p-4 bg-white border-t border-gray-100 flex gap-2 items-center">
-                        <input type="text" id="chat-input" placeholder="Type an encrypted team message..." class="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 text-sm">
-                        <button id="btn-chat-send" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition active:scale-95 shadow-md shadow-blue-600/10 flex items-center justify-center">
-                            Send
-                        </button>
+                    <div class="p-3 bg-white border-t border-gray-100 flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Type a secure terminal synchronized transmission..." class="flex-1 p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 text-sm">
+                        <button id="btn-chat-send" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition shadow-sm">Send</button>
                     </div>
                 </div>
             </div>
 
-            <div id="view-profile" class="content-view hidden max-w-2xl mx-auto">
+            <div id="view-profile" class="content-view hidden max-w-2xl mx-auto w-full">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <div class="flex items-center gap-4 border-b border-gray-100 pb-6 mb-6">
                         <div class="h-16 w-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold font-mono" id="profile-initials">UK</div>
@@ -123,15 +132,11 @@
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Authenticated Account Email</label>
                             <input type="text" id="profile-email-input" readonly value="" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm text-gray-700 outline-none">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Access Designation Group</label>
-                            <div class="inline-block px-3 py-1 bg-green-50 text-green-700 border border-green-100 text-xs font-bold rounded-md">Live Platform Member</div>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="view-accounts" class="content-view hidden max-w-4xl mx-auto">
+            <div id="view-accounts" class="content-view hidden max-w-4xl mx-auto w-full">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900 mb-2 tracking-tight">Workspace Credentials Monitor</h2>
                     <p class="text-xs text-gray-500 mb-4">Active operational states across the cloud matrix nodes.</p>
@@ -143,15 +148,11 @@
                                     <th class="p-3">Reference Account</th>
                                     <th class="p-3">Permission Vector</th>
                                     <th class="p-3">Operational State</th>
+                                    <th class="p-3">Action Terminal</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700">
-                                <tr>
-                                    <td class="p-3 font-semibold text-blue-600" id="current-user-cell">Connecting...</td>
-                                    <td class="p-3">Verified Operator</td>
-                                    <td class="p-3 text-green-600 font-bold">● Active</td>
-                                </tr>
-                            </tbody>
+                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700" id="accounts-table-body">
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -161,7 +162,7 @@
 
     <script type="module">                
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";                
-        import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {                                    
@@ -180,8 +181,13 @@
         const auth = getAuth(app);
 
         let activeUserEmail = "";
+        let currentUserId = "";
+        let activeChatMode = "global"; // "global" or "pm"
+        let activePmTargetUid = "";
+        let activePmTargetEmail = "";
+        let currentChatListenerUnsubscribe = null;
 
-        // UI Selectors
+        // Base DOM Selections
         const authScreen = document.getElementById('auth-screen');
         const portalScreen = document.getElementById('portal-screen');
         const authAlert = document.getElementById('auth-alert');
@@ -193,131 +199,257 @@
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
         const btnChatSend = document.getElementById('btn-chat-send');
-
-        // Database Route Paths
-        const databaseFeedRef = ref(db, 'feed');
-        const databaseChatRef = ref(db, 'chat_messages');
+        const pmOperatorsDirectory = document.getElementById('pm-operators-directory');
+        const accountsTableBody = document.getElementById('accounts-table-body');
 
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // Track Auth Changes
-        onAuthStateChanged(auth, (user) => {
+        // Generate consistent target paths between pairs of users
+        function getPrivateChatPath(uid1, uid2) {
+            return uid1 < uid2 ? `private_chats/${uid1}_${uid2}` : `private_chats/${uid2}_${uid1}`;
+        }
+
+        // Listen to Auth Changes
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 activeUserEmail = user.email;
+                currentUserId = user.uid;
+                
+                // Write active node trace register down info registry tree
+                await set(ref(db, 'users/' + user.uid), {
+                    email: user.email,
+                    lastSeen: serverTimestamp()
+                });
+
                 authScreen.classList.add('hidden');
                 portalScreen.classList.remove('hidden');
 
                 document.getElementById('profile-email-input').value = user.email;
                 document.getElementById('profile-display-name').textContent = user.email.split('@')[0];
                 document.getElementById('profile-initials').textContent = user.email.substring(0,2).toUpperCase();
-                document.getElementById('current-user-cell').textContent = user.email;
+                
+                initChatEngineStream();
+                syncUsersDirectoryEngine();
             } else {
                 activeUserEmail = "";
+                currentUserId = "";
                 portalScreen.classList.add('hidden');
                 authScreen.classList.remove('hidden');
             }
         });
 
-        // Register Account Action
+        // Sync Users Matrix across Dashboard panels
+        function syncUsersDirectoryEngine() {
+            onValue(ref(db, 'users'), (snapshot) => {
+                if(!snapshot.exists()) return;
+                
+                const usersData = snapshot.val();
+                let pmDirectoryHtml = "";
+                let accountsTableHtml = "";
+                
+                Object.keys(usersData).forEach(uid => {
+                    const userObj = usersData[uid];
+                    if(uid === currentUserId) return; // Ignore parsing self inside directories
+                    
+                    const cleanName = escapeHtml(userObj.email).split('@')[0];
+                    
+                    // 1. Appends Chat Hub DM selection buttons
+                    pmDirectoryHtml += `
+                        <button data-uid="${uid}" data-email="${userObj.email}" class="pm-target-btn w-full text-left px-3 py-2 rounded-xl text-xs font-normal hover:bg-gray-100 flex items-center justify-between text-gray-700 transition">
+                            <span>👤 ${cleanName}</span>
+                            <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                        </button>
+                    `;
+                    
+                    // 2. Build Monitor tables rows layout
+                    accountsTableHtml += `
+                        <tr>
+                            <td class="p-3 text-blue-600 font-semibold">${escapeHtml(userObj.email)}</td>
+                            <td class="p-3">Verified Operator</td>
+                            <td class="p-3 text-green-600 font-bold">● Active</td>
+                            <td class="p-3">
+                                <button data-uid="${uid}" data-email="${userObj.email}" class="pm-shortcut-btn px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded text-[11px] font-bold hover:bg-blue-600 hover:text-white transition">Direct Chat</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                // Add current logged-in user at top row of Accounts view 
+                accountsTableBody.innerHTML = `
+                    <tr class="bg-blue-50/40">
+                        <td class="p-3 font-semibold text-blue-600">${escapeHtml(activeUserEmail)} (You)</td>
+                        <td class="p-3">Verified Operator</td>
+                        <td class="p-3 text-green-600 font-bold">● Active</td>
+                        <td class="p-3 text-gray-400 italic">Current Node</td>
+                    </tr>
+                ` + accountsTableHtml;
+                
+                pmOperatorsDirectory.innerHTML = pmDirectoryHtml || `<div class="text-[11px] text-gray-400 p-2 italic">No target lines connected.</div>`;
+                
+                // Bind interaction listeners to text directory actions
+                document.querySelectorAll('.pm-target-btn, .pm-shortcut-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const targetUid = btn.getAttribute('data-uid');
+                        const targetEmail = btn.getAttribute('data-email');
+                        startPrivateChatMode(targetUid, targetEmail);
+                    });
+                });
+            });
+        }
+
+        // Initialize / Switch Chat stream paths dynamically
+        function initChatEngineStream() {
+            if (currentChatListenerUnsubscribe) currentChatListenerUnsubscribe();
+            
+            let currentRefPath = ref(db, 'chat_messages');
+            if (activeChatMode === "global") {
+                document.getElementById('active-chat-title').textContent = "Global System Chat Room";
+                document.getElementById('active-chat-target-node').textContent = "Path: chat_messages";
+                document.getElementById('channel-global').className = "w-full text-left px-3 py-2 rounded-xl text-sm font-semibold bg-blue-50 text-blue-700 flex items-center justify-between transition";
+            } else {
+                const nodePath = getPrivateChatPath(currentUserId, activePmTargetUid);
+                currentRefPath = ref(db, nodePath);
+                document.getElementById('active-chat-title').textContent = `Secure Line: ${activePmTargetEmail.split('@')[0]}`;
+                document.getElementById('active-chat-target-node').textContent = `Path: ${nodePath}`;
+                document.getElementById('channel-global').className = "w-full text-left px-3 py-2 rounded-xl text-sm hover:bg-gray-100 flex items-center justify-between text-gray-700 transition";
+            }
+            
+            chatMessages.innerHTML = `<div class="text-gray-400 text-center py-8 italic text-xs m-auto">Syncing live cloud stream...</div>`;
+            
+            currentChatListenerUnsubscribe = onValue(currentRefPath, (snapshot) => {
+                if (!snapshot.exists()) {
+                    chatMessages.innerHTML = `<div class="text-gray-400 text-center py-8 italic text-xs m-auto">No connection messages logged down line node.</div>`;
+                    return;
+                }
+                
+                let chatPayload = "";
+                const logs = snapshot.val();
+                Object.keys(logs).forEach(key => {
+                    const entry = logs[key];
+                    const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
+                    const senderEmail = entry.sender || 'Operator';
+                    const userTag = escapeHtml(senderEmail).split('@')[0];
+                    const isMe = (senderEmail === activeUserEmail);
+                    
+                    if (isMe) {
+                        chatPayload += `
+                            <div class="flex items-end gap-2 justify-end ml-12">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[9px] text-gray-400 font-mono mb-0.5">${timeStr}</span>
+                                    <div class="bg-blue-600 text-white rounded-2xl rounded-br-none px-4 py-2 text-sm max-w-md shadow-sm">
+                                        <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+                    } else {
+                        chatPayload += `
+                            <div class="flex items-end gap-2 mr-12">
+                                <div class="flex flex-col items-start">
+                                    <span class="text-[10px] text-gray-500 font-semibold font-mono mb-0.5">${userTag} <span class="text-gray-400 font-normal font-sans ml-1">${timeStr}</span></span>
+                                    <div class="bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-bl-none px-4 py-2 text-sm max-w-md shadow-sm">
+                                        <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                });
+                chatMessages.innerHTML = chatPayload;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+
+        function startPrivateChatMode(targetUid, targetEmail) {
+            activeChatMode = "pm";
+            activePmTargetUid = targetUid;
+            activePmTargetEmail = targetEmail;
+            
+            // Auto switch navigation layout tab panel index forward into Chat Hub View
+            contentViews.forEach(view => {
+                view.id === 'view-chat' ? view.classList.remove('hidden') : view.classList.add('hidden');
+            });
+            navButtons.forEach(b => {
+                b.className = b.getAttribute('data-target') === 'view-chat' 
+                    ? "nav-btn w-full text-left block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner transition" 
+                    : "nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition";
+            });
+            
+            initChatEngineStream();
+        }
+
+        document.getElementById('channel-global').addEventListener('click', () => {
+            activeChatMode = "global";
+            activePmTargetUid = "";
+            activePmTargetEmail = "";
+            initChatEngineStream();
+        });
+
+        // Action: Submit Chat Message Entry
+        async function sendChatMessage() {
+            const msgContent = chatInput.value.trim();
+            if(!msgContent) return;
+
+            btnChatSend.disabled = true;
+            let targetRef = activeChatMode === "global" 
+                ? ref(db, 'chat_messages') 
+                : ref(db, getPrivateChatPath(currentUserId, activePmTargetUid));
+
+            try {
+                await push(targetRef, {
+                    message: msgContent,
+                    sender: activeUserEmail,
+                    timestamp: serverTimestamp()
+                });
+                chatInput.value = "";
+            } catch(e) {
+                console.error("Chat terminal fault: ", e);
+            } finally {
+                btnChatSend.disabled = false;
+            }
+        }
+
+        btnChatSend.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+
+        // User registration logic
         document.getElementById('btn-register').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
             authAlert.style.display = 'none';
-
-            if(!email || !password) {
-                authAlert.textContent = "Please fill in all layout credentials.";
-                authAlert.style.display = 'block';
-                return;
-            }
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-            } catch(err) {
-                authAlert.textContent = err.message;
-                authAlert.style.display = 'block';
-            }
+            if(!email || !password) return;
+            try { await createUserWithEmailAndPassword(auth, email, password); } catch(err) { authAlert.textContent = err.message; authAlert.style.display = 'block'; }
         });
 
-        // Sign In Action
+        // User Sign-in logic
         document.getElementById('btn-signin').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
             authAlert.style.display = 'none';
-
-            if(!email || !password) {
-                authAlert.textContent = "Please enter your sign in credentials.";
-                authAlert.style.display = 'block';
-                return;
-            }
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-            } catch(err) {
-                authAlert.textContent = err.message;
-                authAlert.style.display = 'block';
-            }
+            if(!email || !password) return;
+            try { await signInWithEmailAndPassword(auth, email, password); } catch(err) { authAlert.textContent = err.message; authAlert.style.display = 'block'; }
         });
 
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            signOut(auth);
-        });
+        document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
-        // Tab View Switching Engine
+        // Tab View Switching
         const navButtons = document.querySelectorAll('.nav-btn');
         const contentViews = document.querySelectorAll('.content-view');
-
         navButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetViewId = btn.getAttribute('data-target');
                 contentViews.forEach(view => {
-                    if(view.id === targetViewId) {
-                        view.classList.remove('hidden');
-                        if(targetViewId === 'view-chat') {
-                            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
-                        }
-                    } else {
-                        view.classList.add('hidden');
-                    }
+                    view.id === targetViewId ? view.classList.remove('hidden') : view.classList.add('hidden');
                 });
-                navButtons.forEach(b => {
-                    b.className = "nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition";
-                });
+                navButtons.forEach(b => { b.className = "nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition"; });
                 btn.className = "nav-btn w-full text-left block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner transition";
             });
         });
 
-        function displayAlert(msg, errorMode = true) {                                    
-            if (!msg) {                                                
-                alertBanner.style.display = 'none';                                                
-                return;                                    
-            }                                    
-            alertBanner.className = `mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm transition ${errorMode ? 'bg-red-500' : 'bg-gray-800'}`;                                    
-            alertBanner.textContent = msg;                                    
-            alertBanner.style.display = 'block';                        
-        }
-
-        // Live Cloud Connection Pulse
-        const connectedRef = ref(db, ".info/connected");                            
-        onValue(connectedRef, (snap) => {                                        
-            if (snap.val() === true) {                                                    
-                connectionStatus.className = "text-xs flex items-center gap-2 text-green-700 font-semibold bg-green-50 px-3 py-2 rounded-lg border border-green-100";                                                    
-                connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-green-500"></span> Connected Live Cloud`;                                        
-            } else {                                                    
-                connectionStatus.className = "text-xs flex items-center gap-2 text-amber-600 font-semibold bg-amber-50 px-3 py-2 rounded-lg border border-amber-100";                                                    
-                connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span> Syncing Live Cloud...`;                                        
-            }                            
-        });
-
-        // Sync: Home Broadcast Updates Feed
+        // Sync: Home Broadcast Feed
         onValue(databaseFeedRef, (snapshot) => {                                    
-            if (!snapshot.exists()) {
-                feedContainer.className = "text-xs text-gray-400 text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/30";                                                
-                feedContainer.textContent = "No broadcast updates posted yet.";                                                
-                return;                                    
-            }
-
+            if (!snapshot.exists()) { feedContainer.innerHTML = "No broadcast updates posted yet."; return; }
             let htmlPayload = `<div class="space-y-3">`;                                    
             const records = snapshot.val();                                                    
             Object.keys(records).reverse().forEach(key => {                                                
@@ -332,115 +464,16 @@
                             <span class="text-[10px] text-gray-400 font-mono">${timestampLabel}</span>
                         </div>
                         <p class="text-gray-800 font-normal break-words text-sm mt-1">${cleanText}</p>                                                                        
-                    </div>                                                
-                `;                                    
+                    </div>`;                                    
             });                                    
-            htmlPayload += `</div>`;                                                    
-            feedContainer.className = "block";                                    
-            feedContainer.innerHTML = htmlPayload;                        
+            feedContainer.innerHTML = htmlPayload + `</div>`;                        
         });
 
-        // Sync: Optimized Modern Chat Engine UI layout
-        onValue(databaseChatRef, (snapshot) => {
-            if (!snapshot.exists()) {
-                chatMessages.innerHTML = `<div class="text-gray-400 text-center py-8 italic text-xs m-auto">No terminal messages logged yet.</div>`;
-                return;
-            }
-            
-            let chatPayload = "";
-            const logs = snapshot.val();
-            Object.keys(logs).forEach(key => {
-                const entry = logs[key];
-                const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
-                const senderEmail = entry.sender || 'Operator';
-                const userTag = escapeHtml(senderEmail).split('@')[0];
-                const initials = userTag.substring(0, 2).toUpperCase();
-                
-                // Style differentiation: Determine if message belongs to current session user
-                const isMe = (senderEmail === activeUserEmail);
-                
-                if (isMe) {
-                    // Right aligned blue chat bubble layout
-                    chatPayload += `
-                        <div class="flex items-end gap-2 justify-end ml-12">
-                            <div class="flex flex-col items-end">
-                                <span class="text-[10px] text-gray-400 font-mono mb-0.5">${timeStr}</span>
-                                <div class="bg-blue-600 text-white rounded-2xl rounded-br-none px-4 py-2.5 text-sm max-w-md shadow-sm">
-                                    <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
-                                </div>
-                            </div>
-                            <div class="h-7 w-7 rounded-full bg-blue-700 text-[10px] font-bold text-white flex items-center justify-center font-mono shrink-0 shadow-sm shadow-blue-600/20">${initials}</div>
-                        </div>
-                    `;
-                } else {
-                    // Left aligned gray/white chat bubble layout for team members
-                    chatPayload += `
-                        <div class="flex items-end gap-2 mr-12">
-                            <div class="h-7 w-7 rounded-full bg-gray-300 text-[10px] font-bold text-gray-600 flex items-center justify-center font-mono shrink-0 shadow-sm">${initials}</div>
-                            <div class="flex flex-col items-start">
-                                <span class="text-[10px] text-gray-500 font-semibold font-mono mb-0.5 ml-1">${userTag} <span class="text-gray-400 font-normal font-sans ml-1">${timeStr}</span></span>
-                                <div class="bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-bl-none px-4 py-2.5 text-sm max-w-md shadow-sm">
-                                    <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-            chatMessages.innerHTML = chatPayload;
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto anchor view layout to newest logs
-        });
-
-        // Action: Publish Broadcast
         btnPublish.addEventListener('click', async () => {                                    
             const bodyContent = updateTextArea.value.trim();                                    
-            if (!bodyContent) return displayAlert("Cannot process empty text posts.");
-
-            btnPublish.disabled = true;                                    
-            btnPublish.textContent = "Publishing...";                                    
-            displayAlert(null);
-
-            try {                                                
-                await push(databaseFeedRef, {                                                            
-                    text: bodyContent,
-                    sender: activeUserEmail,                                                            
-                    timestamp: serverTimestamp()                                                
-                });                                                
-                updateTextArea.value = "";                                                
-                displayAlert("Post broadcast updated successfully.", false);                                    
-            } catch (err) {                                                
-                displayAlert(`Broadcast Fail: ${err.message}`, true);                                    
-            } finally {                                                
-                btnPublish.disabled = false;                                                
-                btnPublish.textContent = "Publish Post";                                    
-            }                        
+            if (!bodyContent) return;
+            try { await push(databaseFeedRef, { text: bodyContent, sender: activeUserEmail, timestamp: serverTimestamp() }); updateTextArea.value = ""; } catch (err) { console.error(err); }
         });            
-
-        // Action: Submit Live Chat Entry
-        async function sendChatMessage() {
-            const msgContent = chatInput.value.trim();
-            if(!msgContent) return;
-
-            btnChatSend.disabled = true;
-            try {
-                await push(databaseChatRef, {
-                    message: msgContent,
-                    sender: activeUserEmail,
-                    timestamp: serverTimestamp()
-                });
-                chatInput.value = "";
-            } catch(e) {
-                console.error("Chat sync exception: ", e);
-            } finally {
-                btnChatSend.disabled = false;
-            }
-        }
-
-        btnChatSend.addEventListener('click', sendChatMessage);
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sendChatMessage();
-        });
-
     </script>
 </body>
 </html>
