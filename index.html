@@ -318,6 +318,17 @@
       document.getElementById('topBarUserHandle').innerText = val;
       showToast('Profile sync configuration saved.', 'success');
     });
+
+    // Fix: Catch Auth Form and Route Handle Updates
+    document.getElementById('signUpSystemForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = document.getElementById('signUpUser').value.trim();
+      if(val) {
+        document.getElementById('topBarUserHandle').innerText = val;
+        document.getElementById('profUserHandle').value = val;
+        showToast('Global operator handle registered locally.', 'success');
+      }
+    });
   </script>
 
   <script type="module">
@@ -378,7 +389,9 @@
         textInput.value = '';
         activeReplyTarget = null;
         if (containerReply) containerReply.style.display = 'none';
-      }).catch(err => showToast("Message Fail: " + err.message, "error"));
+      }).catch(err => {
+        if(typeof showToast === 'function') showToast("Message Fail: " + err.message, "error");
+      });
     }
 
     document.getElementById('btnChatSend').addEventListener('click', triggerSendMessage);
@@ -410,7 +423,7 @@
 
         // Context Setup for Actions
         const deleteBtn = isMe ? `<span class="delete-msg" style="color:var(--bit-danger);" data-key="${key}">Delete</span>` : '';
-        const escapedText = msg.text.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        const escapedText = (msg.text || "").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
         const replyBtn = `<span class="reply-trigger" style="color:var(--bit-blue-primary);" data-key="${key}" data-sender="${msg.sender}" data-text="${escapedText}">Reply</span>`;
 
         const msgRow = document.createElement('div');
@@ -455,8 +468,12 @@
       if (e.target.classList.contains('delete-msg')) {
         const key = e.target.getAttribute('data-key');
         remove(ref(database, 'messages/' + key))
-          .then(() => showToast("Message dropped successfully.", "success"))
-          .catch(err => showToast("Eviction error: " + err.message, "error"));
+          .then(() => {
+            if(typeof showToast === 'function') showToast("Message dropped successfully.", "success");
+          })
+          .catch(err => {
+            if(typeof showToast === 'function') showToast("Eviction error: " + err.message, "error");
+          });
       }
 
       if (e.target.classList.contains('reply-trigger')) {
@@ -505,9 +522,9 @@
             isRecording = true;
             btnVoiceRecord.innerText = "🛑";
             btnVoiceRecord.style.transform = "scale(1.3)";
-            showToast("Recording audio...", "info");
+            if(typeof showToast === 'function') showToast("Recording audio...", "info");
           } catch (err) {
-            showToast("Microphone access denied or unavailable.", "error");
+            if(typeof showToast === 'function') showToast("Microphone access denied or unavailable.", "error");
           }
         } else {
           if (mediaRecorder) {
@@ -517,7 +534,7 @@
           isRecording = false;
           btnVoiceRecord.innerText = "🎙️";
           btnVoiceRecord.style.transform = "scale(1)";
-          showToast("Processing audio transmission...", "success");
+          if(typeof showToast === 'function') showToast("Processing audio transmission...", "success");
         }
       });
     }
@@ -533,7 +550,7 @@
         audio: audioDataString,
         timestamp: new Date().toISOString()
       }).catch(err => {
-        showToast("Voice Sync Error: " + err.message, "error");
+        if(typeof showToast === 'function') showToast("Voice Sync Error: " + err.message, "error");
       });
     }
   </script>
