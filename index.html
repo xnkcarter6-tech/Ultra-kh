@@ -6,49 +6,53 @@
     <title>Ultra KH - Workspace Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans text-gray-800">
+<body class="bg-gray-100 font-sans text-gray-800 antialiased">
 
-    <div class="bg-green-600 text-white text-[11px] font-bold tracking-wider uppercase py-2 text-center shadow-sm">
+    <div class="bg-green-600 text-white text-[10px] md:text-[11px] font-bold tracking-wider uppercase py-2 text-center shadow-sm px-4">
         ✔ PORTAL CORE SYSTEM ACTIVE V2 (AUTHENTICATED SESSION)
     </div>
 
-    <div id="portal-screen" class="min-h-screen flex">
-        <aside class="w-64 bg-blue-600 text-white flex flex-col justify-between p-4 shadow-lg shrink-0">
+    <div id="portal-screen" class="min-h-screen flex flex-col md:flex-row">
+        
+        <aside class="w-full md:w-64 bg-blue-600 text-white flex flex-col justify-between p-4 shadow-lg shrink-0">
             <div>
-                <h1 class="text-2xl font-bold mb-8 px-2 tracking-tight">Ultra KH</h1>
-                <nav class="space-y-1" id="main-nav">
-                    <button data-target="view-home" class="nav-btn w-full text-left block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner transition">🏠 Home Feed</button>
-                    <button data-target="view-chat" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">💬 Chat Hub</button>
-                    <button data-target="view-profile" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">👤 Edit Profile</button>
-                    <button data-target="view-accounts" class="nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">🔑 Accounts</button>
+                <div class="flex items-center justify-between md:block mb-4 md:mb-8 px-2">
+                    <h1 class="text-2xl font-bold tracking-tight">Ultra KH</h1>
+                    <span class="md:hidden text-[10px] bg-blue-700 px-2 py-1 rounded font-mono">Mobile Node</span>
+                </div>
+                <nav class="grid grid-cols-2 gap-1 md:flex md:flex-col md:space-y-1" id="main-nav">
+                    <button data-target="view-home" class="nav-btn text-left block px-3 md:px-4 py-2 rounded bg-blue-700 text-xs md:text-sm font-semibold shadow-inner transition">🏠 Home Feed</button>
+                    <button data-target="view-chat" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">💬 Chat Hub</button>
+                    <button data-target="view-profile" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">👤 Profile</button>
+                    <button data-target="view-accounts" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">🔑 Accounts</button>
                 </nav>
             </div>
-            <div class="text-xs opacity-75 border-t border-blue-500/30 pt-4 px-2 font-mono">
+            <div class="hidden md:block text-xs opacity-75 border-t border-blue-500/30 pt-4 px-2 font-mono">
                 Status: Connected Matrix
             </div>
         </aside>
 
-        <main class="flex-1 p-6 overflow-y-auto bg-gray-50 flex flex-col">
+        <main class="flex-1 p-4 md:p-6 overflow-y-auto bg-gray-50 flex flex-col">
             <div id="alert-banner" style="display: none;" class="mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm bg-gray-800"></div>
             
-            <div id="view-home" class="content-view grid grid-cols-1 lg:grid-cols-3 gap-6">                                                
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200 self-start">
-                    <h2 class="text-lg font-bold text-gray-900 mb-4 tracking-tight">Publish an Update</h2>
-                    <textarea id="update-text" rows="4" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 resize-none transition text-sm"></textarea>
-                    <button id="btn-publish" class="mt-3 px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">Publish Post</button>
+            <div id="view-home" class="content-view grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">                                                
+                <div class="xl:col-span-2 bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 self-start">
+                    <h2 class="text-md md:text-lg font-bold text-gray-900 mb-3 tracking-tight">Publish an Update</h2>
+                    <textarea id="update-text" rows="3" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 resize-none transition text-sm"></textarea>
+                    <button id="btn-publish" class="mt-2 w-full sm:w-auto px-6 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">Publish Post</button>
                     
-                    <h2 class="text-lg font-bold text-gray-900 mt-8 mb-4 tracking-tight border-t border-gray-100 pt-6">Workspace Broadcast Feed</h2>
+                    <h2 class="text-md md:text-lg font-bold text-gray-900 mt-6 md:text-lg mb-4 tracking-tight border-t border-gray-100 pt-4">Workspace Broadcast Feed</h2>
                     <div id="feed-container" class="space-y-4">
                         </div>
                 </div>
 
-                <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="space-y-4 md:space-y-6">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="font-bold text-gray-900 mb-1 text-sm tracking-tight">Welcome to Ultra KH 🚀</h3>
                         <p class="text-xs text-gray-500 leading-relaxed">Welcome to our official platform tracker feed updates.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="font-bold text-gray-900 mb-3 text-sm tracking-tight">System Connection Status</h3>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-gray-900 mb-2 text-sm tracking-tight">System Connection Status</h3>
                         <div id="connection-status" class="text-xs flex items-center gap-2 text-green-700 font-semibold bg-green-50 px-3 py-2 rounded-lg border border-green-100">
                             <span class="h-2 w-2 rounded-full bg-green-500"></span>
                             Connected Live Cloud
@@ -57,91 +61,73 @@
                 </div>
             </div>
 
-            <div id="view-chat" class="content-view hidden flex-1 max-w-5xl w-full mx-auto flex gap-4 h-[600px]">
-                <div class="w-64 bg-white border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-sm">
+            <div id="view-chat" class="content-view hidden flex-1 max-w-5xl w-full mx-auto flex flex-col sm:flex-row gap-4 h-[500px] sm:h-[600px]">
+                <div class="w-full sm:w-56 bg-white border border-gray-200 rounded-xl flex flex-col overflow-hidden shadow-sm shrink-0">
                     <div class="p-3 border-b border-gray-100 bg-gray-50/70">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Channels</span>
+                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Channels</span>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-2 space-y-1">
-                        <button id="channel-global" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold bg-blue-50 text-blue-700 flex items-center justify-between">
+                    <div class="flex sm:flex-1 overflow-x-auto sm:overflow-x-hidden sm:overflow-y-auto p-2 gap-1 sm:flex-col">
+                        <button id="channel-global" class="whitespace-nowrap text-left px-3 py-2 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 flex items-center justify-between gap-2">
                             <span>🌐 Global Room</span>
                         </button>
-                        <div class="pt-3 pb-1 px-2 border-t border-gray-100 mt-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Operators</span>
-                        </div>
-                        <div id="pm-operators-directory" class="space-y-1"></div>
+                        <div id="pm-operators-directory" class="flex sm:flex-col gap-1"></div>
                     </div>
                 </div>
 
-                <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-                    <div class="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+                <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                    <div class="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
                         <div>
-                            <h2 class="text-sm font-bold text-gray-900 tracking-tight" id="active-chat-title">Global System Chat Room</h2>
-                            <p class="text-[10px] text-gray-400 font-mono" id="active-chat-target-node">Path: chat_messages</p>
+                            <h2 class="text-xs md:text-sm font-bold text-gray-900 tracking-tight" id="active-chat-title">Global System Chat Room</h2>
+                            <p class="text-[9px] text-gray-400 font-mono" id="active-chat-target-node">Path: chat_messages</p>
                         </div>
                     </div>
-                    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3 text-sm flex flex-col"></div>
-                    <div class="p-3 bg-white border-t border-gray-100 flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 text-sm">
-                        <button id="btn-chat-send" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition shadow-sm">Send</button>
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-3 bg-gray-50 space-y-2.5 text-xs md:text-sm flex flex-col"></div>
+                    <div class="p-2.5 bg-white border-t border-gray-100 flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 text-xs md:text-sm">
+                        <button id="btn-chat-send" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm font-semibold rounded-lg transition shadow-sm">Send</button>
                     </div>
                 </div>
             </div>
 
             <div id="view-profile" class="content-view hidden max-w-2xl mx-auto w-full">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h2 class="text-lg font-bold text-gray-900 mb-6 tracking-tight">Social Profile Customization</h2>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-md md:text-lg font-bold text-gray-900 mb-4 tracking-tight">Social Profile Customization</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Display Username</label>
-                            <input type="text" id="profile-display-name-input" value="System Operator" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Display Username</label>
+                            <input type="text" id="profile-display-name-input" value="System Operator" class="w-full p-2 border border-gray-200 rounded-lg text-xs md:text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status Bio Info</label>
-                            <input type="text" id="profile-bio-input" value="Active Monitoring Core" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Status Bio Info</label>
+                            <input type="text" id="profile-bio-input" value="Active Monitoring Core" class="w-full p-2 border border-gray-200 rounded-lg text-xs md:text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
-                        <button id="btn-save-profile" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">Save Matrix Profile</button>
+                        <button id="btn-save-profile" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">Save Matrix Profile</button>
                     </div>
                 </div>
             </div>
 
             <div id="view-accounts" class="content-view hidden max-w-5xl mx-auto w-full">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1 tracking-tight">Workspace Credentials Monitor</h2>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-md md:text-lg font-bold text-gray-900 mb-1 tracking-tight">Workspace Credentials Monitor</h2>
                     <p class="text-xs text-gray-500 mb-4">Active operational states across the cloud matrix nodes.</p>
                     
-                    <div class="overflow-x-auto">
+                    <div class="hidden sm:block overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-gray-200 bg-gray-50 text-[11px] font-bold uppercase text-gray-500 tracking-wider font-mono">
+                                <tr class="border-b border-gray-200 bg-gray-50 text-[10px] font-bold uppercase text-gray-500 tracking-wider font-mono">
                                     <th class="p-3">Reference Account</th>
                                     <th class="p-3">Permission Vector</th>
                                     <th class="p-3">Tunnel Port</th>
                                     <th class="p-3">Operational State</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700" id="accounts-table-body">
-                                <tr>
-                                    <td class="p-3 text-blue-600 font-semibold">xnkcarter6@gmail.com</td>
-                                    <td class="p-3">Master Core Access</td>
-                                    <td class="p-3">443 -&gt; SSL</td>
-                                    <td class="p-3 text-green-600 font-bold">● Active</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3 text-blue-600 font-semibold">guest_terminal_01</td>
-                                    <td class="p-3">Read-Only Broadcast</td>
-                                    <td class="p-3">8080 -&gt; Bypass</td>
-                                    <td class="p-3 text-green-600 font-bold">● Active</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3 text-blue-600 font-semibold">system_automated_sync</td>
-                                    <td class="p-3">DB Server Access</td>
-                                    <td class="p-3">Firebase Node</td>
-                                    <td class="p-3 text-amber-600 font-bold">● Idle</td>
-                                </tr>
-                            </tbody>
+                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700" id="accounts-table-body-desktop">
+                                </tbody>
                         </table>
                     </div>
+
+                    <div class="sm:hidden space-y-3" id="accounts-cards-body-mobile">
+                        </div>
                 </div>
             </div>
         </main>        
@@ -176,6 +162,8 @@
         const btnChatSend = document.getElementById('btn-chat-send');
         const pmOperatorsDirectory = document.getElementById('pm-operators-directory');
         const alertBanner = document.getElementById('alert-banner');
+        const accountsTableBody = document.getElementById('accounts-table-body-desktop');
+        const accountsCardsMobile = document.getElementById('accounts-cards-body-mobile');
 
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
@@ -189,14 +177,55 @@
             setTimeout(() => { alertBanner.style.display = "none"; }, 3000);
         });
 
-        pmOperatorsDirectory.innerHTML = `
-            <button class="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-gray-100 flex items-center justify-between text-gray-700 transition" onclick="alert('Private channel initialized successfully.')">
-                <span>👤 guest_terminal_01</span>
-                <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
-            </button>
-        `;
+        // LIVE MATRIX ACCOUNTS FEED MAPPING DIRECT FROM LIVE FIREBASE CORE NODE
+        onValue(ref(db, 'users'), (snapshot) => {
+            if(!snapshot.exists()) return;
+            
+            let desktopHtml = "";
+            let mobileHtml = "";
+            const users = snapshot.val();
+            
+            Object.keys(users).forEach(uid => {
+                const user = users[uid];
+                
+                // Exact fallback parameters pulling native credential parameters safely 
+                const refAccount = escapeHtml(user.email || uid);
+                const permissionVector = escapeHtml(user.permission || (uid === "xnk_master_node" || refAccount.includes('carter') ? "Master Core Access" : "Operator Access"));
+                const tunnelPort = escapeHtml(user.tunnel || (uid === "xnk_master_node" ? "443 -> SSL" : "8080 -> Bypass"));
+                const isIdle = user.status === "idle" || user.isIdle;
+                const stateLabel = isIdle ? "● Idle" : "● Active";
+                const stateClass = isIdle ? "text-amber-600" : "text-green-600";
+                
+                // Desktop Row Format Builder Layout
+                desktopHtml += `
+                    <tr class="${uid === currentUserId ? 'bg-blue-50/30' : ''}">
+                        <td class="p-3 text-blue-600 font-semibold break-all">${refAccount}</td>
+                        <td class="p-3 text-gray-700">${permissionVector}</td>
+                        <td class="p-3 text-gray-500 font-mono">${tunnelPort}</td>
+                        <td class="p-3 font-bold ${stateClass}">${stateLabel}</td>
+                    </tr>`;
+                
+                // Mobile Card Stack Builder Layout
+                mobileHtml += `
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200/80 space-y-1.5 font-mono text-xs ${uid === currentUserId ? 'border-blue-300 bg-blue-50/20' : ''}">
+                        <div class="flex justify-between items-start border-b border-gray-200/50 pb-1.5">
+                            <span class="text-blue-600 font-bold break-all pr-2">${refAccount}</span>
+                            <span class="font-bold shrink-0 ${stateClass}">${stateLabel}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 pt-1 text-gray-600 text-[11px]">
+                            <span class="text-gray-400 uppercase font-sans">Vector:</span>
+                            <span class="col-span-2 text-gray-800 font-sans">${permissionVector}</span>
+                            <span class="text-gray-400 uppercase font-sans">Port:</span>
+                            <span class="col-span-2 font-mono text-gray-700">${tunnelPort}</span>
+                        </div>
+                    </div>`;
+            });
+            
+            accountsTableBody.innerHTML = desktopHtml;
+            accountsCardsMobile.innerHTML = mobileHtml;
+        });
 
-        // CHAT SYNC STREAM
+        // CHAT ENGINE CORES
         function initChatEngineStream() {
             onValue(ref(db, 'chat_messages'), (snapshot) => {
                 if (!snapshot.exists()) {
@@ -210,10 +239,10 @@
                     const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
                     
                     chatPayload += `
-                        <div class="flex items-end gap-2 mb-2">
+                        <div class="flex items-end gap-2 mb-1">
                             <div class="flex flex-col items-start">
-                                <span class="text-[10px] text-gray-500 font-semibold font-mono mb-0.5">${escapeHtml(entry.senderName || 'Operator')} <span class="text-gray-400 font-normal font-sans ml-1">${timeStr}</span></span>
-                                <div class="bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-bl-none px-4 py-2 text-sm max-w-md shadow-sm">
+                                <span class="text-[9px] md:text-[10px] text-gray-500 font-semibold font-mono mb-0.5">${escapeHtml(entry.senderName || 'Operator')} <span class="text-gray-400 font-normal font-sans ml-1">${timeStr}</span></span>
+                                <div class="bg-white border border-gray-200 text-gray-800 rounded-xl rounded-bl-none px-3 py-1.5 text-xs md:text-sm max-w-xs md:w-md shadow-sm">
                                     <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
                                 </div>
                             </div>
@@ -239,34 +268,33 @@
         btnChatSend.addEventListener('click', sendChatMessage);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-        // CREATE SINGLE BROADCAST CARD NODE (Safe HTML Structure)
+        // DYNAMIC GRANULAR FEED CONSTRUCTORS
         function createPostCardElement(postId, post) {
             const timeLabel = post.timestamp ? new Date(post.timestamp).toLocaleString() : 'Recent';
             const postLikesCount = post.likes ? Object.keys(post.likes).length : 0;
             
             const card = document.createElement('div');
             card.id = `post-${postId}`;
-            card.className = "bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
+            card.className = "bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
             card.innerHTML = `
-                <div class="flex justify-between items-center w-full border-b border-gray-100 pb-2">
-                    <span class="font-bold text-sm text-blue-600 font-mono">${escapeHtml(post.authorName)}</span>
-                    <span class="text-[11px] text-gray-400 font-mono">${timeLabel}</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 w-full border-b border-gray-100 pb-2">
+                    <span class="font-bold text-xs md:text-sm text-blue-600 font-mono">${escapeHtml(post.authorName)}</span>
+                    <span class="text-[10px] md:text-[11px] text-gray-400 font-mono">${timeLabel}</span>
                 </div>
                 <div class="py-1">
-                    <p class="text-gray-800 text-sm font-normal break-words whitespace-pre-wrap leading-relaxed">${escapeHtml(post.text)}</p>
+                    <p class="text-gray-800 text-xs md:text-sm font-normal break-words whitespace-pre-wrap leading-relaxed">${escapeHtml(post.text)}</p>
                 </div>
                 <div class="flex gap-4 items-center pt-2 border-t border-gray-100 text-xs">
                     <button class="btn-like-toggle px-3 py-1 rounded-md bg-gray-100 font-bold hover:bg-red-50 hover:text-red-600 transition">👍 Like (<span class="like-count">${postLikesCount}</span>)</button>
                 </div>
-                <div class="space-y-2 pt-3 bg-gray-50 p-4 rounded-xl border border-gray-200/70">
+                <div class="space-y-2 pt-3 bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-200/70">
                     <div class="comments-list-container space-y-1.5"></div>
-                    <div class="flex gap-2 mt-2 pt-2 border-t border-gray-100/40">
+                    <div class="flex flex-col sm:flex-row gap-2 mt-2 pt-2 border-t border-gray-100/40">
                         <input type="text" placeholder="Write a comment..." class="comment-input-field flex-1 p-2 border border-gray-200 bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        <button class="btn-submit-comment px-4 py-2 bg-gray-800 text-white font-bold rounded-lg text-[11px] hover:bg-gray-900 transition shadow-sm">Comment</button>
+                        <button class="btn-submit-comment w-full sm:w-auto px-4 py-2 bg-gray-800 text-white font-bold rounded-lg text-[11px] hover:bg-gray-900 transition shadow-sm shrink-0">Comment</button>
                     </div>
                 </div>`;
 
-            // Interaction logic attached natively to current DOM object instance
             card.querySelector('.btn-like-toggle').addEventListener('click', () => {
                 runTransaction(ref(db, `social_feed/${postId}/likes/${currentUserId}`), (currentValue) => {
                     return currentValue ? null : true;
@@ -284,57 +312,42 @@
                 input.value = "";
             });
 
-            // Hydrate initial inner comment objects
             if (post.comments) {
                 updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
             }
-
             return card;
         }
 
-        // RE-RENDER INTERNAL COMMENTS BLOCK ONLY (Does not interrupt input fields)
         function updateCommentsUIContainer(containerElement, commentsObj) {
             let html = "";
             Object.keys(commentsObj).forEach(cId => {
                 const comment = commentsObj[cId];
                 html += `
-                    <div class="bg-gray-100 p-2.5 rounded-lg text-xs border border-gray-200/60">
-                        <div class="flex justify-between items-center mb-1">
+                    <div class="bg-gray-100 p-2 rounded-lg text-[11px] md:text-xs border border-gray-200/60">
+                        <div class="flex justify-between items-center mb-0.5">
                             <span class="font-bold font-mono text-blue-600">${escapeHtml(comment.author)}</span>
                         </div>
-                        <p class="text-gray-700 font-normal">${escapeHtml(comment.text)}</p>
+                        <p class="text-gray-700 font-normal break-words">${escapeHtml(comment.text)}</p>
                     </div>`;
             });
             containerElement.innerHTML = html;
         }
 
-        // NON-DESTRUCTIVE GRANULAR FIREBASE CHILD EVENT LISTENERS
+        // MOUNT CHILD TIMELINE REFRESH MATRIX ENGINE HOOKS
         const socialFeedRef = ref(db, 'social_feed');
-        
         onChildAdded(socialFeedRef, (snapshot) => {
-            const placeholder = feedContainer.querySelector('.border-dashed');
-            if (placeholder) placeholder.remove();
-
             const card = createPostCardElement(snapshot.key, snapshot.val());
-            feedContainer.insertBefore(card, feedContainer.firstChild); // Keep newer posts on top
+            feedContainer.insertBefore(card, feedContainer.firstChild);
         });
 
         onChildChanged(socialFeedRef, (snapshot) => {
             const targetCard = document.getElementById(`post-${snapshot.key}`);
             if (targetCard) {
                 const postData = snapshot.val();
-                
-                // 1. Update Likes without redrawing elements
-                const postLikesCount = postData.likes ? Object.keys(postData.likes).length : 0;
-                targetCard.querySelector('.like-count').textContent = postLikesCount;
-                
-                // 2. Refresh Comments safely without altering text inputs
+                targetCard.querySelector('.like-count').textContent = postData.likes ? Object.keys(postData.likes).length : 0;
                 const commentsContainer = targetCard.querySelector('.comments-list-container');
-                if (postData.comments) {
-                    updateCommentsUIContainer(commentsContainer, postData.comments);
-                } else {
-                    commentsContainer.innerHTML = "";
-                }
+                if (postData.comments) updateCommentsUIContainer(commentsContainer, postData.comments);
+                else commentsContainer.innerHTML = "";
             }
         });
 
@@ -343,7 +356,6 @@
             if (targetCard) targetCard.remove();
         });
 
-        // Broadcast Button Click Action Handler
         btnPublish.addEventListener('click', async () => {
             const val = updateTextArea.value.trim();
             if(!val) return;
@@ -356,20 +368,17 @@
             });
             updateTextArea.value = "";
             btnPublish.disabled = false;
-            alertBanner.textContent = "Post broadcast updated successfully.";
-            alertBanner.style.display = "block";
-            setTimeout(() => { alertBanner.style.display = "none"; }, 3000);
         });
 
-        // Navigation Tab Logic Switcher
+        // VIEW NAVIGATION HANDLERS
         const navButtons = document.querySelectorAll('.nav-btn');
         const contentViews = document.querySelectorAll('.content-view');
         navButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetViewId = btn.getAttribute('data-target');
                 contentViews.forEach(view => { view.id === targetViewId ? view.classList.remove('hidden') : view.classList.add('hidden'); });
-                navButtons.forEach(b => { b.className = "nav-btn w-full text-left block px-4 py-2.5 rounded hover:bg-blue-700/50 transition"; });
-                btn.className = "nav-btn w-full text-left block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner transition";
+                navButtons.forEach(b => { b.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition"; });
+                btn.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded bg-blue-700 font-semibold shadow-inner text-xs md:text-sm transition";
             });
         });
     </script>
