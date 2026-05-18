@@ -88,7 +88,6 @@
 
         const databaseFeedRef = ref(db, 'feed');
 
-        // Helper function to prevent malicious html entry breaks
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return String(text).replace(/[&<>"']/g, m => map[m]);
@@ -101,7 +100,8 @@
             }                                    
             alertBanner.className = `mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm transition ${errorMode ? 'bg-red-500' : 'bg-gray-800'}`;                                    
             alertBanner.textContent = msg;                                    
-            alertBanner.style.display = 'block';                        }
+            alertBanner.style.display = 'block';                        
+        }
 
         const connectedRef = ref(db, ".info/connected");                            
         onValue(connectedRef, (snap) => {                                        
