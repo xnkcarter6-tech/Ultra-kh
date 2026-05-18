@@ -3,108 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra KH - Pro Social UI</title>
+<title>Ultra KH - Login System</title>
 
 <style>
 :root{
   --blue:#1E50FF;
   --bg:#eef2ff;
-  --card:#ffffff;
-  --border:#ddd;
 }
 
 *{box-sizing:border-box;font-family:Arial}
 
 body{
   margin:0;
-  display:flex;
-  height:100vh;
   background:var(--bg);
+}
+
+/* LOGIN */
+.login-box{
+  width:320px;
+  margin:120px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+/* APP */
+.app{display:none;height:100vh;flex-direction:column}
+
+.topbar{
+  background:#fff;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #ddd;
+}
+
+.container{
+  display:flex;
+  flex:1;
 }
 
 /* SIDEBAR */
 .sidebar{
-  width:260px;
+  width:220px;
   background:var(--blue);
-  color:white;
-  display:flex;
-  flex-direction:column;
+  color:#fff;
 }
 
-.logo{
-  padding:18px;
-  font-size:20px;
-  font-weight:bold;
-  text-align:center;
-  border-bottom:1px solid rgba(255,255,255,0.2);
-}
-
-.menu{
-  list-style:none;
-  padding:0;
-  margin:0;
-}
-
-.menu li{
-  padding:14px;
+.sidebar div{
+  padding:12px;
   cursor:pointer;
-  border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
-.menu li.active,
-.menu li:hover{
+.sidebar div:hover{
   background:#143fd1;
 }
 
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column;}
-
-.topbar{
-  background:white;
-  padding:12px;
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-
-.content{
+.main{
   flex:1;
-  overflow:auto;
-  padding:15px;
+  padding:10px;
 }
 
+/* CARD */
 .card{
-  background:var(--card);
-  padding:15px;
+  background:#fff;
+  padding:10px;
   border-radius:10px;
-  margin-bottom:15px;
+  margin-bottom:10px;
 }
 
 /* POST */
 .post{
-  border:1px solid var(--border);
+  border:1px solid #ddd;
   padding:10px;
-  border-radius:10px;
   margin-top:10px;
+  border-radius:8px;
 }
 
 .actions button{
-  margin-right:6px;
+  width:auto;
+  padding:5px 8px;
+  margin-right:5px;
   font-size:12px;
-  padding:4px 8px;
 }
 
 /* CHAT */
-.chat-layout{
+.chat{
   display:flex;
   gap:10px;
 }
 
 .users{
-  width:200px;
-  background:white;
-  border-radius:10px;
+  width:160px;
+  background:#fff;
   padding:10px;
+  border-radius:10px;
 }
 
 .user{
@@ -113,88 +124,68 @@ body{
   border-bottom:1px solid #eee;
 }
 
-.user:hover{
-  background:#f1f5ff;
-}
-
-.chat-box{
+.box{
   flex:1;
-  background:white;
-  border-radius:10px;
+  background:#fff;
   padding:10px;
-  height:350px;
+  border-radius:10px;
+  height:300px;
   overflow:auto;
 }
 
 .msg{
-  padding:8px;
-  margin:6px 0;
-  border-radius:8px;
+  padding:6px;
+  margin:5px 0;
+  border-radius:6px;
   background:#dbeafe;
 }
 
-.me{background:#1E50FF;color:white;text-align:right}
-
-.input-box{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-
-input,textarea{
-  width:100%;
-  padding:8px;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-
-button{
-  background:var(--blue);
-  color:white;
-  border:none;
-  padding:8px 12px;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-  body{flex-direction:column}
-  .sidebar{width:100%;flex-direction:row}
-  .menu{display:flex}
-  .menu li{flex:1;text-align:center}
-  .chat-layout{flex-direction:column}
-  .users{width:100%}
+.me{
+  background:#1E50FF;
+  color:#fff;
+  text-align:right;
 }
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
+<div class="login-box" id="loginBox">
+  <h3>Login / Register</h3>
+  <input id="user" placeholder="Username">
+  <input id="pass" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+
+<div class="topbar">
+  <div>Ultra KH</div>
+  <div>
+    <span id="currentUser"></span>
+    <button onclick="logout()" style="width:auto">Logout</button>
+  </div>
+</div>
+
+<div class="container">
+
 <!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="logo">Ultra KH</div>
-  <ul class="menu">
-    <li class="active" onclick="show('home',this)">Home</li>
-    <li onclick="show('chat',this)">Chat</li>
-  </ul>
+  <div onclick="show('home')">Home</div>
+  <div onclick="show('chat')">Chat</div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
-
-<div class="topbar">
-  <div id="title">Home</div>
-</div>
-
-<div class="content">
 
 <!-- HOME -->
 <div id="home">
 
 <div class="card">
 <h3>Create Post</h3>
-<textarea id="postInput" placeholder="What's happening?"></textarea>
+<input id="postInput" placeholder="What's happening?">
 <button onclick="addPost()">Post</button>
 </div>
 
@@ -208,23 +199,21 @@ button{
 <!-- CHAT -->
 <div id="chat" style="display:none">
 
-<div class="chat-layout">
+<div class="chat">
 
-<!-- USERS -->
 <div class="users">
-<h4>Online</h4>
-<div id="userList"></div>
+<h4>Users</h4>
+<div onclick="openChat('Sophia')" class="user">Sophia</div>
+<div onclick="openChat('Rath')" class="user">Rath</div>
+<div onclick="openChat('Dara')" class="user">Dara</div>
 </div>
 
-<!-- CHAT BOX -->
 <div style="flex:1">
 
-<div class="chat-box" id="chatBox"></div>
+<div class="box" id="box"></div>
 
-<div class="input-box">
-<input id="chatInput" placeholder="Message...">
+<input id="msg" placeholder="Message...">
 <button onclick="send()">Send</button>
-</div>
 
 </div>
 
@@ -233,39 +222,59 @@ button{
 </div>
 
 </div>
+</div>
+
 </div>
 
 <script>
 
-let activeUser="user1";
-let currentChat=null;
+/* STORAGE */
+let usersDB = JSON.parse(localStorage.getItem("users")||"{}");
+let posts = JSON.parse(localStorage.getItem("posts")||"[]");
+let chats = JSON.parse(localStorage.getItem("chats")||"{}");
 
-let users=[
-  {id:"user1",name:"Sophia"},
-  {id:"user2",name:"Rath"},
-  {id:"user3",name:"Dara"}
-];
+let currentUser = localStorage.getItem("currentUser");
 
-let chats={};
+/* CHECK LOGIN */
+if(currentUser){
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("app").style.display="flex";
+  document.getElementById("currentUser").innerText=currentUser;
+  render();
+}
 
-function show(page,el){
+/* LOGIN */
+function login(){
+  let u=document.getElementById("user").value;
+  let p=document.getElementById("pass").value;
 
-  document.querySelectorAll(".menu li").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
+  if(!u||!p)return;
 
-  document.getElementById("home").style.display="none";
-  document.getElementById("chat").style.display="none";
-
-  if(page==="home"){
-    document.getElementById("home").style.display="block";
-    document.getElementById("title").innerText="Home";
+  if(!usersDB[u]){
+    usersDB[u]=p;
   }
 
-  if(page==="chat"){
-    document.getElementById("chat").style.display="block";
-    document.getElementById("title").innerText="Chat";
-    renderUsers();
+  if(usersDB[u]!==p){
+    alert("Wrong password");
+    return;
   }
+
+  localStorage.setItem("users",JSON.stringify(usersDB));
+  localStorage.setItem("currentUser",u);
+
+  location.reload();
+}
+
+/* LOGOUT */
+function logout(){
+  localStorage.removeItem("currentUser");
+  location.reload();
+}
+
+/* NAV */
+function show(page){
+  document.getElementById("home").style.display=page==="home"?"block":"none";
+  document.getElementById("chat").style.display=page==="chat"?"block":"none";
 }
 
 /* POSTS */
@@ -273,111 +282,83 @@ function addPost(){
   let text=document.getElementById("postInput").value;
   if(!text)return;
 
-  let div=document.createElement("div");
-  div.className="post";
-
-  div.innerHTML=`
-    <b>Admin</b>
-    <p>${text}</p>
-    <div class="actions">
-      <button onclick="likePost(this)">👍 Like</button>
-      <button onclick="commentPost(this)">💬 Comment</button>
-      <button onclick="sharePost()">🔗 Share</button>
-      <button onclick="this.parentElement.parentElement.remove()">🗑 Delete</button>
-    </div>
-  `;
-
-  document.getElementById("feed").prepend(div);
-  document.getElementById("postInput").value="";
-}
-
-function likePost(btn){
-  btn.innerText="👍 Liked";
-}
-
-/* CHAT USERS */
-function renderUsers(){
-  let box=document.getElementById("userList");
-  box.innerHTML="";
-  users.forEach(u=>{
-    let d=document.createElement("div");
-    d.className="user";
-    d.innerText=u.name;
-    d.onclick=()=>openChat(u.id,u.name);
-    box.appendChild(d);
+  posts.unshift({
+    user:currentUser,
+    text,
+    likes:0
   });
+
+  localStorage.setItem("posts",JSON.stringify(posts));
+  render();
 }
 
-function openChat(id,name){
-  currentChat=id;
-  renderChat();
+/* CHAT */
+let activeChat=null;
+
+function openChat(user){
+  activeChat=user;
+  render();
 }
 
 function send(){
-  let text=document.getElementById("chatInput").value;
-  if(!text||!currentChat)return;
+  let t=document.getElementById("msg").value;
+  if(!t||!activeChat)return;
 
-  if(!chats[currentChat])chats[currentChat]=[];
+  if(!chats[activeChat])chats[activeChat]=[];
 
-  chats[currentChat].push({
-    from:"me",
-    text:text
+  chats[activeChat].push({
+    from:currentUser,
+    text:t
   });
 
-  document.getElementById("chatInput").value="";
-  renderChat();
+  localStorage.setItem("chats",JSON.stringify(chats));
+  document.getElementById("msg").value="";
+  render();
 }
 
-function renderChat(){
-  let box=document.getElementById("chatBox");
-  box.innerHTML="";
+/* RENDER */
+function render(){
 
-  let msgs=chats[currentChat]||[];
+  /* FEED */
+  let feed=document.getElementById("feed");
+  if(feed){
+    feed.innerHTML="";
+    posts.forEach(p=>{
+      let d=document.createElement("div");
+      d.className="post";
 
-  msgs.forEach((m,i)=>{
-    let d=document.createElement("div");
-    d.className="msg "+(m.from==="me"?"me":"");
+      d.innerHTML=`
+        <b>${p.user}</b>
+        <p>${p.text}</p>
+        <div class="actions">
+          <button onclick="likePost(${posts.indexOf(p)})">Like ❤️</button>
+        </div>
+      `;
 
-    d.innerHTML=`
-      ${m.text}
-      <div>
-        <button onclick="reply('${m.text}')">↩ Reply</button>
-        <button onclick="forward('${m.text}')">➡ Forward</button>
-        <button onclick="likeMsg(this)">❤️</button>
-        <button onclick="deleteMsg(${i})">Delete</button>
-        <button onclick="voice()">🎤 Voice</button>
-      </div>
-    `;
+      feed.appendChild(d);
+    });
+  }
 
-    box.appendChild(d);
-  });
+  /* CHAT */
+  let box=document.getElementById("box");
+  if(box){
+    box.innerHTML="";
+    let msgs=chats[activeChat]||[];
 
-  box.scrollTop=box.scrollHeight;
+    msgs.forEach(m=>{
+      let d=document.createElement("div");
+      d.className="msg "+(m.from===currentUser?"me":"");
+      d.innerText=m.from+": "+m.text;
+      box.appendChild(d);
+    });
+  }
 }
 
-function reply(t){
-  document.getElementById("chatInput").value="Reply: "+t+" ";
-}
-
-function forward(t){
-  alert("Forwarded: "+t);
-}
-
-function likeMsg(btn){
-  btn.innerText="❤️";
-}
-
-function deleteMsg(i){
-  chats[currentChat].splice(i,1);
-  renderChat();
-}
-
-function voice(){
-  alert("Voice feature simulated 🎤");
-}
-
-function sharePost(){
-  alert("Post shared!");
+/* LIKE */
+function likePost(i){
+  posts[i].likes++;
+  localStorage.setItem("posts",JSON.stringify(posts));
+  render();
 }
 
 </script>
