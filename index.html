@@ -23,7 +23,6 @@
             --bit-warning: #FAAD14;
             --bg-pattern: none;
         }
-        
         body.theme-dark {
             --bit-bg-main: #141E30;
             --bit-bg-card: #1F2A44;
@@ -321,9 +320,13 @@
             appId: "1:414518365494:web:accf5fa772831d1459b797",            
             measurementId: "G-6RXJMQF7HZ"        
         };
-        const app = initializeApp(firebaseConfig);        
-        const db = getDatabase(app);
-        window.dbReferences = { db, ref, set, onValue, onDisconnect };    
+        try {
+            const app = initializeApp(firebaseConfig);        
+            const db = getDatabase(app);
+            window.dbReferences = { db, ref, set, onValue, onDisconnect };    
+        } catch(e) {
+            console.error("Firebase Initialization Failure:", e);
+        }
     </script>
 </head>
 <body>    
@@ -503,7 +506,9 @@
             syncUIContext();
             initClockSyncEngine(); 
 
+            let connectionsChecks = 0;
             const checkFirebaseTimer = setInterval(() => {                
+                connectionsChecks++;
                 if (window.dbReferences) {                    
                     clearInterval(checkFirebaseTimer);                    
                     const { db, ref, onValue, onDisconnect, set } = window.dbReferences;
@@ -540,7 +545,10 @@
                         chatMessages = snapshot.exists() ? snapshot.val() : [];                        
                         renderChatHistory();                    
                     });                
-                }            
+                } else if(connectionsChecks > 20) {
+                    clearInterval(checkFirebaseTimer);
+                    showToast("Cloud components inactive. Running local fallback session.", "warning");
+                }           
             }, 200);        
         });
 
@@ -567,7 +575,10 @@
             if (window.dbReferences) {                
                 const { db, ref, set } = window.dbReferences;                
                 set(ref(db, nodePath), dataValue);            
-            }        
+            } else {
+                renderFeed();
+                renderChatHistory();
+            }       
         }
 
         function initNavigation() {            
@@ -687,6 +698,10 @@
                 cloudPush('users', userDatabase);            
                 syncUIContext();            
                 showToast("Signature configurations saved globally.", "success");        
+            } else {
+                currentSessionUser = val;
+                syncUIContext();
+                showToast("Signature configurations updated locally.", "success");
             }
         }
 
@@ -781,6 +796,7 @@
             }
 
             appPosts.forEach(post => {
+                if (!post) return;
                 let fileSnippet = "";
                 if(post.file) {
                     if(post.file.data.startsWith("data:image/")) {
@@ -865,7 +881,7 @@
 
             if (!isCurrentlyRecordingVoice) {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    showToast("Audio recording structural framework unsupported or blocked.", "danger");
+                    showToast("Audio framework blocked or requires https connection.", "danger");
                     return;
                 }
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -925,12 +941,13 @@
                 reactions: {}
             };
 
+            chatMessages.push(newMsg);
             if (window.dbReferences) {
                 const { db, ref, set } = window.dbReferences;
-                const targetMessageIndex = chatMessages.length; 
-                
-                set(ref(db, `chatMessages/${targetMessageIndex}`), newMsg)
-                    .catch(err => console.error("Database update sequence rejected:", err));
+                set(ref(db, `chatMessages`), chatMessages)
+                    .catch(err => console.error("Database sync rejected:", err));
+            } else {
+                renderChatHistory();
             }
 
             input.value = "";
@@ -942,39 +959,39 @@
         }
 
         function purgeChatMessage(msgId) {
+            chatMessages = chatMessages.filter(m => m && m.id !== msgId);
             if (window.dbReferences) {
                 const { db, ref, set } = window.dbReferences;
-                const msgIdx = chatMessages.findIndex(m => m.id === msgId);
-                
-                if (msgIdx !== -1) {
-                    set(ref(db, `chatMessages/${msgIdx}`), null)
-                        .then(() => showToast("Message purged.", "warning"))
-                        .catch(err => console.error("Purge failure:", err));
-                }
+                set(ref(db, `chatMessages`), chatMessages)
+                    .then(() => showToast("Message purged.", "warning"))
+                    .catch(err => console.error("Purge failure:", err));
+            } else {
+                renderChatHistory();
             }
         }
 
         window.toggleChatMessageReaction = function(msgId, targetEmoji) {
+            const msgIdx = chatMessages.findIndex(m => m && m.id === msgId);
+            if (msgIdx === -1) return;
+            
+            if (!chatMessages[msgIdx].reactions) chatMessages[msgIdx].reactions = {};
+            if (!chatMessages[msgIdx].reactions[targetEmoji]) chatMessages[msgIdx].reactions[targetEmoji] = [];
+            
+            const index = chatMessages[msgIdx].reactions[targetEmoji].indexOf(currentSessionUser);
+            if (index > -1) {
+                chatMessages[msgIdx].reactions[targetEmoji].splice(index, 1);
+                if (chatMessages[msgIdx].reactions[targetEmoji].length === 0) {
+                    delete chatMessages[msgIdx].reactions[targetEmoji];
+                }
+            } else {
+                chatMessages[msgIdx].reactions[targetEmoji].push(currentSessionUser);
+            }
+            
             if (window.dbReferences) {
                 const { db, ref, set } = window.dbReferences;
-                const msgIdx = chatMessages.findIndex(m => m.id === msgId);
-                if (msgIdx === -1) return;
-                
-                let targetMsg = chatMessages[msgIdx];
-                if (!targetMsg.reactions) targetMsg.reactions = {};
-                if (!targetMsg.reactions[targetEmoji]) targetMsg.reactions[targetEmoji] = [];
-                
-                const index = targetMsg.reactions[targetEmoji].indexOf(currentSessionUser);
-                if (index > -1) {
-                    targetMsg.reactions[targetEmoji].splice(index, 1);
-                    if (targetMsg.reactions[targetEmoji].length === 0) {
-                        delete targetMsg.reactions[targetEmoji];
-                    }
-                } else {
-                    targetMsg.reactions[targetEmoji].push(currentSessionUser);
-                }
-                
-                set(ref(db, `chatMessages/${msgIdx}/reactions`), targetMsg.reactions || null);
+                set(ref(db, `chatMessages/${msgIdx}/reactions`), chatMessages[msgIdx].reactions || null);
+            } else {
+                renderChatHistory();
             }
         };
 
