@@ -1,97 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Ultra KH Social Workspace</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Ultra KH</title>
 
 <style>
-
 :root{
-    --primary:#1E50FF;
-    --primary-hover:#0033E6;
-    --bg:#EDF1F7;
-    --card:#FFFFFF;
-    --text:#1F2D3D;
-    --light:#606266;
-    --border:#E0E0E0;
-    --success:#52C41A;
-    --danger:#FF4D4F;
-}
-
-body.dark-mode{
-    --bg:#141E30;
-    --card:#1F2A44;
-    --text:#FFFFFF;
-    --light:#A0AABF;
-    --border:#2D3D5A;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-
-    font-family:
-    "Noto Sans Khmer",
-    "Khmer OS Battambang",
-    "Segoe UI",
-    sans-serif;
+    --blue:#1E50FF;
+    --dark:#1f2937;
+    --light:#f3f4f6;
+    --white:#ffffff;
+    --border:#d1d5db;
 }
 
 body{
-    background:var(--bg);
-    color:var(--text);
+    margin:0;
+    font-family:'Khmer OS Battambang',sans-serif;
+    background:#eef2ff;
     display:flex;
     height:100vh;
-    overflow:hidden;
-    line-height:1.7;
 }
 
-/* SIDEBAR */
-
 .sidebar{
-    width:250px;
-    background:var(--primary);
+    width:240px;
+    background:var(--blue);
     color:white;
     display:flex;
     flex-direction:column;
 }
 
-.sidebar-brand{
-    padding:25px;
+.logo{
+    padding:20px;
     font-size:24px;
-    font-weight:800;
+    font-weight:bold;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+.menu{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.menu li{
+    padding:15px 20px;
+    cursor:pointer;
     border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
-.sidebar-menu{
-    list-style:none;
+.menu li:hover,
+.menu li.active{
+    background:#143fd1;
 }
-
-.sidebar-item a{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:15px 22px;
-    color:white;
-    text-decoration:none;
-    transition:0.2s;
-    font-weight:600;
-}
-
-.sidebar-item:hover{
-    background:var(--primary-hover);
-}
-
-.sidebar-item.active{
-    background:#0026B3;
-}
-
-/* MAIN */
 
 .main{
     flex:1;
@@ -100,715 +62,300 @@ body{
 }
 
 .topbar{
-    height:60px;
-    background:var(--card);
+    background:white;
+    padding:15px 20px;
     border-bottom:1px solid var(--border);
     display:flex;
-    align-items:center;
     justify-content:space-between;
-    padding:0 25px;
-}
-
-.topbar-right{
-    display:flex;
     align-items:center;
-    gap:15px;
 }
 
-.lang-select{
-    padding:6px 10px;
-    border-radius:6px;
-    border:1px solid var(--border);
-}
-
-.container{
+.content{
     flex:1;
-    overflow-y:auto;
-    padding:25px;
+    overflow:auto;
+    padding:20px;
 }
-
-.layout{
-    display:flex;
-    gap:20px;
-}
-
-.left{
-    flex:1;
-}
-
-.right{
-    width:320px;
-}
-
-/* CARD */
 
 .card{
-    background:var(--card);
-    border:1px solid var(--border);
+    background:white;
     border-radius:10px;
     padding:20px;
     margin-bottom:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* FORM */
-
-.form-group{
-    margin-bottom:15px;
-}
-
-.form-input,
-.form-textarea{
+textarea,
+input{
     width:100%;
+    padding:10px;
     border:1px solid var(--border);
     border-radius:6px;
-    padding:12px;
-    background:var(--card);
-    color:var(--text);
+    margin-top:5px;
+    margin-bottom:15px;
+    box-sizing:border-box;
 }
 
-.form-textarea{
-    resize:none;
-    height:90px;
-}
-
-.btn{
-    background:var(--primary);
+button{
+    background:var(--blue);
     color:white;
     border:none;
+    padding:10px 16px;
     border-radius:6px;
-    padding:10px 20px;
     cursor:pointer;
-    font-weight:600;
 }
 
-.btn:hover{
-    background:var(--primary-hover);
+button:hover{
+    opacity:0.9;
 }
-
-/* POSTS */
 
 .post{
-    margin-bottom:15px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:15px;
+    margin-top:15px;
 }
 
-.post-header{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:10px;
-}
-
-.post-author{
-    font-weight:700;
-}
-
-.post-time{
-    color:var(--light);
-    font-size:12px;
-}
-
-/* TOAST */
-
-.toast-container{
-    position:fixed;
-    top:20px;
-    right:20px;
-    z-index:9999;
-}
-
-.toast{
-    background:white;
-    color:black;
-    padding:14px 18px;
+.chat-box{
+    height:300px;
+    overflow:auto;
+    border:1px solid var(--border);
+    padding:10px;
     border-radius:8px;
     margin-bottom:10px;
-    min-width:220px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-    animation:slide 0.3s ease;
+    background:#f9fafb;
 }
 
-@keyframes slide{
-    from{
-        opacity:0;
-        transform:translateY(-20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+.message{
+    margin-bottom:10px;
+    padding:10px;
+    border-radius:8px;
+    background:#dbeafe;
 }
 
-/* MOBILE */
+.hidden{
+    display:none;
+}
+
+.dark{
+    background:#111827;
+    color:white;
+}
+
+.dark .card,
+.dark .topbar{
+    background:#1f2937;
+    color:white;
+}
+
+.dark textarea,
+.dark input{
+    background:#374151;
+    color:white;
+    border:1px solid #4b5563;
+}
 
 @media(max-width:768px){
-
     body{
         flex-direction:column;
     }
 
     .sidebar{
         width:100%;
+        flex-direction:row;
+        overflow:auto;
     }
 
-    .layout{
-        flex-direction:column;
+    .menu{
+        display:flex;
     }
 
-    .right{
-        width:100%;
+    .menu li{
+        border:none;
+        white-space:nowrap;
     }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="toast-container" id="toastHub"></div>
+<div class="sidebar">
+    <div class="logo">Ultra KH</div>
 
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-<div class="sidebar-brand">
-Ultra KH
+    <ul class="menu">
+        <li class="active" onclick="showPage('home',this)">🏠 ទំព័រដើម</li>
+        <li onclick="showPage('chat',this)">💬 សារ</li>
+        <li onclick="showPage('notify',this)">🔔 ការជូនដំណឹង</li>
+        <li onclick="showPage('profile',this)">👤 Profile</li>
+    </ul>
 </div>
-
-<ul class="sidebar-menu">
-
-<li class="sidebar-item active">
-<a href="#">
-🏠 <span id="nav-home">Home</span>
-</a>
-</li>
-
-<li class="sidebar-item">
-<a href="#">
-💬 <span id="nav-chat">Chat</span>
-</a>
-</li>
-
-<li class="sidebar-item">
-<a href="#">
-🔔 <span id="nav-notif">Notifications</span>
-</a>
-</li>
-
-<li class="sidebar-item">
-<a href="#">
-👤 <span id="nav-profile">Profile</span>
-</a>
-</li>
-
-<li class="sidebar-item">
-<a href="#">
-🔐 <span id="nav-account">Accounts</span>
-</a>
-</li>
-
-<li class="sidebar-item">
-<a href="#" onclick="signOut()">
-🚪 <span id="nav-signout">Sign Out</span>
-</a>
-</li>
-
-</ul>
-
-</aside>
-
-<!-- MAIN -->
 
 <div class="main">
 
-<!-- TOPBAR -->
+    <div class="topbar">
+        <div id="pageTitle">ទំព័រដើម</div>
 
-<div class="topbar">
+        <div>
+            <button onclick="toggleDark()">🌙 Dark</button>
+        </div>
+    </div>
 
-<div>
-Dashboard / Home
-</div>
+    <div class="content">
 
-<div class="topbar-right">
+        <!-- HOME -->
+        <div id="homePage">
 
-<select class="lang-select" id="languageSwitcher">
-<option value="en">English</option>
-<option value="kh">ភាសាខ្មែរ</option>
-</select>
+            <div class="card">
+                <h2>បង្ហោះព័ត៌មានថ្មី</h2>
 
-<button class="btn" onclick="toggleDarkMode()">
-🌙
-</button>
+                <textarea id="postInput" placeholder="សរសេរអ្វីមួយ..."></textarea>
 
-</div>
+                <button onclick="addPost()">បង្ហោះ</button>
+            </div>
 
-</div>
+            <div class="card">
+                <h2>ព័ត៌មានថ្មីៗ</h2>
 
-<!-- CONTENT -->
+                <div id="postList"></div>
+            </div>
 
-<div class="container">
+        </div>
 
-<div class="layout">
+        <!-- CHAT -->
+        <div id="chatPage" class="hidden">
 
-<!-- LEFT -->
+            <div class="card">
+                <h2>ប្រអប់សារ</h2>
 
-<div class="left">
+                <div class="chat-box" id="chatBox"></div>
 
-<div class="card">
+                <input type="text" id="chatInput" placeholder="វាយសារ...">
 
-<h2 id="publish-title">
-Publish an Update
-</h2>
+                <button onclick="sendMessage()">ផ្ញើ</button>
+            </div>
 
-<br>
+        </div>
 
-<form id="postForm">
+        <!-- NOTIFICATION -->
+        <div id="notifyPage" class="hidden">
 
-<div class="form-group">
+            <div class="card">
+                <h2>ការជូនដំណឹង</h2>
 
-<textarea
-id="postText"
-class="form-textarea"
-placeholder="What is happening within your workspace channels?"
-required
-></textarea>
+                <ul id="notifyList">
+                    <li>✅ ប្រព័ន្ធដំណើរការធម្មតា</li>
+                    <li>📢 សូមស្វាគមន៍មកកាន់ Ultra KH</li>
+                </ul>
+            </div>
 
-</div>
+        </div>
 
-<div class="form-group">
+        <!-- PROFILE -->
+        <div id="profilePage" class="hidden">
 
-<label>
-📎 <span id="attach-label">Add Image / File</span>
-</label>
+            <div class="card">
+                <h2>ព័ត៌មានគណនី</h2>
 
-<input type="file" id="fileInput" class="form-input">
+                <label>ឈ្មោះ</label>
+                <input type="text" id="username" value="Admin">
 
-</div>
+                <button onclick="saveProfile()">រក្សាទុក</button>
+            </div>
 
-<button class="btn" type="submit" id="publish-btn">
-Publish Post
-</button>
+        </div>
 
-</form>
-
-</div>
-
-<div id="feedContainer"></div>
-
-</div>
-
-<!-- RIGHT -->
-
-<div class="right">
-
-<div class="card">
-
-<h2 id="welcome-title">
-Welcome to Ultra KH 🚀
-</h2>
-
-<br>
-
-<p id="welcome-text">
-We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.
-</p>
-
-<br>
-
-<h3 id="purpose-title">
-Our Purpose:
-</h3>
-
-<ul style="padding-left:20px; margin-top:10px;">
-
-<li id="p1">
-Stay updated with latest news and content
-</li>
-
-<li id="p2">
-Learn and grow together
-</li>
-
-<li id="p3">
-Share ideas and experiences
-</li>
-
-<li id="p4">
-Connect with the Ultra KH community
-</li>
-
-</ul>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
 <script>
 
-/* =========================
-LANGUAGE
-========================= */
+function showPage(page,el){
 
-let currentLanguage = "en";
+    document.getElementById("homePage").classList.add("hidden");
+    document.getElementById("chatPage").classList.add("hidden");
+    document.getElementById("notifyPage").classList.add("hidden");
+    document.getElementById("profilePage").classList.add("hidden");
 
-const translations = {
+    document.querySelectorAll(".menu li").forEach(item=>{
+        item.classList.remove("active");
+    });
 
-en:{
-    home:"Home",
-    chat:"Chat",
-    notif:"Notifications",
-    profile:"Profile",
-    account:"Accounts",
-    signout:"Sign Out",
+    el.classList.add("active");
 
-    publish:"Publish an Update",
-    publishBtn:"Publish Post",
-    attach:"Add Image / File",
+    if(page==="home"){
+        document.getElementById("homePage").classList.remove("hidden");
+        document.getElementById("pageTitle").innerText="ទំព័រដើម";
+    }
 
-    placeholder:"What is happening within your workspace channels?",
+    if(page==="chat"){
+        document.getElementById("chatPage").classList.remove("hidden");
+        document.getElementById("pageTitle").innerText="សារ";
+    }
 
-    welcome:"Welcome to Ultra KH 🚀",
+    if(page==="notify"){
+        document.getElementById("notifyPage").classList.remove("hidden");
+        document.getElementById("pageTitle").innerText="ការជូនដំណឹង";
+    }
 
-    welcomeText:
-    "We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.",
-
-    purpose:"Our Purpose:",
-
-    pp1:"Stay updated with latest news and content",
-    pp2:"Learn and grow together",
-    pp3:"Share ideas and experiences",
-    pp4:"Connect with the Ultra KH community",
-
-    success:"Post published successfully",
-    logout:"Signed out successfully",
-
-    dark:"Dark mode enabled",
-    light:"Light mode enabled"
-},
-
-kh:{
-    home:"ទំព័រដើម",
-    chat:"ការជជែក",
-    notif:"ការជូនដំណឹង",
-    profile:"ប្រវត្តិរូប",
-    account:"គណនី",
-    signout:"ចាកចេញ",
-
-    publish:"បង្ហោះព័ត៌មានថ្មី",
-    publishBtn:"បង្ហោះ",
-    attach:"បន្ថែមរូបភាព / ឯកសារ",
-
-    placeholder:"តើមានអ្វីកើតឡើងនៅក្នុងក្រុមការងាររបស់អ្នក?",
-
-    welcome:"សូមស្វាគមន៍មកកាន់ Ultra KH 🚀",
-
-    welcomeText:
-    "យើងមានសេចក្តីរីករាយក្នុងការបើកដំណើរការវេទិកាបណ្ដាញសង្គមផ្លូវការរបស់យើង។",
-
-    purpose:"គោលបំណងរបស់យើង៖",
-
-    pp1:"ទទួលព័ត៌មានថ្មីៗ",
-    pp2:"រៀន និងអភិវឌ្ឍជាមួយគ្នា",
-    pp3:"ចែករំលែកបទពិសោធន៍",
-    pp4:"ភ្ជាប់ជាមួយសហគមន៍ Ultra KH",
-
-    success:"បង្ហោះព័ត៌មានដោយជោគជ័យ",
-    logout:"បានចាកចេញដោយជោគជ័យ",
-
-    dark:"បានបើក Dark Mode",
-    light:"បានប្ដូរទៅ Light Mode"
+    if(page==="profile"){
+        document.getElementById("profilePage").classList.remove("hidden");
+        document.getElementById("pageTitle").innerText="Profile";
+    }
 }
 
-};
+function addPost(){
 
-/* =========================
-INITIALIZE
-========================= */
+    let text=document.getElementById("postInput").value;
 
-document.addEventListener("DOMContentLoaded",()=>{
+    if(text.trim()===""){
+        alert("សូមបញ្ចូលព័ត៌មាន");
+        return;
+    }
 
-setupLanguage();
-setupPosts();
-setupSidebar();
-loadPosts();
-setupFileUpload();
+    let div=document.createElement("div");
+    div.className="post";
 
-});
+    div.innerHTML=`
+        <strong>Admin</strong>
+        <p>${text}</p>
+    `;
 
-/* =========================
-LANGUAGE SWITCH
-========================= */
+    document.getElementById("postList").prepend(div);
 
-function setupLanguage(){
-
-document.getElementById("languageSwitcher")
-.addEventListener("change",function(){
-
-currentLanguage = this.value;
-
-applyLanguage(currentLanguage);
-
-});
-
+    document.getElementById("postInput").value="";
 }
 
-function applyLanguage(lang){
+function sendMessage(){
 
-const t = translations[lang];
+    let input=document.getElementById("chatInput");
+    let text=input.value;
 
-document.getElementById("nav-home").innerText = t.home;
-document.getElementById("nav-chat").innerText = t.chat;
-document.getElementById("nav-notif").innerText = t.notif;
-document.getElementById("nav-profile").innerText = t.profile;
-document.getElementById("nav-account").innerText = t.account;
-document.getElementById("nav-signout").innerText = t.signout;
+    if(text.trim()===""){
+        return;
+    }
 
-document.getElementById("publish-title").innerText = t.publish;
-document.getElementById("publish-btn").innerText = t.publishBtn;
-document.getElementById("attach-label").innerText = t.attach;
+    let msg=document.createElement("div");
+    msg.className="message";
+    msg.innerText=text;
 
-document.getElementById("postText").placeholder = t.placeholder;
+    document.getElementById("chatBox").appendChild(msg);
 
-document.getElementById("welcome-title").innerText = t.welcome;
-document.getElementById("welcome-text").innerText = t.welcomeText;
-document.getElementById("purpose-title").innerText = t.purpose;
+    input.value="";
 
-document.getElementById("p1").innerText = t.pp1;
-document.getElementById("p2").innerText = t.pp2;
-document.getElementById("p3").innerText = t.pp3;
-document.getElementById("p4").innerText = t.pp4;
-
+    document.getElementById("chatBox").scrollTop=
+    document.getElementById("chatBox").scrollHeight;
 }
 
-/* =========================
-POST SYSTEM
-========================= */
+function saveProfile(){
 
-function setupPosts(){
+    let name=document.getElementById("username").value;
 
-document.getElementById("postForm")
-.addEventListener("submit",function(e){
-
-e.preventDefault();
-
-const input = document.getElementById("postText");
-
-const text = input.value.trim();
-
-if(!text) return;
-
-createPost(text);
-
-savePosts();
-
-input.value = "";
-
-showToast(
-translations[currentLanguage].success,
-"success"
-);
-
-});
-
+    alert("បានរក្សាទុក: "+name);
 }
 
-function createPost(text){
-
-const feed = document.getElementById("feedContainer");
-
-const div = document.createElement("div");
-
-div.className = "card post";
-
-const time = new Date().toLocaleTimeString([],{
-hour:'2-digit',
-minute:'2-digit'
-});
-
-div.innerHTML = `
-
-<div class="post-header">
-
-<div class="post-author">
-Admin
-</div>
-
-<div class="post-time">
-${time}
-</div>
-
-</div>
-
-<div>
-${text}
-</div>
-
-`;
-
-feed.prepend(div);
-
-}
-
-/* =========================
-LOCAL STORAGE
-========================= */
-
-function savePosts(){
-
-const posts = [];
-
-document.querySelectorAll(".post").forEach(post=>{
-
-posts.push(
-post.querySelector("div:last-child").innerText
-);
-
-});
-
-localStorage.setItem(
-"ultrakh_posts",
-JSON.stringify(posts)
-);
-
-}
-
-function loadPosts(){
-
-const saved =
-localStorage.getItem("ultrakh_posts");
-
-if(!saved) return;
-
-const posts = JSON.parse(saved);
-
-posts.reverse().forEach(post=>{
-
-createPost(post);
-
-});
-
-}
-
-/* =========================
-FILE UPLOAD
-========================= */
-
-function setupFileUpload(){
-
-document.getElementById("fileInput")
-.addEventListener("change",function(e){
-
-const file = e.target.files[0];
-
-if(file){
-
-showToast(
-"📎 " + file.name,
-"success"
-);
-
-}
-
-});
-
-}
-
-/* =========================
-DARK MODE
-========================= */
-
-function toggleDarkMode(){
-
-document.body.classList.toggle("dark-mode");
-
-if(document.body.classList.contains("dark-mode")){
-
-showToast(
-translations[currentLanguage].dark,
-"success"
-);
-
-}else{
-
-showToast(
-translations[currentLanguage].light,
-"success"
-);
-
-}
-
-}
-
-/* =========================
-SIDEBAR
-========================= */
-
-function setupSidebar(){
-
-document.querySelectorAll(".sidebar-item")
-.forEach(item=>{
-
-item.addEventListener("click",function(){
-
-document.querySelectorAll(".sidebar-item")
-.forEach(i=>i.classList.remove("active"));
-
-this.classList.add("active");
-
-});
-
-});
-
-}
-
-/* =========================
-SIGN OUT
-========================= */
-
-function signOut(){
-
-showToast(
-translations[currentLanguage].logout,
-"error"
-);
-
-}
-
-/* =========================
-TOAST
-========================= */
-
-function showToast(message,type="info"){
-
-const hub = document.getElementById("toastHub");
-
-const toast = document.createElement("div");
-
-toast.className = "toast";
-
-if(type==="success"){
-toast.style.borderLeft = "5px solid #52C41A";
-}
-
-if(type==="error"){
-toast.style.borderLeft = "5px solid #FF4D4F";
-}
-
-toast.innerHTML = message;
-
-hub.appendChild(toast);
-
-setTimeout(()=>{
-
-toast.remove();
-
-},3000);
-
+function toggleDark(){
+    document.body.classList.toggle("dark");
 }
 
 </script>
