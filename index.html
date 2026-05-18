@@ -1,1018 +1,623 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra KHsite - Enhanced Interface Production</title>
-    <style>
-        :root {
-            --bit-blue-primary: #1E50FF;              
-            --bit-blue-hover: #0033E6;                
-            --bit-blue-active: #0026B3;               
-            --bit-text-menu: #FFFFFF;                 
-            --bit-bg-main: #EDF1F7;                           
-            --bit-bg-card: #FFFFFF;                           
-            --bit-border-light: #E0E0E0;
-            --bit-text-dark: #1F2D3D;
-            --bit-text-light: #606266;
-            --chat-bubble-me: #1E50FF;
-            --chat-bubble-them: #F1F3F5;
-            --chat-text-them: #1F2D3D;
-            --bit-danger: #FF4D4F;
-            --bit-success: #52C41A;
-            --bit-warning: #FAAD14;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body.dark-mode {
-            --bit-bg-main: #141E30;
-            --bit-bg-card: #1F2A44;
-            --bit-border-light: #2D3D5A;
-            --bit-text-dark: #FFFFFF;
-            --bit-text-light: #A0AABF;
-            --chat-bubble-them: #2D3D5A;
-            --chat-text-them: #FFFFFF;
-        }
+<title>Ultra KH - Khmer Supported</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Khmer OS Battambang', sans-serif;
-        }
+<!-- Khmer Font -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        body {
-            background-color: var(--bit-bg-main);
-            color: var(--bit-text-dark);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-size: 14px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+<style>
+:root {
+    --bit-blue-primary: #1E50FF;
+    --bit-blue-hover: #0033E6;
+    --bit-blue-active: #0026B3;
+    --bit-text-menu: #FFFFFF;
+    --bit-bg-main: #EDF1F7;
+    --bit-bg-card: #FFFFFF;
+    --bit-border-light: #E0E0E0;
+    --bit-text-dark: #1F2D3D;
+    --bit-text-light: #606266;
+    --chat-bubble-me: #1E50FF;
+    --chat-bubble-them: #F1F3F5;
+    --chat-text-them: #1F2D3D;
+}
 
-        .sidebar {
-            width: 250px;
-            background-color: var(--bit-blue-primary);
-            color: var(--bit-text-menu);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            z-index: 100;
-        }
+body.dark-mode {
+    --bit-bg-main: #141E30;
+    --bit-bg-card: #1F2A44;
+    --bit-border-light: #2D3D5A;
+    --bit-text-dark: #FFFFFF;
+    --bit-text-light: #A0AABF;
+    --chat-bubble-them: #2D3D5A;
+    --chat-text-them: #FFFFFF;
+}
 
-        .sidebar-brand {
-            background-color: var(--bit-blue-primary);
-            padding: 24px 20px;
-            font-size: 24px;
-            font-weight: 800; 
-            color: #FFFFFF;                
-            display: flex;
-            align-items: center;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);         }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 
-        .brand-text-space { margin-right: 8px; }
-        .sidebar-menu { list-style: none; padding: 0; flex-grow: 1; display: flex; flex-direction: column; }
-        
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            padding: 14px 22px;
-            color: var(--bit-text-menu);
-            text-decoration: none;
-            transition: background 0.2s ease;
-            font-weight: 700; 
-            font-size: 14px;
-        }
+    font-family:
+        "Noto Sans Khmer",
+        "Khmer OS Battambang",
+        "Khmer OS Siemreap",
+        "Hanuman",
+        "Segoe UI",
+        sans-serif;
+}
 
-        .sidebar-item a:hover { background-color: var(--bit-blue-hover); }
-        .sidebar-item.active { background-color: var(--bit-blue-active); position: relative; }
-        .sidebar-item.active::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: white; }
+body {
+    background: var(--bit-bg-main);
+    color: var(--bit-text-dark);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    line-height: 1.8;
+    text-rendering: optimizeLegibility;
+}
 
-        .sidebar-icon {
-            width: 18px;
-            height: 18px;
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: var(--bit-blue-primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
 
-        .sidebar-icon svg {
-            width: 100%; height: 100%; fill: none; stroke: currentColor;
-            stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
-        }
+.sidebar-brand {
+    padding: 24px;
+    font-size: 24px;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
 
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        
-        .top-bar {
-            background-color: var(--bit-bg-card);
-            height: 60px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 25px; border-bottom: 1px solid var(--bit-border-light); flex-shrink: 0;
-        }
+.sidebar-menu {
+    list-style: none;
+}
 
-        .top-bar-right { display: flex; align-items: center; gap: 15px; color: var(--bit-text-light); }
-        .lang-select { padding: 4px 8px; border: 1px solid var(--bit-border-light); border-radius: 4px; background-color: var(--bit-bg-card); color: var(--bit-text-dark); font-weight: 600; cursor: pointer; font-size: 13px; }
-        .top-bar-profile-wrap { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.sidebar-item a {
+    display: flex;
+    align-items: center;
+    padding: 15px 22px;
+    color: white;
+    text-decoration: none;
+    transition: 0.2s;
+    font-weight: 600;
+}
 
-        .container { padding: 25px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; }
-        .card { background: var(--bit-bg-card); border-radius: 8px; border: 1px solid var(--bit-border-light); padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .page-view { display: none; height: 100%; }
-        .page-view.active { display: block; }
+.sidebar-item a:hover {
+    background: var(--bit-blue-hover);
+}
 
-        .split-view-layout { display: flex; gap: 25px; height: 100%; align-items: flex-start; }
-        .left-form-panel { width: 350px; flex-shrink: 0; }
-        .right-display-panel { flex-grow: 1; }
+.sidebar-item.active {
+    background: var(--bit-blue-active);
+}
 
-        .form-group { margin-bottom: 18px; }
-        .form-label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--bit-text-dark); }
-        .form-input, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
-        .form-textarea { resize: none; height: 70px; }
-        
-        .btn-submit { width: 100%; background: var(--bit-blue-primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
-        .btn-submit:hover { background: var(--bit-blue-hover); }
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--bit-border-light); }
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-        .home-layout { display: flex; gap: 25px; align-items: flex-start; }
-        .home-main-feed { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; width: 100%; }
-        .home-side-metrics { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
-        .feed-container { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }
-        
-        .post-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; }
-        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .post-author { font-weight: 700; color: var(--bit-text-dark); }
-        .post-time { font-size: 12px; color: var(--bit-text-light); }
-        .post-content-text { color: var(--bit-text-dark); font-size: 14px; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
-        .post-media-attachment { margin-bottom: 12px; max-width: 100%; border-radius: 6px; max-height: 300px; object-fit: cover; border: 1px solid var(--bit-border-light); }
-        .post-file-link { display: inline-flex; align-items: center; gap: 6px; color: var(--bit-blue-primary); text-decoration: none; font-weight: 600; margin-bottom: 12px; background: rgba(30, 80, 255, 0.05); padding: 6px 12px; border-radius: 6px; font-size: 13px; }
-        .post-file-link:hover { text-decoration: underline; }
-        .tag-badge { display: inline-block; background: rgba(30, 80, 255, 0.1); color: var(--bit-blue-primary); padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 5px; font-weight: 600; }
+.top-bar {
+    background: var(--bit-bg-card);
+    border-bottom: 1px solid var(--bit-border-light);
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+}
 
-        .post-actions { display: flex; align-items: center; border-top: 1px solid var(--bit-border-light); border-bottom: 1px solid var(--bit-border-light); padding: 10px 0; margin-bottom: 12px; gap: 15px; }
-        .action-trigger-btn { background: transparent; border: none; color: var(--bit-text-light); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; }
-        .action-trigger-btn:hover { color: var(--bit-blue-primary); }
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-        .comments-section-wrapper { display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.01); border-radius: 6px; padding: 10px; }
-        .comment-item-row { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 8px; }
-        .comment-content-bubble { background: rgba(0,0,0,0.03); border-radius: 12px; padding: 8px 12px; flex-grow: 1; }
-        .comment-user-title { font-weight: 700; color: var(--bit-text-dark); }
-        .comment-input-inline-box { display: flex; gap: 10px; margin-top: 10px; }
+.lang-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--bit-border-light);
+    background: white;
+    cursor: pointer;
+}
 
-        .notification-stream-list { display: flex; flex-direction: column; gap: 10px; }
-        .notification-card-item { padding: 12px 15px; border-radius: 6px; border: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; align-items: center; justify-content: space-between; }
-        .notification-card-item.unread { border-left: 4px solid var(--bit-blue-primary); background: rgba(30, 80, 255, 0.02); }
-        .notif-text { font-size: 13px; color: var(--bit-text-dark); }
-        .notif-time { font-size: 11px; color: var(--bit-text-light); }
+.container {
+    padding: 25px;
+    overflow-y: auto;
+    flex: 1;
+}
 
-        .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; min-height: 450px; }
-        .chat-sidebar { width: 280px; border-right: 1px solid var(--bit-border-light); display: flex; flex-direction: column; }
-        .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); }
-        .friends-list { list-style: none; overflow-y: auto; flex-grow: 1; }
-        .friend-item { padding: 15px 20px; border-bottom: 1px solid var(--bit-border-light); cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .friend-item.active { background: rgba(30, 80, 255, 0.08); }
-        .friend-name { font-weight: 600; color: var(--bit-text-dark); font-size: 13px; }
+.card {
+    background: var(--bit-bg-card);
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid var(--bit-border-light);
+}
 
-        .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; min-width: 0; }
-        .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; }
-        .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: rgba(0, 0, 0, 0.02); }
-        
-        .msg-row { display: flex; flex-direction: column; width: 100%; position: relative; }
-        .msg-row.msg-me { align-items: flex-end; }
-        .msg-row.msg-them { align-items: flex-start; }
-        .msg-meta-container { font-size: 11px; color: var(--bit-text-light); margin-bottom: 3px; display: flex; gap: 10px; }
-        
-        .bubble-wrapper { display: flex; align-items: center; gap: 8px; max-width: 85%; position: relative; }
-        .bubble { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; word-wrap: break-word; position: relative; }
-        .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; border-bottom-right-radius: 2px; }
-        .msg-them .bubble { background: var(--chat-bubble-them); color: var(--chat-text-them); border-bottom-left-radius: 2px; border: 1px solid var(--bit-border-light); }
-        
-        .msg-interact-bar { display: flex; gap: 8px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); visibility: hidden; opacity: 0; transition: opacity 0.15s, visibility 0.15s; }
-        .msg-row:hover .msg-interact-bar { visibility: visible; opacity: 1; }
-        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; font-weight: 600; }
-        .msg-interact-btn:hover { color: var(--bit-blue-primary); }
-        .msg-delete-btn:hover { color: var(--bit-danger) !important; }
+.home-layout {
+    display: flex;
+    gap: 20px;
+}
 
-        .chat-input-container { border-top: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; flex-direction: column; }
-        .chat-input-area { padding: 15px 20px; display: flex; gap: 10px; align-items: center; }
-        .chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
-        
-        .chat-utility-row { display: flex; gap: 10px; padding: 0 20px 10px; align-items: center; }
-        .emoji-picker-inline { display: flex; gap: 6px; }
-        .emoji-select-btn { background: rgba(0,0,0,0.04); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        .emoji-select-btn:hover { background: rgba(30,80,255,0.1); }
-        
-        .file-attach-label { cursor: pointer; display: flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; color: var(--bit-text-dark); transition: background 0.2s; }
-        .file-attach-label:hover { background: rgba(30,80,255,0.1); }
+.home-main-feed {
+    flex: 1;
+}
 
-        .btn-send { background: var(--bit-blue-primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.home-side-metrics {
+    width: 320px;
+}
 
-        .metrics-grid-vertical { display: flex; flex-direction: column; gap: 15px; }
-        .metric-widget-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; min-height: 100px; }
-        .metric-widget-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--bit-text-light); letter-spacing: 0.5px; margin-bottom: 8px; }
-        .metric-widget-value { font-size: 28px; font-weight: 800; color: var(--bit-blue-primary); }
-        .metric-widget-status { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; margin-top: 8px; }
-        .dot-pulse { width: 8px; height: 8px; background-color: var(--bit-success); border-radius: 50%; margin-right: 6px; display: inline-block; }
+.form-group {
+    margin-bottom: 15px;
+}
 
-        .user-directory-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-        .user-directory-table th { padding: 8px 5px; color: var(--bit-text-light); border-bottom: 2px solid var(--bit-border-light); }
-        .user-directory-table td { padding: 10px 5px; border-bottom: 1px solid var(--bit-border-light); }
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--bit-border-light);
+    outline: none;
+    font-size: 14px;
+}
 
-        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 420px; pointer-events: none; }
-        .toast-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); padding: 14px 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); display: flex; align-items: center; gap: 12px; pointer-events: auto; border-left: 5px solid var(--bit-blue-primary); animation: toastSlideIn 0.3s forwards; }
-        .toast-card.success { border-left-color: var(--bit-success); }
-        .toast-card.error { border-left-color: var(--bit-danger); }
-        .toast-message { font-size: 13.5px; font-weight: 600; color: var(--bit-text-dark); flex-grow: 1; }
-        .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; }
-        @keyframes toastSlideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.form-textarea {
+    height: 90px;
+    resize: none;
+}
 
-        .welcome-content-box h4 { margin-top: 12px; font-weight: 700; font-size: 13px; color: var(--bit-text-dark); }
-        .welcome-content-box ul { list-style: none; margin: 8px 0; padding-left: 0; }
-        .welcome-content-box ul li { font-size: 13px; color: var(--bit-text-light); position: relative; padding-left: 14px; margin-bottom: 4px; }
-        .welcome-content-box ul li::before { content: "•"; color: var(--bit-blue-primary); position: absolute; left: 0; font-weight: bold; }
-        .welcome-content-box p { font-size: 13px; color: var(--bit-text-light); line-height: 1.4; margin-bottom: 10px; }
-        .welcome-hashtags { font-size: 12px; font-weight: 600; color: var(--bit-blue-primary); margin-top: 10px; }
+.btn-submit,
+.btn-send {
+    background: var(--bit-blue-primary);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
 
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; }
-            .sidebar-brand { padding: 15px 20px; font-size: 18px; border-bottom: none; width: 100%; justify-content: center; }
-            .sidebar-menu { display: flex; flex-direction: row; width: 100%; justify-content: space-around; overflow-x: auto; }
-            .sidebar-item a { padding: 12px 10px; font-size: 12px; flex-direction: column; }
-            .sidebar-item a span { display: none; }
-            .sidebar-item.active::before { left: 0; right: 0; bottom: 0; top: auto; width: auto; height: 3px; }
-            .home-layout, .split-view-layout, .chat-layout { flex-direction: column; height: auto; gap: 15px; }
-            .home-side-metrics, .left-form-panel, .chat-sidebar { width: 100%; }
-            .chat-layout { height: calc(100vh - 120px); }
-            .chat-sidebar { max-height: 120px; }
-            .chat-window { height: 350px; }
-        }
-    </style>
+.feed-container {
+    margin-top: 20px;
+}
+
+.post-card {
+    margin-bottom: 20px;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.post-author {
+    font-weight: 700;
+}
+
+.post-time {
+    font-size: 12px;
+    color: var(--bit-text-light);
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    background: rgba(30,80,255,0.1);
+    border-radius: 4px;
+    font-size: 11px;
+    margin-right: 5px;
+}
+
+.file-attach-label {
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+.toast-card {
+    background: white;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+@media(max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .home-layout {
+        flex-direction: column;
+    }
+
+    .home-side-metrics {
+        width: 100%;
+    }
+}
+</style>
 </head>
+
 <body>
-    <div class="toast-container" id="toastHub"></div>
-    <aside class="sidebar" id="appSidebar">
-        <div class="sidebar-brand"><span class="brand-text-space">Ultra</span><span>KH</span></div>
-        <ul class="sidebar-menu">
-            <li class="sidebar-item" data-target="notifications" id="nav-notifications"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><span>Notifications (<span id="notifBadgeCount">0</span>)</span></a></li>
-            <li class="sidebar-item active" data-target="home" id="nav-home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><span>Home</span></a></li>
-            <li class="sidebar-item" data-target="message" id="nav-message"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><span>Chat</span></a></li>
-            <li class="sidebar-item" data-target="profile" id="nav-profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Profile</span></a></li>
-            <li class="sidebar-item" data-target="auth" id="nav-auth"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div><span>Accounts</span></a></li>
-            <li class="sidebar-item" style="margin-top:auto;" onclick="triggerSignOut()"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div><span>Sign Out</span></a></li>
-        </ul>
-    </aside>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <div id="breadcrumb" style="font-weight: 600; color: var(--bit-text-light);">Dashboard / Home</div>
-            <div class="top-bar-right">
-                <select class="lang-select">
-                    <option value="en">English</option>
-                    <option value="kh">ភាសាខ្មែរ</option>
-                </select>
-                <div class="top-bar-profile-wrap">
-                    <div style="width:24px; height:24px; background: #E0E0E0; border-radius:50%;"></div>
-                    <div><span id="topBarUserHandle">Admin</span></div>
-                </div>
-            </div>
-        </header>
+<div class="toast-container" id="toastHub"></div>
 
-        <div class="container" id="mainContainer">
-            <div class="page-view active" id="page-home">
-                <div class="home-layout">
-                    <div class="home-main-feed">
-                        <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 12px;">Publish an Update</h3>
-                            <form id="homePublishForm" onsubmit="handlePostPublish(event)">
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <textarea class="form-textarea" id="postText" required placeholder="What is happening within your workspace channels?"></textarea>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label class="form-label">Add Tags (comma separated)</label>                                    
-                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <label class="file-attach-label" for="homeFileInput">
-                                        📎 Add Image / File
-                                        <input type="file" id="homeFileInput" style="display:none;" onchange="handleHomeFileSelected(this)">
-                                    </label>
-                                    <span id="homeFilePreview" style="font-size:12px; color:var(--bit-text-light); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-                                    <button type="submit" class="btn-submit" style="width: auto; padding: 8px 24px;">Publish Post</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="feed-container" id="homeFeedStream"></div>
-                    </div>
+<!-- Sidebar -->
+<aside class="sidebar">
 
-                    <div class="home-side-metrics">
-                        <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 10px; color: var(--bit-blue-primary);">Welcome to Ultra KH 🚀</h3>
-                            <div class="welcome-content-box">
-                                <p>We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.</p>
-                                <h4>Our Purpose:</h4>
-                                <ul>
-                                    <li>Stay updated with the latest news and content</li>
-                                    <li>Learn and grow together</li>
-                                    <li>Share ideas and experiences</li>
-                                    <li>Connect with the Ultra KH community</li>
-                                </ul>
-                                <p>Thank you for being part of our journey. Your support means everything to us, and we look forward to building an amazing community together.</p>
-                                <p>Follow us and stay connected with Ultra KH.</p>
-                                <strong style="color: var(--bit-text-dark); display:block; margin-top:8px;">The future starts here. 🔥</strong>
-                                <div class="welcome-hashtags">#UltraKH #Community #Welcome #StayConnected</div>
-                            </div>
-                        </div>
-                                                                        
-                        <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 12px;">Active System Operators (<span id="metUserCount">2</span>)</h3>
-                            <table class="user-directory-table">
-                                <thead>
-                                    <tr>
-                                        <th>Operator Handle</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="systemUserTableBody"></tbody>
-                            </table>
-                        </div>
+    <div class="sidebar-brand">
+        Ultra KH
+    </div>
 
-                        <div class="metrics-grid-vertical">
-                            <div class="metric-widget-card"><div class="metric-widget-title">System Status</div><div class="metric-widget-status"><span class="dot-pulse"></span><span>Operational / Online</span></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <ul class="sidebar-menu">
 
-            <div class="page-view" id="page-notifications">
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3>System and Workspace Notifications</h3>
-                        <button class="btn-send" style="padding:4px 12px; font-size:12px;" onclick="clearAllNotifications()">Clear All</button>
-                    </div>
-                    <div class="notification-stream-list" id="notificationStreamBox"></div>
-                </div>
-            </div>
+        <li class="sidebar-item active">
+            <a href="#">
+                🏠 <span style="margin-left:10px;" id="nav-home-text">Home</span>
+            </a>
+        </li>
 
-            <div class="page-view" id="page-profile">
-                <div class="split-view-layout">
-                    <div class="card left-form-panel">
-                        <h3 style="margin-bottom: 15px; text-align: center;">Account Info</h3>
-                        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
-                            <div class="form-group">
-                                <label class="form-label">Active Operator Username</label>
-                                <input type="text" class="form-input" id="profUserHandle" required>
-                            </div>
-                            <button type="submit" class="btn-submit">Save Changes</button>
-                        </form>
-                    </div>
-                    <div class="card right-display-panel">
-                        <h3 style="margin-bottom: 15px;">Workspace Preferences</h3>
-                        <div class="toggle-container">
-                            <div>
-                                <div style="font-weight: 700;">Developer Dark Mode</div>
-                                <div style="font-size: 12px; color: var(--bit-text-light);">Switch background layout color palette to low-light style.</div>
-                            </div>
-                            <input type="checkbox" id="themeToggleCheckbox" style="width: 20px; height: 20px; cursor: pointer;">
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <li class="sidebar-item">
+            <a href="#">
+                💬 <span style="margin-left:10px;" id="nav-chat-text">Chat</span>
+            </a>
+        </li>
 
-            <div class="page-view" id="page-message">
-                <div class="chat-layout">
-                    <div class="chat-sidebar">
-                        <div class="chat-sidebar-header">Workspace Operators</div>
-                        <ul class="friends-list" id="chatFriendsContainer"></ul>
-                    </div>
-                    <div class="chat-window">
-                        <div class="chat-window-header" id="activeChatUser">Select an operator thread to view history</div>
-                        <div class="chat-messages-box" id="chatMsgContainer"></div>
-                        <div class="chat-input-container">
-                            <div class="chat-utility-row">
-                                <div class="emoji-picker-inline">
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('👍')">👍</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('❤️')">❤️</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('😮')">😮</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('🔥')">🔥</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('🙏')">🙏</button>
-                                </div>
-                                <label class="file-attach-label" for="chatFileInput">
-                                    📎 Attach File
-                                    <input type="file" id="chatFileInput" style="display:none;" onchange="handleFileAttachmentSelected(this)">
-                                </label>
-                                <span id="fileAttachmentPreview" style="font-size:12px; color:var(--bit-text-light);"></span>
-                            </div>
-                            <div class="chat-input-area">
-                                <input type="text" class="chat-input" id="chatInputField" placeholder="Type your message here..." onkeydown="if(event.key === 'Enter') submitChatMessage()">
-                                <button class="btn-send" onclick="submitChatMessage()">Send</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <li class="sidebar-item">
+            <a href="#">
+                🔔 <span style="margin-left:10px;" id="nav-notif-text">Notifications</span>
+            </a>
+        </li>
 
-            <div class="page-view" id="page-auth">
-                <div class="split-view-layout" style="justify-content: center; align-items: center; min-height: 400px;">
-                    <div class="card left-form-panel" id="authSignUpBox" style="width: 100%; max-width: 400px;">
-                        <h3 style="margin-bottom: 20px; text-align: center;">Sign Up Workspace Account</h3>
-                        <form id="signUpSystemForm" onsubmit="processSignUp(event)">
-                            <div class="form-group">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-input" id="signUpUser" required placeholder="Choose operator handle...">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" class="form-input" id="signUpEmail" required placeholder="name@company.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-input" id="signUpPass" required placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-submit">Sign Up & Log In</button>
-                        </form>
-                        <p style="margin-top: 20px; text-align: center; font-size: 13px; color: var(--bit-text-light);">
-                            Already have an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signin')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Sign In here</a>
-                        </p>
-                    </div>
+        <li class="sidebar-item">
+            <a href="#">
+                👤 <span style="margin-left:10px;" id="nav-profile-text">Profile</span>
+            </a>
+        </li>
 
-                    <div class="card left-form-panel" id="authSignInBox" style="width: 100%; max-width: 400px; display: none;">
-                        <h3 style="margin-bottom: 20px; text-align: center;">Sign In Portal</h3>
-                        <form id="signInSystemForm" onsubmit="processSignIn(event)">
-                            <div class="form-group">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-input" id="signInUser" required placeholder="Enter handle name...">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-input" id="signInPass" required placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-submit">Sign In</button>
-                        </form>
-                        <p style="margin-top: 20px; text-align: center; font-size: 13px; color: var(--bit-text-light);">
-                            Need an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signup')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Create one here</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <li class="sidebar-item">
+            <a href="#">
+                🔐 <span style="margin-left:10px;" id="nav-account-text">Accounts</span>
+            </a>
+        </li>
+
+        <li class="sidebar-item">
+            <a href="#" onclick="signOut()">
+                🚪 <span style="margin-left:10px;" id="nav-signout-text">Sign Out</span>
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+
+<!-- Main -->
+<main class="main-content">
+
+<header class="top-bar">
+
+    <div id="breadcrumb">
+        Dashboard / Home
+    </div>
+
+    <div class="top-bar-right">
+
+        <select class="lang-select" id="languageSwitcher">
+            <option value="en">English</option>
+            <option value="kh">ភាសាខ្មែរ</option>
+        </select>
+
+        <div>
+            👤 Admin
         </div>
-    </main>
 
-    <script>
-        // State Management Objects
-        let currentUser = "Admin";
-        let currentUserId = "user-admin";
-        let activeTargetChatId = null;
-        let selectedHomeFileBase64 = null;
-        let selectedHomeFileName = "";
-        let selectedChatFileBase64 = null;
-        let selectedChatFileName = "";
+    </div>
 
-        // Seeded Static Arrays
-        let usersList = [
-            { id: "user-admin", username: "Admin", email: "admin@ultrakh.com", status: "Online" },
-            { id: "user-sophia", username: "Sophia_Dev", email: "sophia@ultrakh.com", status: "Online" },
-            { id: "user-rath", username: "VannRath", email: "rath@ultrakh.com", status: "Away" }
-        ];
+</header>
 
-        let notifications = [
-            { id: 1, text: "Sophia_Dev shared an architecture review note inside Channel #production", time: "10 mins ago", unread: true },
-            { id: 2, text: "System security policy verified successfully for node KH-MAIN", time: "1 hour ago", unread: false }
-        ];
+<div class="container">
 
-        let feedPosts = [
-            {
-                id: 101,
-                author: "Sophia_Dev",
-                time: "20 mins ago",
-                content: "Just finalized the design specs for the layout system. Check it out and provide feedback inside the chat matrix module!",
-                tags: ["general", "announcement"],
-                fileData: null,
-                fileName: "",
-                comments: [
-                    { author: "VannRath", text: "Looks great, clean layout!" }
-                ]
-            }
-        ];
+<div class="home-layout">
 
-        // Chat Data Structure Matrix
-        let chatLogs = {
-            "user-sophia": [
-                { id: 1, senderId: "user-sophia", senderName: "Sophia_Dev", text: "Hello! Did you review the production deployment code?", time: "09:14 AM", fileData: null },
-                { id: 2, senderId: "user-admin", senderName: "Admin", text: "Hey Sophia, looking over the metrics logs right now.", time: "09:16 AM", fileData: null }
-            ],
-            "user-rath": [
-                { id: 1, senderId: "user-rath", senderName: "VannRath", text: "System upgrade packages successfully validated.", time: "Yesterday", fileData: null }
-            ]
-        };
+<!-- Left -->
+<div class="home-main-feed">
 
-        // Initialize App Operations
-        document.addEventListener("DOMContentLoaded", () => {
-            setupNavigation();
-            setupThemeControl();
-            renderAllViews();
-            initRealtimeSimulation();
-        });
+<div class="card">
 
-        function setupNavigation() {
-            document.querySelectorAll(".sidebar-item[data-target]").forEach(item => {
-                item.addEventListener("click", () => {
-                    const viewTarget = item.getAttribute("data-target");
-                    switchView(viewTarget);
-                });
-            });
-        }
+<h3 id="publish-title">
+    Publish an Update
+</h3>
 
-        function switchView(target) {
-            document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
-            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
+<br>
 
-            const activeNav = document.getElementById(`nav-${target}`);
-            if (activeNav) activeNav.classList.add("active");
+<form id="homePublishForm">
 
-            const activePage = document.getElementById(`page-${target}`);
-            if (activePage) activePage.classList.add("active");
+<div class="form-group">
+<textarea
+class="form-textarea"
+id="postText"
+placeholder="What is happening within your workspace channels?"
+></textarea>
+</div>
 
-            const breadcrumb = document.getElementById("breadcrumb");
-            breadcrumb.innerText = `Dashboard / ${target.charAt(0).toUpperCase() + target.slice(1)}`;
-        }
+<div class="form-group">
+<input
+type="text"
+class="form-input"
+placeholder="e.g. general, urgent"
+>
+</div>
 
-        function setupThemeControl() {
-            const checkbox = document.getElementById("themeToggleCheckbox");
-            checkbox.addEventListener("change", () => {
-                if (checkbox.checked) {
-                    document.body.classList.add("dark-mode");
-                    showToast("Dark Mode engaged successfully.", "success");
-                } else {
-                    document.body.classList.remove("dark-mode");
-                    showToast("Light Mode restored.", "success");
-                }
-            });
-        }
+<div style="display:flex; justify-content:space-between; align-items:center;">
 
-        // View Renderers
-        function renderAllViews() {
-            renderUserDirectory();
-            renderNotificationCenter();
-            renderFeedStream();
-            renderChatSidebar();
-            renderChatWindowMessages();
-            updateGlobalHeaderCounters();
-        }
+<label class="file-attach-label">
+📎 <span id="attach-text">Add Image / File</span>
+<input type="file" hidden>
+</label>
 
-        function updateGlobalHeaderCounters() {
-            document.getElementById("topBarUserHandle").innerText = currentUser;
-            document.getElementById("profUserHandle").value = currentUser;
-            
-            const unreadCount = notifications.filter(n => n.unread).length;
-            document.getElementById("notifBadgeCount").innerText = unreadCount;
-            document.getElementById("metUserCount").innerText = usersList.length;
-        }
+<button type="submit" class="btn-submit" id="publish-btn">
+Publish Post
+</button>
 
-        function renderUserDirectory() {
-            const tableBody = document.getElementById("systemUserTableBody");
-            tableBody.innerHTML = "";
-            usersList.forEach(user => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td style="font-weight:700;">${user.username} <span style="font-size:11px;font-weight:normal;color:var(--bit-text-light);">(${user.email})</span></td>
-                    <td><span style="color: ${user.status === 'Online' ? 'var(--bit-success)' : 'var(--bit-warning)'}; font-weight:700;">● ${user.status}</span></td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
+</div>
 
-        function renderNotificationCenter() {
-            const container = document.getElementById("notificationStreamBox");
-            container.innerHTML = "";
-            if (notifications.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--bit-text-light);">No recent notifications.</div>`;
-                return;
-            }
-            notifications.forEach(notif => {
-                const div = document.createElement("div");
-                div.className = `notification-card-item ${notif.unread ? 'unread' : ''}`;
-                div.innerHTML = `
-                    <div>
-                        <div class="notif-text">${notif.text}</div>
-                        <div class="notif-time">${notif.time}</div>
-                    </div>
-                    ${notif.unread ? `<button class="btn-send" style="padding:2px 8px; font-size:11px;" onclick="markNotificationRead(${notif.id})">Read</button>` : ''}
-                `;
-                container.appendChild(div);
-            });
-        }
+</form>
 
-        function markNotificationRead(id) {
-            const index = notifications.findIndex(n => n.id === id);
-            if (index !== -1) {
-                notifications[index].unread = false;
-                renderNotificationCenter();
-                updateGlobalHeaderCounters();
-            }
-        }
+</div>
 
-        function clearAllNotifications() {
-            notifications = [];
-            renderNotificationCenter();
-            updateGlobalHeaderCounters();
-            showToast("Notification queue cleared.", "success");
-        }
+<div class="feed-container" id="feedContainer"></div>
 
-        function renderFeedStream() {
-            const stream = document.getElementById("homeFeedStream");
-            stream.innerHTML = "";
-            feedPosts.forEach(post => {
-                const postCard = document.createElement("div");
-                postCard.className = "card post-card";
+</div>
 
-                let tagsMarkup = "";
-                if (post.tags) {
-                    post.tags.forEach(t => { if(t) tagsMarkup += `<span class="tag-badge">#${t.trim()}</span>`; });
-                }
+<!-- Right -->
+<div class="home-side-metrics">
 
-                let assetMarkup = "";
-                if (post.fileData) {
-                    if (post.fileData.startsWith("data:image")) {
-                        assetMarkup = `<img src="${post.fileData}" class="post-media-attachment" alt="upload">`;
-                    } else {
-                        assetMarkup = `<a href="${post.fileData}" download="${post.fileName}" class="post-file-link">📁 Download Associated Resource (${post.fileName})</a>`;
-                    }
-                }
+<div class="card">
 
-                let commentsMarkup = "";
-                if (post.comments) {
-                    post.comments.forEach(c => {
-                        commentsMarkup += `
-                            <div class="comment-item-row">
-                                <div class="comment-content-bubble">
-                                    <span class="comment-user-title">${c.author}:</span> ${c.text}
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
+<h3 id="welcome-title">
+Welcome to Ultra KH 🚀
+</h3>
 
-                postCard.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">@${post.author}</span>
-                        <span class="post-time">${post.time}</span>
-                    </div>
-                    <div class="post-content-text">${post.content}</div>
-                    <div>${tagsMarkup}</div>
-                    ${assetMarkup}
-                    <div class="post-actions">
-                        <button class="action-trigger-btn">👍 Upvote Channel</button>
-                    </div>
-                    <div class="comments-section-wrapper">
-                        ${commentsMarkup}
-                        <div class="comment-input-inline-box">
-                            <input type="text" class="form-input" style="padding:6px 10px;" placeholder="Write a workspace response..." onkeydown="if(event.key === 'Enter') addPostComment(${post.id}, this)">
-                        </div>
-                    </div>
-                `;
-                stream.appendChild(postCard);
-            });
-        }
+<br>
 
-        function handleHomeFileSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-            selectedHomeFileName = file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedHomeFileBase64 = e.target.result;
-                document.getElementById("homeFilePreview").innerText = `📎 ${file.name}`;
-            };
-            reader.readAsDataURL(file);
-        }
+<p id="welcome-text">
+We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.
+</p>
 
-        function handlePostPublish(e) {
-            e.preventDefault();
-            const text = document.getElementById("postText").value;
-            const tagsRaw = document.getElementById("postTags").value;
-            const tags = tagsRaw ? tagsRaw.split(",") : [];
+<br>
 
-            const newPost = {
-                id: Date.now(),
-                author: currentUser,
-                time: "Just now",
-                content: text,
-                tags: tags,
-                fileData: selectedHomeFileBase64,
-                fileName: selectedHomeFileName,
-                comments: []
-            };
+<h4 id="purpose-title">
+Our Purpose:
+</h4>
 
-            feedPosts.unshift(newPost);
-            document.getElementById("homePublishForm").reset();
-            selectedHomeFileBase64 = null;
-            selectedHomeFileName = "";
-            document.getElementById("homeFilePreview").innerText = "";
+<ul style="padding-left:20px; margin-top:10px;">
 
-            renderFeedStream();
-            showToast("Update broadcast successfully.", "success");
-        }
+<li id="purpose1">
+Stay updated with the latest news and content
+</li>
 
-        function addPostComment(postId, inputField) {
-            const text = inputField.value.trim();
-            if(!text) return;
-            const post = feedPosts.find(p => p.id === postId);
-            if (post) {
-                post.comments.push({ author: currentUser, text: text });
-                inputField.value = "";
-                renderFeedStream();
-            }
-        }
+<li id="purpose2">
+Learn and grow together
+</li>
 
-        // Realtime Chat Modules
-        function renderChatSidebar() {
-            const container = document.getElementById("chatFriendsContainer");
-            container.innerHTML = "";
-            
-            // Render only valid conversation partners (excluding self)
-            usersList.forEach(user => {
-                if (user.id === currentUserId) return;
-                
-                const li = document.createElement("li");
-                li.className = `friend-item ${activeTargetChatId === user.id ? 'active' : ''}`;
-                li.onclick = () => selectChatThread(user.id);
-                li.innerHTML = `
-                    <div style="width:10px; height:10px; border-radius:50%; background:${user.status === 'Online' ? 'var(--bit-success)' : 'var(--bit-warning)'};"></div>
-                    <div class="friend-name">${user.username}</div>
-                `;
-                container.appendChild(li);
-            });
-        }
+<li id="purpose3">
+Share ideas and experiences
+</li>
 
-        function selectChatThread(userId) {
-            activeTargetChatId = userId;
-            const targetUser = usersList.find(u => u.id === userId);
-            document.getElementById("activeChatUser").innerText = targetUser ? `Thread Room: @${targetUser.username}` : "Select an operator thread to view history";
-            renderChatSidebar();
-            renderChatWindowMessages();
-        }
+<li id="purpose4">
+Connect with the Ultra KH community
+</li>
 
-        function renderChatWindowMessages() {
-            const box = document.getElementById("chatMsgContainer");
-            box.innerHTML = "";
-            
-            if (!activeTargetChatId) {
-                box.innerHTML = `<div style="margin:auto; text-align:center; color:var(--bit-text-light);">Select an operator thread from the sidebar workspace directory to begin transmission.</div>`;
-                return;
-            }
+</ul>
 
-            const messages = chatLogs[activeTargetChatId] || [];
-            if(messages.length === 0) {
-                box.innerHTML = `<div style="margin:auto; text-align:center; color:var(--bit-text-light);">Secure room initialized. Begin conversation logs safely.</div>`;
-                return;
-            }
+</div>
 
-            messages.forEach(msg => {
-                const isMe = msg.senderId === currentUserId;
-                const msgRow = document.createElement("div");
-                msgRow.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
+</div>
 
-                let mediaMarkup = "";
-                if(msg.fileData) {
-                    if (msg.fileData.startsWith("data:image")) {
-                        mediaMarkup = `<img src="${msg.fileData}" style="max-width:100%; border-radius:6px; margin-top:5px; display:block; max-height:150px; object-fit:cover;">`;
-                    } else {
-                        mediaMarkup = `<a href="${msg.fileData}" download="${msg.fileName || 'file'}" style="display:block; color:white; font-size:12px; margin-top:5px; text-decoration:underline;">📁 Shared Attachment File</a>`;
-                    }
-                }
+</div>
 
-                msgRow.innerHTML = `
-                    <div class="msg-meta-container">
-                        <span><b>${msg.senderName}</b></span>
-                        <span>${msg.time}</span>
-                    </div>
-                    <div class="bubble-wrapper">
-                        <div class="bubble">
-                            <div>${msg.text}</div>
-                            ${mediaMarkup}
-                        </div>
-                    </div>
-                    <div class="msg-interact-bar">
-                        <span class="msg-interact-btn msg-delete-btn" onclick="deleteChatMessage('${activeTargetChatId}', ${msg.id})">Purge</span>
-                    </div>
-                `;
-                box.appendChild(msgRow);
-            });
-            box.scrollTop = box.scrollHeight;
-        }
+</div>
 
-        function handleFileAttachmentSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-            selectedChatFileName = file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedChatFileBase64 = e.target.result;
-                document.getElementById("fileAttachmentPreview").innerText = `📎 Attached: ${file.name}`;
-            };
-            reader.readAsDataURL(file);
-        }
+</main>
 
-        function insertEmojiIntoChat(emoji) {
-            const input = document.getElementById("chatInputField");
-            input.value += emoji;
-            input.focus();
-        }
+<script>
 
-        function submitChatMessage() {
-            if (!activeTargetChatId) {
-                showToast("Please select a valid conversation channel target first.", "error");
-                return;
-            }
-            const input = document.getElementById("chatInputField");
-            const text = input.value.trim();
-            
-            if (!text && !selectedChatFileBase64) return;
+const translations = {
 
-            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            if (!chatLogs[activeTargetChatId]) {
-                chatLogs[activeTargetChatId] = [];
-            }
+    en: {
 
-            const newMsg = {
-                id: Date.now(),
-                senderId: currentUserId,
-                senderName: currentUser,
-                text: text,
-                time: timeString,
-                fileData: selectedChatFileBase64,
-                fileName: selectedChatFileName
-            };
+        home: "Home",
+        chat: "Chat",
+        notif: "Notifications",
+        profile: "Profile",
+        account: "Accounts",
+        signout: "Sign Out",
 
-            chatLogs[activeTargetChatId].push(newMsg);
-            
-            // Clean inputs
-            input.value = "";
-            selectedChatFileBase64 = null;
-            selectedChatFileName = "";
-            document.getElementById("fileAttachmentPreview").innerText = "";
+        publish: "Publish an Update",
+        publishBtn: "Publish Post",
 
-            renderChatWindowMessages();
-        }
+        attach: "Add Image / File",
 
-        function deleteChatMessage(threadId, msgId) {
-            if(chatLogs[threadId]) {
-                chatLogs[threadId] = chatLogs[threadId].filter(m => m.id !== msgId);
-                renderChatWindowMessages();
-                showToast("Message line successfully purged from local storage context.", "success");
-            }
-        }
+        placeholder: "What is happening within your workspace channels?",
 
-        // Simulated Realtime WebSocket Layer Engine
-        function initRealtimeSimulation() {
-            setInterval(() => {
-                if (!activeTargetChatId) return;
+        welcome: "Welcome to Ultra KH 🚀",
 
-                // 20% random probability match condition of receiving incoming dynamic message responses
-                if (Math.random() > 0.8) {
-                    const responses = [
-                        "Acknowledged, synchronizing workspace modules.",
-                        "Processing database node structural diagnostics now. 👍",
-                        "Please verify the server cluster configuration logs.",
-                        "Everything looks smooth from our deployment telemetry side. 🔥",
-                        "Agreed. Let us organize a brief team call via the sync room later."
-                    ];
-                    const randomText = responses[Math.floor(Math.random() * responses.length)];
-                    const targetUser = usersList.find(u => u.id === activeTargetChatId);
-                    
-                    if (!targetUser) return;
-                    
-                    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    
-                    if (!chatLogs[activeTargetChatId]) {
-                        chatLogs[activeTargetChatId] = [];
-                    }
+        welcomeText:
+        "We are excited to launch our official social media platform dedicated to sharing updates, knowledge, trends, entertainment, and community engagement.",
 
-                    chatLogs[activeTargetChatId].push({
-                        id: Date.now(),
-                        senderId: targetUser.id,
-                        senderName: targetUser.username,
-                        text: randomText,
-                        time: timeString,
-                        fileData: null
-                    });
+        purpose: "Our Purpose:",
 
-                    renderChatWindowMessages();
-                    
-                    // Inject real-time native counter push alert notification matrix
-                    notifications.unshift({
-                        id: Date.now(),
-                        text: `New live chat message alert received from @${targetUser.username}`,
-                        time: "Just Now",
-                        unread: true
-                    });
-                    
-                    updateGlobalHeaderCounters();
-                    renderNotificationCenter();
-                }
-            }, 7000); 
-        }
+        p1: "Stay updated with the latest news and content",
+        p2: "Learn and grow together",
+        p3: "Share ideas and experiences",
+        p4: "Connect with the Ultra KH community"
 
-        // Profile Form Updates
-        function handleProfileUpdate(e) {
-            e.preventDefault();
-            const value = document.getElementById("profUserHandle").value.trim();
-            if(value) {
-                currentUser = value;
-                // Update local profile identification list trace
-                const index = usersList.findIndex(u => u.id === currentUserId);
-                if(index !== -1) usersList[index].username = currentUser;
-                
-                renderAllViews();
-                showToast("System profiles synced successfully.", "success");
-            }
-        }
+    },
 
-        // Authentication Portal Subsystem
-        function toggleAuthForms(mode) {
-            const signupBox = document.getElementById("authSignUpBox");
-            const signinBox = document.getElementById("authSignInBox");
-            if (mode === 'signin') {
-                signupBox.style.display = "none";
-                signinBox.style.display = "block";
-            } else {
-                signupBox.style.display = "block";
-                signinBox.style.display = "none";
-            }
-        }
+    kh: {
 
-        function processSignUp(e) {
-            e.preventDefault();
-            const username = document.getElementById("signUpUser").value.trim();
-            const email = document.getElementById("signUpEmail").value.trim();
-            const password = document.getElementById("signUpPass").value;
+        home: "ទំព័រដើម",
+        chat: "ការជជែក",
+        notif: "ការជូនដំណឹង",
+        profile: "ប្រវត្តិរូប",
+        account: "គណនី",
+        signout: "ចាកចេញ",
 
-            if(!username || !email || !password) return;
+        publish: "បង្ហោះព័ត៌មានថ្មី",
+        publishBtn: "បង្ហោះ",
 
-            // Register system accounts
-            const newId = `user-${Date.now()}`;
-            const newUserObj = { id: newId, username: username, email: email, status: "Online" };
-            
-            usersList.push(newUserObj);
-            
-            // Switch session credentials state
-            currentUser = username;
-            currentUserId = newId;
+        attach: "បន្ថែមរូបភាព / ឯកសារ",
 
-            document.getElementById("signUpSystemForm").reset();
-            renderAllViews();
-            switchView("home");
-            showToast(`Welcome logged inside room context: ${username}`, "success");
-        }
+        placeholder: "តើមានអ្វីកើតឡើងនៅក្នុងក្រុមការងាររបស់អ្នក?",
 
-        function processSignIn(e) {
-            e.preventDefault();
-            const username = document.getElementById("signInUser").value.trim();
-            if(!username) return;
+        welcome: "សូមស្វាគមន៍មកកាន់ Ultra KH 🚀",
 
-            const existing = usersList.find(u => u.username.toLowerCase() === username.toLowerCase());
-            if (existing) {
-                currentUser = existing.username;
-                currentUserId = existing.id;
-                existing.status = "Online";
-            } else {
-                // Autocreate on arbitrary login handles for interface continuity
-                const newId = `user-${Date.now()}`;
-                currentUserId = newId;
-                currentUser = username;
-                usersList.push({ id: newId, username: username, email: `${username.toLowerCase()}@ultrakh.com`, status: "Online" });
-            }
+        welcomeText:
+        "យើងមានសេចក្តីរីករាយក្នុងការបើកដំណើរការវេទិកាបណ្តាញសង្គមផ្លូវការរបស់យើងសម្រាប់ចែករំលែកព័ត៌មាន ចំណេះដឹង និន្នាការ ការកម្សាន្ត និងការចូលរួមសហគមន៍។",
 
-            document.getElementById("signInSystemForm").reset();
-            renderAllViews();
-            switchView("home");
-            showToast(`Welcome back session active: ${currentUser}`, "success");
-        }
+        purpose: "គោលបំណងរបស់យើង៖",
 
-        function triggerSignOut() {
-            currentUser = "Guest";
-            currentUserId = "guest-id";
-            showToast("Session disconnected from environment core.", "error");
-            renderAllViews();
-            switchView("auth");
-            toggleAuthForms('signin');
-        }
+        p1: "ទទួលព័ត៌មាន និងមាតិកាថ្មីៗ",
+        p2: "រៀន និងអភិវឌ្ឍជាមួយគ្នា",
+        p3: "ចែករំលែកគំនិត និងបទពិសោធន៍",
+        p4: "ភ្ជាប់ទំនាក់ទំនងជាមួយសហគមន៍ Ultra KH"
 
-        // Globalized Toast Framework Engine
-        function showToast(message, type = "info") {
-            const hub = document.getElementById("toastHub");
-            const card = document.createElement("div");
-            card.className = `toast-card ${type}`;
-            card.innerHTML = `
-                <div class="toast-message">${message}</div>
-                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-            `;
-            hub.appendChild(card);
-            setTimeout(() => { card.remove(); }, 4000);
-        }
-    </script>
+    }
+
+};
+
+document.getElementById("languageSwitcher")
+.addEventListener("change", function() {
+
+    const lang = this.value;
+
+    document.getElementById("nav-home-text").innerText =
+        translations[lang].home;
+
+    document.getElementById("nav-chat-text").innerText =
+        translations[lang].chat;
+
+    document.getElementById("nav-notif-text").innerText =
+        translations[lang].notif;
+
+    document.getElementById("nav-profile-text").innerText =
+        translations[lang].profile;
+
+    document.getElementById("nav-account-text").innerText =
+        translations[lang].account;
+
+    document.getElementById("nav-signout-text").innerText =
+        translations[lang].signout;
+
+    document.getElementById("publish-title").innerText =
+        translations[lang].publish;
+
+    document.getElementById("publish-btn").innerText =
+        translations[lang].publishBtn;
+
+    document.getElementById("attach-text").innerText =
+        translations[lang].attach;
+
+    document.getElementById("postText").placeholder =
+        translations[lang].placeholder;
+
+    document.getElementById("welcome-title").innerText =
+        translations[lang].welcome;
+
+    document.getElementById("welcome-text").innerText =
+        translations[lang].welcomeText;
+
+    document.getElementById("purpose-title").innerText =
+        translations[lang].purpose;
+
+    document.getElementById("purpose1").innerText =
+        translations[lang].p1;
+
+    document.getElementById("purpose2").innerText =
+        translations[lang].p2;
+
+    document.getElementById("purpose3").innerText =
+        translations[lang].p3;
+
+    document.getElementById("purpose4").innerText =
+        translations[lang].p4;
+
+});
+
+function signOut() {
+    showToast("Session Signed Out");
+}
+
+function showToast(message) {
+
+    const hub = document.getElementById("toastHub");
+
+    const card = document.createElement("div");
+
+    card.className = "toast-card";
+
+    card.innerHTML = message;
+
+    hub.appendChild(card);
+
+    setTimeout(() => {
+        card.remove();
+    }, 3000);
+}
+
+document.getElementById("homePublishForm")
+.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    const text = document.getElementById("postText").value;
+
+    if(!text.trim()) return;
+
+    const feed = document.getElementById("feedContainer");
+
+    const div = document.createElement("div");
+
+    div.className = "card post-card";
+
+    div.innerHTML = `
+        <div class="post-header">
+            <div class="post-author">Admin</div>
+            <div class="post-time">Just now</div>
+        </div>
+
+        <div>
+            ${text}
+        </div>
+    `;
+
+    feed.prepend(div);
+
+    this.reset();
+
+    showToast("Post Published Successfully");
+
+});
+
+</script>
+
 </body>
 </html>
