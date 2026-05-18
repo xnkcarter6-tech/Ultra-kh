@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra kh</title>
+    <title>Ultra kh - Corporate Operations Interface</title>
     <style>
         :root {
             --bit-blue-primary: #1E50FF;  
@@ -21,9 +22,11 @@
             --bit-danger: #FF4D4F;
             --bit-success: #52C41A;
             --bit-warning: #FAAD14;
+            --bg-pattern: none;
         }
-
-        body.dark-mode {
+        
+        /* Background Theme Presets */
+        body.theme-dark {
             --bit-bg-main: #141E30;
             --bit-bg-card: #1F2A44;
             --bit-border-light: #2D3D5A;
@@ -31,6 +34,27 @@
             --bit-text-light: #A0AABF;
             --chat-bubble-them: #2D3D5A;
             --chat-text-them: #FFFFFF;
+            --bg-pattern: none;
+        }
+        body.theme-grid {
+            --bit-bg-main: #F4F7FC;
+            --bit-bg-card: #FFFFFF;
+            --bit-border-light: #D0DDF0;
+            --bit-text-dark: #0F1B2A;
+            --bit-text-light: #5C6E84;
+            --bg-pattern: linear-gradient(90deg, rgba(30,80,255,0.03) 1px, transparent 1px), linear-gradient(rgba(30,80,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        body.theme-sepia {
+            --bit-bg-main: #F4EFE6;
+            --bit-bg-card: #FCF9F2;
+            --bit-border-light: #E4DCCF;
+            --bit-text-dark: #433422;
+            --bit-text-light: #7D6E5D;
+            --chat-bubble-me: #8C6A42;
+            --chat-bubble-them: #EDE4D3;
+            --chat-text-them: #433422;
+            --bg-pattern: none;
         }
 
         * {
@@ -39,17 +63,16 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
         }
-
         body {
             background-color: var(--bit-bg-main);
+            background-image: var(--bg-pattern);
             color: var(--bit-text-dark);
             display: flex;
             height: 100vh;
             overflow: hidden;
             font-size: 14px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.2s, color 0.2s;
         }
-
         .sidebar {
             width: 250px;
             background-color: var(--bit-blue-primary);
@@ -59,11 +82,10 @@
             flex-shrink: 0;
             z-index: 100;
         }
-
         .sidebar-brand {
             background-color: var(--bit-blue-primary);
             padding: 24px 20px;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800; 
             color: #FFFFFF;    
             display: flex;
@@ -71,10 +93,8 @@
             letter-spacing: 0.5px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
         }
-
         .brand-text-space { margin-right: 8px; }
-        .sidebar-menu { list-style: none; padding: 0; flex-grow: 1; }
-        
+        .sidebar-menu { list-style: none; padding: 0; flex-grow: 1; display: flex; flex-direction: column; }    
         .sidebar-item a {
             display: flex;
             align-items: center;
@@ -85,11 +105,9 @@
             font-weight: 700; 
             font-size: 14px;
         }
-
         .sidebar-item a:hover { background-color: var(--bit-blue-hover); }
         .sidebar-item.active { background-color: var(--bit-blue-active); position: relative; }
         .sidebar-item.active::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: white; }
-
         .sidebar-icon {
             width: 18px;
             height: 18px;
@@ -99,122 +117,94 @@
             justify-content: center;
             flex-shrink: 0;
         }
-
         .sidebar-icon svg {
             width: 100%; height: 100%; fill: none; stroke: currentColor;
             stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
         }
-
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }    
         .top-bar {
             background-color: var(--bit-bg-card);
             height: 60px; display: flex; align-items: center; justify-content: space-between;
             padding: 0 25px; border-bottom: 1px solid var(--bit-border-light); flex-shrink: 0;
         }
-
         .top-bar-right { display: flex; align-items: center; gap: 15px; color: var(--bit-text-light); }
         .top-bar-profile-wrap { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-
         .container { padding: 25px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; }
         .card { background: var(--bit-bg-card); border-radius: 8px; border: 1px solid var(--bit-border-light); padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .page-view { display: none; height: 100%; }
         .page-view.active { display: block; }
-
         .split-view-layout { display: flex; gap: 25px; height: 100%; align-items: flex-start; }
         .left-form-panel { width: 350px; flex-shrink: 0; }
         .right-display-panel { flex-grow: 1; }
-
         .form-group { margin-bottom: 18px; }
         .form-label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--bit-text-dark); }
         .form-input, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
-        .form-textarea { resize: none; height: 70px; }
-        
+        .form-select { width: 100%; padding: 10px 12px; border: 1px solid var(--bit-border-light); border-radius: 6px; background: var(--bit-bg-card); color: var(--bit-text-dark); font-size: 13px; outline: none; cursor: pointer; }
+        .form-textarea { resize: none; height: 70px; }    
         .btn-submit { width: 100%; background: var(--bit-blue-primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
         .btn-submit:hover { background: var(--bit-blue-hover); }
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--bit-border-light); }
+        
+        .bg-preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 15px; }
+        .bg-option-card { border: 2px solid var(--bit-border-light); border-radius: 6px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s ease; }
+        .bg-option-card:hover { border-color: var(--bit-blue-primary); }
+        .bg-option-card.selected { border-color: var(--bit-blue-primary); background: rgba(30, 80, 255, 0.05); }
+        .bg-preview-swatch { height: 35px; border-radius: 4px; margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.08); }
 
         .home-layout { display: flex; gap: 25px; align-items: flex-start; }
         .home-main-feed { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; width: 100%; }
         .home-side-metrics { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
-        .feed-container { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }
-        
+        .feed-container { display: flex; flex-direction: column; gap: 20px; margin-top: 10px; }    
         .post-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; }
         .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .post-author { font-weight: 700; color: var(--bit-text-dark); }
-        .post-time { font-size: 12px; color: var(--bit-text-light); }
         .post-content-text { color: var(--bit-text-dark); font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
-        .tag-badge { display: inline-block; background: rgba(30, 80, 255, 0.1); color: var(--bit-blue-primary); padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 5px; font-weight: 600; }
-
         .post-actions { display: flex; align-items: center; border-top: 1px solid var(--bit-border-light); border-bottom: 1px solid var(--bit-border-light); padding: 10px 0; margin-bottom: 12px; gap: 15px; }
         .action-trigger-btn { background: transparent; border: none; color: var(--bit-text-light); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; }
         .action-trigger-btn:hover { color: var(--bit-blue-primary); }
-
-        .comments-section-wrapper { display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.01); border-radius: 6px; padding: 10px; }
-        .comment-item-row { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 8px; }
-        .comment-content-bubble { background: rgba(0,0,0,0.03); border-radius: 12px; padding: 8px 12px; flex-grow: 1; }
-        .comment-user-title { font-weight: 700; color: var(--bit-text-dark); }
-        .comment-input-inline-box { display: flex; gap: 10px; margin-top: 10px; }
-
+        .action-trigger-btn.purge:hover { color: var(--bit-danger); }
+        
         .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; min-height: 450px; }
         .chat-sidebar { width: 280px; border-right: 1px solid var(--bit-border-light); display: flex; flex-direction: column; }
-        .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); }
+        .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); letter-spacing: 0.3px; text-transform: uppercase; font-size: 11px; color: var(--bit-text-light); }
         .friends-list { list-style: none; overflow-y: auto; flex-grow: 1; }
         .friend-item { padding: 15px 20px; border-bottom: 1px solid var(--bit-border-light); cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .friend-item.active { background: rgba(30, 80, 255, 0.08); }
         .friend-name { font-weight: 600; color: var(--bit-text-dark); font-size: 13px; }
-
         .chat-window { flex-grow: 1; display: flex; flex-direction: column; background: var(--bit-bg-card); position: relative; min-width: 0; }
-        .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; }
-        .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: rgba(0, 0, 0, 0.02); }
-        
+        .chat-window-header { height: 50px; padding: 0 20px; border-bottom: 1px solid var(--bit-border-light); display: flex; align-items: center; font-weight: 600; font-size: 13px; }
+        .chat-messages-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: rgba(0, 0, 0, 0.01); }    
         .msg-row { display: flex; flex-direction: column; width: 100%; position: relative; }
         .msg-row.msg-me { align-items: flex-end; }
         .msg-row.msg-them { align-items: flex-start; }
-        .msg-meta-container { font-size: 11px; color: var(--bit-text-light); margin-bottom: 3px; display: flex; gap: 10px; }
-        
+        .msg-meta-container { font-size: 11px; color: var(--bit-text-light); margin-bottom: 3px; display: flex; gap: 10px; }    
         .bubble-wrapper { display: flex; align-items: center; gap: 8px; max-width: 85%; position: relative; }
-        .bubble { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; word-wrap: break-word; position: relative; }
-        .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; border-bottom-right-radius: 2px; }
-        .msg-them .bubble { background: var(--chat-bubble-them); color: var(--chat-text-them); border-bottom-left-radius: 2px; border: 1px solid var(--bit-border-light); }
-        
-        .msg-interact-bar { display: flex; gap: 8px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); }
-        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; }
+        .bubble { padding: 10px 14px; border-radius: 6px; font-size: 13px; line-height: 1.5; word-wrap: break-word; position: relative; }
+        .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; }
+        .msg-them .bubble { background: var(--chat-bubble-them); color: var(--chat-text-them); border: 1px solid var(--bit-border-light); }    
+        .msg-interact-bar { display: flex; gap: 12px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); align-items: center; }
+        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 2px; }
         .msg-interact-btn:hover { color: var(--bit-blue-primary); }
-        .msg-delete-btn:hover { color: var(--bit-danger); }
-        .reactions-pill-box { display: flex; gap: 4px; margin-top: 4px; }
-        .react-badge { background: var(--bit-bg-main); border: 1px solid var(--bit-border-light); border-radius: 10px; padding: 1px 6px; font-size: 11px; cursor: pointer; }
-
-        .chat-input-container { border-top: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; flex-direction: column; }
-        .chat-input-area { padding: 15px 20px; display: flex; gap: 10px; align-items: center; }
-        .chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }
-        
-        .chat-utility-row { display: flex; gap: 10px; padding: 0 20px 10px; align-items: center; }
-        .emoji-picker-inline { display: flex; gap: 6px; }
-        .emoji-select-btn { background: rgba(0,0,0,0.04); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        .emoji-select-btn:hover { background: rgba(30,80,255,0.1); }
-        
-        .file-attach-label { cursor: pointer; display: flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-        .file-attach-label:hover { background: rgba(30,80,255,0.1); }
-        .attachment-preview-tag { display: inline-flex; align-items: center; background: var(--bit-warning); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-top: 4px; }
-
+        .msg-interact-btn.msg-delete-btn:hover { color: var(--bit-danger); }
+        .reaction-badge { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 10px; padding: 2px 6px; font-size: 11px; margin-top: 4px; display: inline-flex; align-items: center; gap: 3px; }
+        .chat-input-container { border-top: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; flex-direction: column; padding: 10px 20px; }
+        .chat-controls-row { display: flex; gap: 15px; margin-bottom: 8px; align-items: center; }
+        .chat-control-icon-btn { background: none; border: none; color: var(--bit-text-light); font-weight: 600; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .chat-control-icon-btn:hover { color: var(--bit-blue-primary); }
+        .chat-input-area { display: flex; gap: 10px; align-items: center; }
+        .chat-input { flex-grow: 1; padding: 10px 15px; border: 1px solid var(--bit-border-light); border-radius: 6px; outline: none; font-size: 13px; background: var(--bit-bg-card); color: var(--bit-text-dark); }    
         .btn-send { background: var(--bit-blue-primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-
         .metrics-grid-vertical { display: flex; flex-direction: column; gap: 15px; }
         .metric-widget-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; padding: 20px; min-height: 100px; }
-        .metric-widget-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--bit-text-light); letter-spacing: 0.5px; margin-bottom: 8px; }
+        .metric-widget-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--bit-text-light); letter-spacing: 0.5px; margin-bottom: 8px; }
         .metric-widget-value { font-size: 28px; font-weight: 800; color: var(--bit-blue-primary); }
-        .metric-widget-status { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; margin-top: 8px; }
-        .dot-pulse { width: 8px; height: 8px; background-color: var(--bit-success); border-radius: 50%; margin-right: 6px; display: inline-block; }
-
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 420px; pointer-events: none; }
         .toast-card { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); padding: 14px 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); display: flex; align-items: center; gap: 12px; pointer-events: auto; border-left: 5px solid var(--bit-blue-primary); animation: toastSlideIn 0.3s forwards; }
         .toast-card.success { border-left-color: var(--bit-success); }
-        .toast-card.error { border-left-color: var(--bit-danger); }
         .toast-message { font-size: 13.5px; font-weight: 600; color: var(--bit-text-dark); flex-grow: 1; }
-        .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; }
+        .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; }    
+        .reply-preview-bar { background: rgba(0,0,0,0.03); border-left: 3px solid var(--bit-blue-primary); padding: 6px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; font-size: 12px; }
+        .inline-reply-context { font-size: 11px; font-style: italic; background: rgba(0,0,0,0.04); padding: 3px 8px; border-radius: 4px; margin-bottom: 4px; display: block; color: var(--bit-text-light); }
         @keyframes toastSlideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; flex-direction: row; }
@@ -234,22 +224,20 @@
 <body>
     <div class="toast-container" id="toastHub"></div>
     <aside class="sidebar">
-        <div class="sidebar-brand"><span class="brand-text-space">Ultra</span><span>Workspace</span></div>
+        <div class="sidebar-brand"><span class="brand-text-space">Ultra</span><span>kh</span></div>
         <ul class="sidebar-menu">
             <li class="sidebar-item active" data-target="home" id="nav-home"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><span>Home</span></a></li>
             <li class="sidebar-item" data-target="message" id="nav-message"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><span>Chat</span></a></li>
-            <li class="sidebar-item" data-target="profile" id="nav-profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Profile</span></a></li>
-            <li class="sidebar-item" data-target="auth" id="nav-auth"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div><span>Accounts</span></a></li>
-            <li class="sidebar-item" style="margin-top:auto;" onclick="triggerSignOut()"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div><span>Sign Out</span></a></li>
+            <li class="sidebar-item" data-target="profile" id="nav-profile"><a href="javascript:void(0)"><div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><span>Preferences</span></a></li>
         </ul>
     </aside>
     <main class="main-content">
         <header class="top-bar">
-            <div id="breadcrumb" style="font-weight: 600; color: var(--bit-text-light);">Dashboard / Home</div>
+            <div id="breadcrumb" style="font-weight: 600; color: var(--bit-text-light);">Home</div>
             <div class="top-bar-right">
                 <div class="top-bar-profile-wrap">
                     <div style="width:24px; height:24px; background: #E0E0E0; border-radius:50%;"></div>
-                    <div><span id="topBarUserHandle">Admin</span></div>
+                    <div>User: ID <span id="topBarUserHandle" style="font-weight: 700;">Admin</span></div>
                 </div>
             </div>
         </header>
@@ -259,165 +247,122 @@
                 <div class="home-layout">
                     <div class="home-main-feed">
                         <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 12px;">Publish an Update</h3>
                             <form id="homePublishForm" onsubmit="handlePostPublish(event)">
                                 <div class="form-group" style="margin-bottom: 12px;">
-                                    <textarea class="form-textarea" id="postText" required placeholder="What is happening within your workspace channels?"></textarea>
+                                    <textarea class="form-textarea" id="postText" placeholder="Write a post..."></textarea>
                                 </div>
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label class="form-label">Add Tags (comma separated)</label>
-                                    <input type="text" id="postTags" class="form-input" placeholder="e.g. general, announcement, urgent">
-                                </div>
-                                <div style="display: flex; justify-content: flex-end;">
-                                    <button type="submit" class="btn-submit" style="width: auto; padding: 8px 24px;">Publish Post</button>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label class="file-attach-label" for="homePostFileInput" style="cursor: pointer; background: rgba(0,0,0,0.04); padding: 4px 10px; border-radius: 4px; font-weight: 600; color: var(--bit-text-light);">
+                                            📎 Upload File
+                                            <input type="file" id="homePostFileInput" style="display:none;" onchange="handleHomePostFileSelected(this)">
+                                        </label>
+                                        <span id="homeFilePreviewText" style="font-size:12px; margin-left:8px; color:var(--bit-text-light);"></span>
+                                    </div>
+                                    <button type="submit" class="btn-submit" style="width: auto; padding: 8px 24px;">Post</button>
                                 </div>
                             </form>
                         </div>
                         <div class="feed-container" id="homeFeedStream"></div>
                     </div>
                     <div class="home-side-metrics">
-                        <div class="card" style="padding: 20px;">
-                            <h3 style="margin-bottom: 5px;">Welcome to Ultra Workspace</h3>
-                            <p style="color: var(--bit-text-light); font-size: 12px;">Your workspace platform channels are active.</p>
-                        </div>
                         <div class="metrics-grid-vertical">
-                            <div class="metric-widget-card"><div class="metric-widget-title">Total Accounts</div><div class="metric-widget-value" id="metUserCount">2</div></div>
-                            <div class="metric-widget-card"><div class="metric-widget-title">System Status</div><div class="metric-widget-status"><span class="dot-pulse"></span><span>Operational / Online</span></div></div>
+                            <div class="metric-widget-card"><div class="metric-widget-title">Registered</div><div class="metric-widget-value" id="metUserCount">1</div></div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- PAGE PROFILE -->
+            <!-- PAGE PROFILE (PREFERENCES) -->
             <div class="page-view" id="page-profile">
                 <div class="split-view-layout">
                     <div class="card left-form-panel">
-                        <h3 style="margin-bottom: 15px; text-align: center;">Account Info</h3>
+                        <h3 style="margin-bottom: 15px; text-align: center; font-size: 14px; text-transform: uppercase;">User Signature</h3>
                         <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
                             <div class="form-group">
-                                <label class="form-label">Active Operator Username</label>
+                                <label class="form-label">Active Handle Name</label>
                                 <input type="text" class="form-input" id="profUserHandle" required>
                             </div>
-                            <button type="submit" class="btn-submit">Save Changes</button>
+                            <button type="submit" class="btn-submit">Update Signature</button>
                         </form>
                     </div>
                     <div class="card right-display-panel">
-                        <h3 style="margin-bottom: 15px;">Workspace Preferences</h3>
-                        <div class="toggle-container">
-                            <div>
-                                <div style="font-weight: 700;">Developer Dark Mode</div>
-                                <div style="font-size: 12px; color: var(--bit-text-light);">Switch background layout color palette to low-light style.</div>
+                        <h3 style="margin-bottom: 5px; font-size: 14px; text-transform: uppercase;">Interface Environment</h3>
+                        <div style="font-size: 12px; color: var(--bit-text-light); margin-bottom: 15px;">Select a display palette layout framework for your workstation.</div>
+                        
+                        <div class="bg-preset-grid">
+                            <div class="bg-option-card selected" id="preset-default" onclick="setWorkspaceTheme('default')">
+                                <div class="bg-preview-swatch" style="background: #EDF1F7;"></div>
+                                <div style="font-weight:700; font-size:12px;">Standard Clear</div>
                             </div>
-                            <input type="checkbox" id="themeToggleCheckbox" style="width: 20px; height: 20px; cursor: pointer;">
+                            <div class="bg-option-card" id="preset-grid" onclick="setWorkspaceTheme('grid')">
+                                <div class="bg-preview-swatch" style="background: #F4F7FC; background-image: linear-gradient(90deg, rgba(30,80,255,0.1) 1px, transparent 1px), linear-gradient(rgba(30,80,255,0.1) 1px, transparent 1px); background-size: 8px 8px;"></div>
+                                <div style="font-weight:700; font-size:12px;">Grid Blue</div>
+                            </div>
+                            <div class="bg-option-card" id="preset-dark" onclick="setWorkspaceTheme('dark')">
+                                <div class="bg-preview-swatch" style="background: #141E30;"></div>
+                                <div style="font-weight:700; font-size:12px;">Console Slate</div>
+                            </div>
+                            <div class="bg-option-card" id="preset-sepia" onclick="setWorkspaceTheme('sepia')">
+                                <div class="bg-preview-swatch" style="background: #F4EFE6;"></div>
+                                <div style="font-weight:700; font-size:12px;">Warm Sepia</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- PAGE MESSAGE -->
             <div class="page-view" id="page-message">
                 <div class="chat-layout">
                     <div class="chat-sidebar">
-                        <div class="chat-sidebar-header">Workspace Operators</div>
+                        <div class="chat-sidebar-header">Direct Chats</div>
                         <ul class="friends-list" id="chatFriendsContainer"></ul>
                     </div>
                     <div class="chat-window">
-                        <div class="chat-window-header" id="activeChatUser">Select an operator thread to view history</div>
+                        <div class="chat-window-header" id="activeChatUser">Demo</div>
                         <div class="chat-messages-box" id="chatMsgContainer"></div>
                         <div class="chat-input-container">
-                            <div class="chat-utility-row">
-                                <div class="emoji-picker-inline">
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('👍')">👍</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('❤️')">❤️</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('😮')">😮</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('🔥')">🔥</button>
-                                    <button class="emoji-select-btn" onclick="insertEmojiIntoChat('🙏')">🙏</button>
-                                </div>
-                                <label class="file-attach-label" for="chatFileInput">
-                                    📎 Attach File
-                                    <input type="file" id="chatFileInput" style="display:none;" onchange="handleFileAttachmentSelected(this)">
+                            <div id="chatReplyPreviewContext" class="reply-preview-bar" style="display: none;">
+                                <span id="replyPreviewText">Replying to message...</span>
+                                <button onclick="cancelReplyContext()" style="background:none; border:none; cursor:pointer; font-weight:bold; color:var(--bit-text-light);">×</button>
+                            </div>                                                        
+                            <div class="chat-controls-row">
+                                <label class="chat-control-icon-btn" for="chatFileInputField">
+                                    📎 file
+                                    <input type="file" id="chatFileInputField" style="display:none;" onchange="handleChatFileSelection(this)">
                                 </label>
-                                <span id="fileAttachmentPreview" style="font-size:12px; color:var(--bit-text-light);"></span>
+                                <span id="chatControlStatusAppendText" style="font-size:12px; color:var(--bit-text-light);"></span>
                             </div>
                             <div class="chat-input-area">
-                                <input type="text" class="chat-input" id="chatInputField" placeholder="Type your message here...">
-                                <button class="btn-send" onclick="submitChatMessage()">Send</button>
+                                <input type="text" class="chat-input" id="chatInputField" placeholder="Type a message...">
+                                <button class="btn-send" onclick="submitChatMessage()">send</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PAGE AUTH (SIGN UP / SIGN IN) -->
-            <div class="page-view" id="page-auth">
-                <div class="split-view-layout" style="justify-content: center; align-items: center; min-height: 400px;">
-                    <div class="card left-form-panel" id="authSignUpBox" style="width: 100%; max-width: 400px;">
-                        <h3 style="margin-bottom: 20px; text-align: center;">Sign Up Workspace Account</h3>
-                        <form id="signUpSystemForm" onsubmit="processSignUp(event)">
-                            <div class="form-group">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-input" id="signUpUser" required placeholder="Choose operator handle...">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-input" id="signUpPass" required placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-submit">Sign Up</button>
-                        </form>
-                        <p style="margin-top: 20px; text-align: center; font-size: 13px; color: var(--bit-text-light);">
-                            Already have an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signin')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Sign In here</a>
-                        </p>
-                    </div>
-
-                    <div class="card left-form-panel" id="authSignInBox" style="width: 100%; max-width: 400px; display: none;">
-                        <h3 style="margin-bottom: 20px; text-align: center;">Sign In Portal</h3>
-                        <form id="signInSystemForm" onsubmit="processSignIn(event)">
-                            <div class="form-group">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-input" id="signInUser" required placeholder="Enter handle name...">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-input" id="signInPass" required placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-submit">Sign In</button>
-                        </form>
-                        <p style="margin-top: 20px; text-align: center; font-size: 13px; color: var(--bit-text-light);">
-                            Need an account? <a href="javascript:void(0)" onclick="toggleAuthForms('signup')" style="color: var(--bit-blue-primary); font-weight: 700; text-decoration: none;">Sign Up now</a>
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    <script>
-        // Core Platform Structural Databases
-        let memoryDatabase = { "Admin": "123456", "Operator_Alpha": "123456" };
-        let memoryActiveUser = "Admin"; 
-        let memoryPosts = [
-            { id: 1, author: "Admin", text: "Deposit channels are running normally.", tags: ["deposit", "reconciliation"], likes: 4, comments: [], shares: 1 },
-            { id: 2, author: "Operator_Alpha", text: "Third-party gateway channel updated successfully.", tags: ["channels"], likes: 2, comments: [], shares: 0 }
-        ];
-        let memoryChats = [
-            { id: 1, from: "Admin", to: "Operator_Alpha", text: "Please monitor the pending withdrawal requests.", time: "08:30 AM", reactions: {}, file: null },
-            { id: 2, from: "Operator_Alpha", to: "Admin", text: "Acknowledged. All systems clear.", time: "08:32 AM", reactions: {}, file: null }
-        ];
 
+    <script>
+        let memoryDatabase = { "Admin": "123456", "Demo": "654321" };
+        let currentSessionUser = "Admin"; 
+        let selectedActiveChatPartner = "Demo";
+        
         function safeGet(key, fallback) {
             try { return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : fallback; } 
             catch(e) { return fallback; }
         }
-
         function safeSet(key, val) {
             try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
         }
 
         let userDatabase = safeGet('users', memoryDatabase);
-        let currentSessionUser = safeGet('activeUser', "Admin");
-        let selectedActiveChatPartner = "Operator_Alpha";
-        let appPosts = safeGet('appPosts', memoryPosts);
-        let chatMessages = safeGet('chatMessages', memoryChats);
+        let appPosts = safeGet('appPosts', []);
+        let chatMessages = safeGet('chatMessages', []);
+                
         let activeSelectedFileBase64 = null;
+        let activeHomePostFileBase64 = null;
+        let activeReplyTargetId = null;
 
         document.addEventListener("DOMContentLoaded", () => {
             initNavigation();
@@ -429,7 +374,8 @@
                 userDatabase = safeGet('users', userDatabase);
                 appPosts = safeGet('appPosts', appPosts);
                 chatMessages = safeGet('chatMessages', chatMessages);
-                
+                const userCountEl = document.getElementById("metUserCount");
+                if (userCountEl) userCountEl.innerText = Object.keys(userDatabase).length;
                 renderFeed();
                 renderChatHistory();
             }, 5000);
@@ -450,37 +396,34 @@
 
             const targetPage = document.getElementById(`page-${pageId}`);
             const targetNav = document.getElementById(`nav-${pageId}`);
-            
+                        
             if(targetPage) targetPage.classList.add("active");
             if(targetNav) targetNav.classList.add("active");
 
             const breadcrumb = document.getElementById("breadcrumb");
             if(breadcrumb) {
-                breadcrumb.innerText = `Dashboard / ${pageId.charAt(0).toUpperCase() + pageId.slice(1)}`;
+                breadcrumb.innerText = pageId === 'home' ? 'Home' : pageId === 'message' ? 'Chat' : 'Preferences';
             }
         }
 
         function initThemeEngine() {
-            const checkbox = document.getElementById("themeToggleCheckbox");
-            const savedTheme = localStorage.getItem("workspaceTheme");
-            
-            if(savedTheme === "dark") {
-                document.body.classList.add("dark-mode");
-                if(checkbox) checkbox.checked = true;
-            }
+            const savedTheme = localStorage.getItem("workspaceThemePreset") || "default";
+            setWorkspaceTheme(savedTheme, false);
+        }
 
-            if(checkbox) {
-                checkbox.addEventListener("change", () => {
-                    if(checkbox.checked) {
-                        document.body.classList.add("dark-mode");
-                        localStorage.setItem("workspaceTheme", "dark");
-                        showToast("Dark mode channel preference active.", "success");
-                    } else {
-                        document.body.classList.remove("dark-mode");
-                        localStorage.setItem("workspaceTheme", "light");
-                        showToast("Light layout configuration loaded.", "success");
-                    }
-                });
+        function setWorkspaceTheme(themeName, triggerToast = true) {
+            document.body.className = ""; 
+            if (themeName !== 'default') {
+                document.body.classList.add(`theme-${themeName}`);
+            }
+            localStorage.setItem("workspaceThemePreset", themeName);
+            
+            document.querySelectorAll(".bg-option-card").forEach(card => card.classList.remove("selected"));
+            const activeCard = document.getElementById(`preset-${themeName}`);
+            if (activeCard) activeCard.classList.add("selected");
+            
+            if (triggerToast) {
+                showToast(`Switched matrix layer background template to ${themeName}.`, "success");
             }
         }
 
@@ -498,313 +441,226 @@
             document.getElementById("topBarUserHandle").innerText = currentSessionUser;
             const profInput = document.getElementById("profUserHandle");
             if(profInput) profInput.value = currentSessionUser;
-            
-            document.getElementById("metUserCount").innerText = Object.keys(userDatabase).length;
             renderFeed();
             renderChatFriends();
+            renderChatHistory();
+        }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            const val = document.getElementById("profUserHandle").value.trim();
+            if(!val) return;
+            delete userDatabase[currentSessionUser];
+            currentSessionUser = val;
+            userDatabase[val] = "123456";
+            safeSet('users', userDatabase);
+            syncUIContext();
+            showToast("Signature configurations saved.", "success");
+        }
+
+        function handleHomePostFileSelected(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                activeHomePostFileBase64 = { name: file.name, data: e.target.result };
+                document.getElementById("homeFilePreviewText").innerText = `Ready: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
         }
 
         function handlePostPublish(e) {
             e.preventDefault();
             const text = document.getElementById("postText").value.trim();
-            const tagInput = document.getElementById("postTags").value.trim();
-            if(!text) return;
+            if(!text && !activeHomePostFileBase64) return;
 
-            const tags = tagInput ? tagInput.split(",").map(t => t.trim().toLowerCase()).filter(t => t) : [];
             const newPost = {
                 id: Date.now(),
                 author: currentSessionUser,
                 text: text,
-                tags: tags,
                 likes: 0,
-                comments: [],
-                shares: 0
+                shares: 0,
+                file: activeHomePostFileBase64
             };
 
             appPosts.unshift(newPost);
             safeSet('appPosts', appPosts);
             document.getElementById("homePublishForm").reset();
+            activeHomePostFileBase64 = null;
+            document.getElementById("homeFilePreviewText").innerText = "";
             renderFeed();
-            showToast("Update successfully published into global log feed.", "success");
         }
 
         function renderFeed() {
             const stream = document.getElementById("homeFeedStream");
             if(!stream) return;
             stream.innerHTML = "";
+            if (appPosts.length === 0) return;
 
             appPosts.forEach(post => {
                 const card = document.createElement("div");
                 card.className = "post-card";
-                
-                let tagsMarkup = post.tags.map(t => `<span class="tag-badge">#${t}</span>`).join("");
-                let commentsMarkup = post.comments.map(c => `
-                    <div class="comment-item-row">
-                        <div class="comment-content-bubble">
-                            <span class="comment-user-title">${c.author}:</span> ${c.text}
-                        </div>
-                    </div>
-                `).join("");
+                let fileMarkup = post.file ? `<div style="margin: 12px 0; padding:10px; background:rgba(0,0,0,0.03); border-radius:6px;"><a href="${post.file.data}" download="${post.file.name}" style="color:var(--bit-blue-primary); text-decoration:none;">💾 ${post.file.name}</a></div>` : "";
 
                 card.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">@${post.author}</span>
-                        <span class="post-time">Workspace Update</span>
-                    </div>
+                    <div class="post-header"><span class="post-author">@${post.author}</span></div>
                     <div class="post-content-text">${post.text}</div>
-                    <div style="margin-bottom:12px;">${tagsMarkup}</div>
+                    ${fileMarkup}
                     <div class="post-actions">
-                        <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes})</button>
-                    </div>
-                    <div class="comments-section-wrapper">
-                        ${commentsMarkup}
-                        <div class="comment-input-inline-box">
-                            <input type="text" class="form-input" style="padding:6px 10px;" placeholder="Write a workspace memo entry..." id="comment-out-${post.id}">
-                            <button class="btn-send" style="padding:6px 12px; font-size:12px;" onclick="submitComment(${post.id})">Reply</button>
-                        </div>
-                    </div>
-                `;
+                        <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
+                        <button class="action-trigger-btn purge" onclick="deletePost(${post.id})">🗑️ Delete</button>
+                    </div>`;
                 stream.appendChild(card);
             });
         }
 
         function likePost(id) {
-            appPosts = appPosts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p);
+            appPosts = appPosts.map(p => p.id === id ? {...p, likes: (p.likes||0)+1} : p);
             safeSet('appPosts', appPosts);
             renderFeed();
         }
 
-        function submitComment(id) {
-            const input = document.getElementById(`comment-out-${id}`);
-            if(!input || !input.value.trim()) return;
-            
-            appPosts = appPosts.map(p => {
-                if(p.id === id) {
-                    return {
-                        ...p,
-                        comments: [...p.comments, { author: currentSessionUser, text: input.value.trim() }]
-                    };
-                }
-                return p;
-            });
-
+        function deletePost(id) {
+            appPosts = appPosts.filter(p => p.id !== id);
             safeSet('appPosts', appPosts);
             renderFeed();
-        }
-
-        function handleProfileUpdate(e) {
-            e.preventDefault();
-            const newHandle = document.getElementById("profUserHandle").value.trim();
-            if(!newHandle || newHandle === currentSessionUser) return;
-
-            if(userDatabase[newHandle] && newHandle !== currentSessionUser) {
-                showToast("Target channel operator signature duplicate registered.", "error");
-                return;
-            }
-
-            const pass = userDatabase[currentSessionUser];
-            delete userDatabase[currentSessionUser];
-            userDatabase[newHandle] = pass;
-            
-            currentSessionUser = newHandle;
-            safeSet('users', userDatabase);
-            safeSet('activeUser', currentSessionUser);
-            
-            syncUIContext();
-            showToast("Operator identities safely adjusted across channels.", "success");
         }
 
         function renderChatFriends() {
             const container = document.getElementById("chatFriendsContainer");
             if(!container) return;
             container.innerHTML = "";
-
             Object.keys(userDatabase).forEach(user => {
                 if(user === currentSessionUser) return;
                 const li = document.createElement("li");
                 li.className = `friend-item ${selectedActiveChatPartner === user ? 'active' : ''}`;
-                li.innerHTML = `<div style="width:10px; height:10px; background:var(--bit-success); border-radius:50%;"></div><span class="friend-name">${user}</span>`;
-                li.onclick = () => {
-                    selectedActiveChatPartner = user;
-                    renderChatFriends();
-                    renderChatHistory();
-                };
+                li.innerHTML = `<span class="friend-name">User ID: ${user}</span>`;
+                li.onclick = () => { selectedActiveChatPartner = user; renderChatFriends(); renderChatHistory(); };
                 container.appendChild(li);
             });
-        }
-
-        function renderChatHistory() {
-            const container = document.getElementById("chatMsgContainer");
             const header = document.getElementById("activeChatUser");
-            if(!container) return;
-
-            if(!selectedActiveChatPartner || !userDatabase[selectedActiveChatPartner]) {
-                header.innerText = "Select an operator thread to view history";
-                container.innerHTML = "";
-                return;
-            }
-
-            header.innerText = `Secure Operator Connection: @${selectedActiveChatPartner}`;
-            container.innerHTML = "";
-
-            const targetMessages = chatMessages.filter(m => 
-                (m.from === currentSessionUser && m.to === selectedActiveChatPartner) ||
-                (m.from === selectedActiveChatPartner && m.to === currentSessionUser)
-            );
-
-            targetMessages.forEach(msg => {
-                const isMe = msg.from === currentSessionUser;
-                const row = document.createElement("div");
-                row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
-
-                let reactionsMarkup = "";
-                if(msg.reactions && Object.keys(msg.reactions).length > 0) {
-                    reactionsMarkup = `<div class="reactions-pill-box">`;
-                    Object.entries(msg.reactions).forEach(([emoji, count]) => {
-                        if(count > 0) {
-                            reactionsMarkup += `<span class="react-badge" onclick="reactToMessage(${msg.id}, '${emoji}')">${emoji} ${count}</span>`;
-                        }
-                    });
-                    reactionsMarkup += `</div>`;
-                }
-
-                let fileMarkup = "";
-                if(msg.file) {
-                    fileMarkup = `<div style="margin-top:5px;"><a href="${msg.file.data}" download="${msg.file.name}" style="color:inherit; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:4px; text-decoration:none;">💾 ${msg.file.name}</a></div>`;
-                }
-
-                row.innerHTML = `
-                    <div class="msg-meta-container"><span>${msg.from}</span><span>${msg.time}</span></div>
-                    <div class="bubble-wrapper">
-                        <div class="bubble">${msg.text} ${fileMarkup}</div>
-                    </div>
-                    <div class="msg-interact-bar">
-                        <button class="msg-interact-btn" onclick="reactToMessage(${msg.id}, '👍')">👍</button>
-                        <button class="msg-interact-btn" onclick="reactToMessage(${msg.id}, '❤️')">❤️</button>
-                        ${isMe ? `<button class="msg-interact-btn msg-delete-btn" onclick="deleteChatMessage(${msg.id})">Delete</button>` : ''}
-                    </div>
-                    ${reactionsMarkup}
-                `;
-                container.appendChild(row);
-            });
-            container.scrollTop = container.scrollHeight;
+            if(header) header.innerText = selectedActiveChatPartner ? selectedActiveChatPartner : "Select a partner";
         }
 
-        function submitChatMessage() {
-            const input = document.getElementById("chatInputField");
-            if(!input) return;
-            const text = input.value.trim();
-            if(!text && !activeSelectedFileBase64) return;
-
-            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const newMsg = {
-                id: Date.now(),
-                from: currentSessionUser,
-                to: selectedActiveChatPartner,
-                text: text || "Sent an attachment file integration link.",
-                time: timeString,
-                reactions: {},
-                file: activeSelectedFileBase64
-            };
-
-            chatMessages.push(newMsg);
-            safeSet('chatMessages', chatMessages);
-            
-            input.value = "";
-            activeSelectedFileBase64 = null;
-            document.getElementById("chatFileInput").value = "";
-            document.getElementById("fileAttachmentPreview").innerText = "";
-
-            renderChatHistory();
-        }
-
-        function handleFileAttachmentSelected(input) {
+        function handleChatFileSelection(input) {
             const file = input.files[0];
             if(!file) return;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
-                activeSelectedFileBase64 = {
-                    name: file.name,
-                    data: e.target.result
-                };
-                document.getElementById("fileAttachmentPreview").innerHTML = `<span class="attachment-preview-tag">Attached: ${file.name}</span>`;
+                activeSelectedFileBase64 = { name: file.name, data: e.target.result };
+                document.getElementById("chatControlStatusAppendText").innerText = `📎 ${file.name}`;
             };
             reader.readAsDataURL(file);
         }
 
-        function insertEmojiIntoChat(emoji) {
+        function setReplyContext(msgId, partialText) {
+            activeReplyTargetId = msgId;
+            const previewBar = document.getElementById("chatReplyPreviewContext");
+            const previewText = document.getElementById("replyPreviewText");
+            if(previewBar && previewText) {
+                previewText.innerText = `Replying to: "${partialText.substring(0, 25)}..."`;
+                previewBar.style.display = "flex";
+            }
+        }
+
+        function cancelReplyContext() {
+            activeReplyTargetId = null;
+            const previewBar = document.getElementById("chatReplyPreviewContext");
+            if(previewBar) previewBar.style.display = "none";
+        }
+
+        function reactToMessage(msgId, reactionEmoji) {
+            chatMessages = chatMessages.map(m => m.id === msgId ? { ...m, reaction: m.reaction === reactionEmoji ? null : reactionEmoji } : m);
+            safeSet('chatMessages', chatMessages);
+            renderChatHistory();
+        }
+
+        function removeChatMessage(msgId) {
+            chatMessages = chatMessages.filter(m => m.id !== msgId);
+            safeSet('chatMessages', chatMessages);
+            renderChatHistory();
+        }
+
+        function likeChatMessage(msgId) {
+            chatMessages = chatMessages.map(m => m.id === msgId ? { ...m, likes: (m.likes || 0) + 1 } : m);
+            safeSet('chatMessages', chatMessages);
+            renderChatHistory();
+        }
+
+        function submitChatMessage() {
+            if(!selectedActiveChatPartner) { showToast("Select an operational recipient first.", "error"); return; }
             const input = document.getElementById("chatInputField");
-            if(input) { input.value += emoji; input.focus(); }
-        }
+            const text = input.value.trim();
 
-        function reactToMessage(id, emoji) {
-            chatMessages = chatMessages.map(m => {
-                if(m.id === id) {
-                    const currentReactions = m.reactions || {};
-                    currentReactions[emoji] = (currentReactions[emoji] || 0) + 1;
-                    return { ...m, reactions: currentReactions };
-                }
-                return m;
-            });
+            if(!text && !activeSelectedFileBase64) return;
+
+            const msg = {
+                id: Date.now(),
+                sender: currentSessionUser,
+                receiver: selectedActiveChatPartner,
+                text: text,
+                file: activeSelectedFileBase64,
+                replyTo: activeReplyTargetId,
+                reaction: null,
+                likes: 0
+            };
+
+            chatMessages.push(msg);
             safeSet('chatMessages', chatMessages);
-            renderChatHistory();
-        }
-
-        function deleteChatMessage(id) {
-            chatMessages = chatMessages.filter(m => m.id !== id);
-            safeSet('chatMessages', chatMessages);
-            renderChatHistory();
-            showToast("Log entry completely purged from network history.", "success");
-        }
-
-        function toggleAuthForms(mode) {
-            if(mode === 'signin') {
-                document.getElementById("authSignUpBox").style.display = "none";
-                document.getElementById("authSignInBox").style.display = "block";
-            } else {
-                document.getElementById("authSignUpBox").style.display = "block";
-                document.getElementById("authSignInBox").style.display = "none";
-            }
-        }
-
-        function processSignUp(e) {
-            e.preventDefault();
-            const u = document.getElementById("signUpUser").value.trim();
-            const p = document.getElementById("signUpPass").value;
             
-            if(userDatabase[u]) {
-                showToast("Username context signatures matching pre-existing item.", "error");
-                return;
-            }
-
-            userDatabase[u] = p;
-            safeSet('users', userDatabase);
-            document.getElementById("signUpSystemForm").reset();
-            syncUIContext();
-            showToast("New operator account created.", "success");
+            input.value = "";
+            activeSelectedFileBase64 = null;
+            cancelReplyContext();
+            document.getElementById("chatControlStatusAppendText").innerText = "";
+            renderChatHistory();
         }
 
-        function processSignIn(e) {
-            e.preventDefault();
-            const u = document.getElementById("signInUser").value.trim();
-            const p = document.getElementById("signInPass").value;
+        function renderChatHistory() {
+            const box = document.getElementById("chatMsgContainer");
+            if(!box) return;
+            box.innerHTML = "";
 
-            if(userDatabase[u] && userDatabase[u] === p) {
-                currentSessionUser = u;
-                safeSet('activeUser', currentSessionUser);
-                syncUIContext();
-                document.getElementById("signInSystemForm").reset();
-                switchPage('home');
-                showToast(`Session key authorized. Welcome operator @${u}`, "success");
-            } else {
-                showToast("Access credential verification matrix misaligned.", "error");
-            }
-        }
+            const activeHistory = chatMessages.filter(m => 
+                (m.sender === currentSessionUser && m.receiver === selectedActiveChatPartner) ||
+                (m.sender === selectedActiveChatPartner && m.receiver === currentSessionUser)
+            );
 
-        function triggerSignOut() {
-            showToast("Signing out of current operational space dashboard...", "error");
-            setTimeout(() => { switchPage('auth'); toggleAuthForms('signin'); }, 800);
+            activeHistory.forEach(m => {
+                const row = document.createElement("div");
+                row.className = `msg-row ${m.sender === currentSessionUser ? 'msg-me' : 'msg-them'}`;
+                
+                let fileMarkup = m.file ? `<br><a href="${m.file.data}" download="${m.file.name}" style="color:var(--bit-blue-primary); font-weight:bold;">💾 Download: ${m.file.name}</a>` : "";
+                
+                let parentContextMarkup = "";
+                if(m.replyTo) {
+                    const originalMsg = chatMessages.find(parent => parent.id === m.replyTo);
+                    if(originalMsg) {
+                        parentContextMarkup = `<span class="inline-reply-context">↩️ Replying to: "${originalMsg.text.substring(0,20)}..."</span>`;
+                    }
+                }
+
+                let reactionMarkup = m.reaction ? `<div class="reaction-badge">${m.reaction}</div>` : "";
+                let likeCountMarkup = m.likes > 0 ? `<span style="font-size:11px; margin-left:4px; color:var(--bit-blue-primary);">👍 ${m.likes}</span>` : "";
+                
+                row.innerHTML = `
+                    <div class="msg-meta-container"><span>${m.sender}</span></div>
+                    <div class="bubble-wrapper">
+                        <div class="bubble">
+                            ${parentContextMarkup}
+                            ${m.text} 
+                            ${fileMarkup}
+                        </div>
+                    </div>
+                    <div class="msg-interact-bar">
+                        <button class="msg-interact-btn" onclick="likeChatMessage(${m.id})">👍 Like${likeCountMarkup}</button>
+                        <button class="msg-interact-btn" onclick="setReplyContext(${m.id}, '${m.text.replace(/'/g, "\\'")}')">↩️ Reply</button>
+                        <button class="msg-interact-btn" onclick="reactToMessage(${m.id}, '❤️')">❤️ React</button>
+                        <button class="msg-interact-btn msg-delete-btn" onclick="removeChatMessage(${m.id})">🗑️ Remove</button>
+                        ${reactionMarkup}
+                    </div>`;
+                box.appendChild(row);
+            });
+            box.scrollTop = box.scrollHeight;
         }
     </script>
 </body>
