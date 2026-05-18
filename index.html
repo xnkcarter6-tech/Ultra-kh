@@ -24,7 +24,6 @@
             --bg-pattern: none;
         }
         
-        /* Background Theme Presets */
         body.theme-dark {
             --bit-bg-main: #141E30;
             --bit-bg-card: #1F2A44;
@@ -181,10 +180,9 @@
         .msg-me .bubble { background: var(--chat-bubble-me); color: #FFFFFF; }
         .msg-them .bubble { background: var(--chat-bubble-them); color: var(--chat-text-them); border: 1px solid var(--bit-border-light); }    
         .msg-interact-bar { display: flex; gap: 12px; font-size: 11px; margin-top: 4px; color: var(--bit-text-light); align-items: center; }
-        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 2px; }
+        .msg-interact-btn { cursor: pointer; background: none; border: none; color: var(--bit-text-light); font-size: 11px; font-weight: 600; }
         .msg-interact-btn:hover { color: var(--bit-blue-primary); }
-        .msg-interact-btn.msg-delete-btn:hover { color: var(--bit-danger); }
-        .reaction-badge { background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 10px; padding: 2px 6px; font-size: 11px; margin-top: 4px; display: inline-flex; align-items: center; gap: 3px; }
+        .msg-interact-btn.msg-del:hover { color: var(--bit-danger); }
         .chat-input-container { border-top: 1px solid var(--bit-border-light); background: var(--bit-bg-card); display: flex; flex-direction: column; padding: 10px 20px; }
         .chat-controls-row { display: flex; gap: 15px; margin-bottom: 8px; align-items: center; }
         .chat-control-icon-btn { background: none; border: none; color: var(--bit-text-light); font-weight: 600; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
@@ -202,7 +200,6 @@
         .toast-message { font-size: 13.5px; font-weight: 600; color: var(--bit-text-dark); flex-grow: 1; }
         .toast-close { background: transparent; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: bold; }    
         .reply-preview-bar { background: rgba(0,0,0,0.03); border-left: 3px solid var(--bit-blue-primary); padding: 6px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; font-size: 12px; }
-        .inline-reply-context { font-size: 11px; font-style: italic; background: rgba(0,0,0,0.04); padding: 3px 8px; border-radius: 4px; margin-bottom: 4px; display: block; color: var(--bit-text-light); }
         @keyframes toastSlideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @media (max-width: 768px) {
             body { flex-direction: column; }
@@ -219,7 +216,7 @@
             .chat-window { height: 350px; }
         }
     </style>
-    <!-- LOAD GOOGLE FIREBASE CORE SDK MODULES VIA CDN -->
+    <!-- GOOGLE FIREBASE SDK INITIALIZATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -238,7 +235,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.dbReferences = { db, ref, set };
+        window.dbReferences = { db, ref, set, onValue };
     </script>
 </head>
 <body>
@@ -292,7 +289,7 @@
                     </div>
                 </div>
             </div>
-            <!-- PAGE PROFILE (PREFERENCES) -->
+            <!-- PAGE PROFILE -->
             <div class="page-view" id="page-profile">
                 <div class="split-view-layout">
                     <div class="card left-form-panel">
@@ -337,7 +334,7 @@
                         <ul class="friends-list" id="chatFriendsContainer"></ul>
                     </div>
                     <div class="chat-window">
-                        <div class="chat-window-header" id="activeChatUser">Demo Workspace Channel</div>
+                        <div class="chat-window-header" id="activeChatUser">Demo</div>
                         <div class="chat-messages-box" id="chatMsgContainer"></div>
                         <div class="chat-input-container">
                             <div id="chatReplyPreviewContext" class="reply-preview-bar" style="display: none;">
@@ -349,6 +346,9 @@
                                     📎 file
                                     <input type="file" id="chatFileInputField" style="display:none;" onchange="handleChatFileSelection(this)">
                                 </label>
+                                <button class="chat-control-icon-btn" id="voiceRecordControlBtn" onclick="toggleVoiceRecording()">
+                                    🎙️ voice record
+                                </button>
                                 <span id="chatControlStatusAppendText" style="font-size:12px; color:var(--bit-text-light);"></span>
                             </div>
                             <div class="chat-input-area">
@@ -371,8 +371,14 @@
         let chatMessages = [];
                         
         let activeSelectedFileBase64 = null;
+        let activeSelectedVoiceBase64 = null;
         let activeHomePostFileBase64 = null;
         let activeReplyTargetId = null;
+
+        // Voice Recorder Properties
+        let mediaRecorderRef = null;
+        let audioChunksList = [];
+        let isCurrentlyRecordingVoice = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             initNavigation();
@@ -380,8 +386,9 @@
             switchPage('home'); 
             syncUIContext();
 
-            setTimeout(() => {
+            const checkFirebaseTimer = setInterval(() => {
                 if (window.dbReferences) {
+                    clearInterval(checkFirebaseTimer);
                     const { db, ref, onValue } = window.dbReferences;
 
                     onValue(ref(db, 'users'), (snapshot) => {
@@ -402,7 +409,7 @@
                         renderChatHistory();
                     });
                 }
-            }, 1000);
+            }, 200);
         });
 
         function cloudPush(nodePath, dataValue) {
@@ -481,7 +488,7 @@
             renderFeed();
             
             const friendsCont = document.getElementById("chatFriendsContainer");
-            if (friendsCont) friendsCont.innerHTML = `<li class="friend-item active"><span class="friend-name">Demo Workspace Channel</span></li>`;
+            if (friendsCont) friendsCont.innerHTML = `<li class="friend-item active"><span class="friend-name">Demo</span></li>`;
             renderChatHistory();
         }
 
@@ -518,7 +525,6 @@
                 author: currentSessionUser,
                 text: text,
                 likes: 0,
-                shares: 0,
                 file: activeHomePostFileBase64 || null
             };
 
@@ -566,13 +572,16 @@
         function submitChatMessage() {
             const inputField = document.getElementById("chatInputField");
             const txt = inputField.value.trim();
-            if(!txt && !activeSelectedFileBase64) return;
+            if(!txt && !activeSelectedFileBase64 && !activeSelectedVoiceBase64) return;
 
             const msg = {
                 id: Date.now(),
                 sender: currentSessionUser,
                 text: txt,
                 file: activeSelectedFileBase64 || null,
+                voice: activeSelectedVoiceBase64 || null,
+                replyToId: activeReplyTargetId || null,
+                likes: 0,
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
@@ -594,20 +603,57 @@
                 const row = document.createElement("div");
                 row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
                 
-                let fileSnippet = m.file ? `<div style="margin-top:5px; font-size:12px;"><a href="${m.file.data}" download="${m.file.name}" style="color:${isMe ? '#FFF':'var(--bit-blue-primary)'}; font-weight:bold;">📎 File: ${m.file.name}</a></div>` : "";
+                // Constructing features
+                let parentMessageMarkup = "";
+                if (m.replyToId) {
+                    const match = chatMessages.find(p => p.id === m.replyToId);
+                    if (match) {
+                        parentMessageMarkup = `<div style="font-size:11px; background:rgba(0,0,0,0.05); padding:4px 8px; border-radius:4px; margin-bottom:4px; color:var(--bit-text-light);">↳ Reply to @${match.sender}: ${match.text || "[Media/Voice]"}</div>`;
+                    }
+                }
+
+                let fileSnippet = m.file ? `<div style="margin-top:5px; font-size:12px;"><a href="${m.file.data}" download="${m.file.name}" style="color:${isMe ? '#FFF':'var(--bit-blue-primary)'}; font-weight:bold; text-decoration:underline;">📎 File: ${m.file.name}</a></div>` : "";
+                let voiceSnippet = m.voice ? `<div style="margin-top:5px;"><audio src="${m.voice}" controls style="max-width:200px; height:30px;"></audio></div>` : "";
                 
                 row.innerHTML = `
                     <div class="msg-meta-container"><span>${m.sender}</span> <span>${m.timestamp}</span></div>
                     <div class="bubble-wrapper">
                         <div class="bubble">
+                            ${parentMessageMarkup}
                             <div>${m.text}</div>
                             ${fileSnippet}
+                            ${voiceSnippet}
                         </div>
+                    </div>
+                    <div class="msg-interact-bar">
+                        <button class="msg-interact-btn" onclick="initiateReplyContext(${m.id}, '${m.sender}')">↳ Reply</button>
+                        <button class="msg-interact-btn" onclick="likeChatMessage(${m.id})">👍 (${m.likes || 0})</button>
+                        <button class="msg-interact-btn msg-del" onclick="deleteChatMessage(${m.id})">🗑️ Delete</button>
                     </div>
                 `;
                 box.appendChild(row);
             });
             box.scrollTop = box.scrollHeight;
+        }
+
+        function likeChatMessage(id) {
+            chatMessages = chatMessages.map(m => m.id === id ? {...m, likes: (m.likes || 0) + 1} : m);
+            cloudPush('chatMessages', chatMessages);
+        }
+
+        function deleteChatMessage(id) {
+            chatMessages = chatMessages.filter(m => m.id !== id);
+            cloudPush('chatMessages', chatMessages);
+        }
+
+        function initiateReplyContext(id, user) {
+            activeReplyTargetId = id;
+            const bar = document.getElementById("chatReplyPreviewContext");
+            const txt = document.getElementById("replyPreviewText");
+            if (bar && txt) {
+                txt.innerText = `Replying to @${user}`;
+                bar.style.display = "flex";
+            }
         }
 
         function handleChatFileSelection(input) {
@@ -616,15 +662,60 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 activeSelectedFileBase64 = { name: file.name, data: e.target.result };
-                document.getElementById("chatControlStatusAppendText").innerText = `File attachment ready: ${file.name}`;
+                document.getElementById("chatControlStatusAppendText").innerText = `📎 ${file.name} linked`;
             };
             reader.readAsDataURL(file);
         }
 
+        function toggleVoiceRecording() {
+            const btn = document.getElementById("voiceRecordControlBtn");
+            const statusText = document.getElementById("chatControlStatusAppendText");
+
+            if (!isCurrentlyRecordingVoice) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorderRef = new MediaRecorder(stream);
+                    audioChunksList = [];
+                    
+                    mediaRecorderRef.ondataavailable = e => { audioChunksList.push(e.data); };
+                    mediaRecorderRef.onstop = () => {
+                        const blob = new Blob(audioChunksList, { type: 'audio/mp3' });
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            activeSelectedVoiceBase64 = reader.result;
+                            if (statusText) statusText.innerText = "🎙️ Voice ready to send";
+                        };
+                        reader.readAsDataURL(blob);
+                    };
+
+                    mediaRecorderRef.start();
+                    isCurrentlyRecordingVoice = true;
+                    if (btn) btn.innerText = "🛑 stop recording";
+                    if (statusText) statusText.innerText = "🎙️ Recording live audio...";
+                }).catch(err => {
+                    showToast("Microphone access denied.", "info");
+                });
+            } else {
+                if (mediaRecorderRef && mediaRecorderRef.state !== "inactive") {
+                    mediaRecorderRef.stop();
+                }
+                isCurrentlyRecordingVoice = false;
+                if (btn) btn.innerText = "🎙️ voice record";
+            }
+        }
+
         function cancelReplyContext() {
             activeSelectedFileBase64 = null;
-            document.getElementById("chatControlStatusAppendText").innerText = "";
-            document.getElementById("chatFileInputField").value = "";
+            activeSelectedVoiceBase64 = null;
+            activeReplyTargetId = null;
+            
+            const bar = document.getElementById("chatReplyPreviewContext");
+            if (bar) bar.style.display = "none";
+            
+            const indicatorText = document.getElementById("chatControlStatusAppendText");
+            if (indicatorText) indicatorText.innerText = "";
+            
+            const fileInput = document.getElementById("chatFileInputField");
+            if (fileInput) fileInput.value = "";
         }
     </script>
 </body>
