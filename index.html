@@ -161,6 +161,16 @@
         .action-trigger-btn:hover { color: var(--bit-blue-primary); }
         .action-trigger-btn.purge:hover { color: var(--bit-danger); }
         
+        /* Nested Commments & Replies UI Architecture */
+        .post-comments-section { background: rgba(0,0,0,0.01); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .comment-item-box { border-left: 2px solid var(--bit-border-light); padding-left: 10px; margin-bottom: 6px; font-size: 13px; }
+        .comment-meta-hdr { font-weight: 700; color: var(--bit-text-dark); margin-bottom: 2px; font-size: 12px; }
+        .comment-body-txt { color: var(--bit-text-dark); line-height: 1.4; margin-bottom: 4px; }
+        .comment-action-bar { display: flex; gap: 12px; font-size: 11px; color: var(--bit-text-light); }
+        .comment-action-inline-btn { background: none; border: none; cursor: pointer; color: var(--bit-text-light); font-weight: 600; font-size: 11px; }
+        .comment-action-inline-btn:hover { color: var(--bit-blue-primary); }
+        .comment-input-inline-wrap { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+
         .chat-layout { display: flex; background: var(--bit-bg-card); border: 1px solid var(--bit-border-light); border-radius: 8px; height: 100%; overflow: hidden; min-height: 450px; }
         .chat-sidebar { width: 280px; border-right: 1px solid var(--bit-border-light); display: flex; flex-direction: column; }
         .chat-sidebar-header { padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--bit-border-light); background: rgba(0,0,0,0.01); letter-spacing: 0.3px; text-transform: uppercase; font-size: 11px; color: var(--bit-text-light); }
@@ -525,7 +535,9 @@
                 author: currentSessionUser,
                 text: text,
                 likes: 0,
-                file: activeHomePostFileBase64 || null
+                shares: 0,
+                file: activeHomePostFileBase64 || null,
+                comments: []
             };
 
             appPosts.unshift(newPost);
@@ -535,6 +547,7 @@
             document.getElementById("homeFilePreviewText").innerText = "";
         }
 
+        /* DYNAMIC FEED ENGINE: WITH REPLY, COMMENT, LIKE, SHARE & FILE ATTACHMENTS */
         function renderFeed() {
             const stream = document.getElementById("homeFeedStream");
             if(!stream) return;
@@ -546,14 +559,45 @@
                 card.className = "post-card";
                 let fileMarkup = post.file ? `<div style="margin: 12px 0; padding:10px; background:rgba(0,0,0,0.03); border-radius:6px;"><a href="${post.file.data}" download="${post.file.name}" style="color:var(--bit-blue-primary); text-decoration:none; font-weight:600;">💾 Download: ${post.file.name}</a></div>` : "";
 
+                // Build Comments Node Hierarchy
+                let commentsMarkup = "";
+                if(post.comments && post.comments.length > 0) {
+                    commentsMarkup += `<div class="post-comments-section">`;
+                    post.comments.forEach(c => {
+                        commentsMarkup += `
+                            <div class="comment-item-box">
+                                <div class="comment-meta-hdr">@${c.author}</div>
+                                <div class="comment-body-txt">${c.text}</div>
+                                <div class="comment-action-bar">
+                                    <button class="comment-action-inline-btn" onclick="toggleCommentInlineReplyForm(${post.id}, ${c.id}, '${c.author}')">↳ Reply</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    commentsMarkup += `</div>`;
+                }
+
                 card.innerHTML = `
                     <div class="post-header"><span class="post-author">@${post.author}</span></div>
                     <div class="post-content-text">${post.text}</div>
                     ${fileMarkup}
                     <div class="post-actions">
                         <button class="action-trigger-btn" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
+                        <button class="action-trigger-btn" onclick="toggleMainCommentForm(${post.id})">💬 Comment (${post.comments ? post.comments.length : 0})</button>
+                        <button class="action-trigger-btn" onclick="sharePost(${post.id})">🔗 Share (${post.shares || 0})</button>
                         <button class="action-trigger-btn purge" onclick="deletePost(${post.id})">🗑️ Delete</button>
-                    </div>`;
+                    </div>
+                    
+                    <!-- Dynamic Dynamic Target Inputs Container -->
+                    <div id="commentInputSection-${post.id}" style="display:none; margin-top:12px; margin-bottom:12px;">
+                        <div class="comment-input-inline-wrap">
+                            <input type="text" class="form-input" id="newCommentText-${post.id}" placeholder="Write your comment or reply here...">
+                            <button class="btn-submit" style="width:auto; padding:8px 16px;" onclick="submitPostComment(${post.id})">Submit</button>
+                        </div>
+                    </div>
+
+                    ${commentsMarkup}
+                `;
                 stream.appendChild(card);
             });
         }
@@ -563,9 +607,63 @@
             cloudPush('appPosts', appPosts);
         }
 
+        function sharePost(id) {
+            appPosts = appPosts.map(p => p.id === id ? {...p, shares: (p.shares||0)+1} : p);
+            cloudPush('appPosts', appPosts);
+            showToast("Post link generated and shared.", "success");
+        }
+
         function deletePost(id) {
             appPosts = appPosts.filter(p => p.id !== id);
             cloudPush('appPosts', appPosts);
+        }
+
+        function toggleMainCommentForm(postId) {
+            const el = document.getElementById(`commentInputSection-${postId}`);
+            const input = document.getElementById(`newCommentText-${postId}`);
+            if(el) {
+                el.style.display = el.style.display === "none" ? "block" : "none";
+                if(el.style.display === "block" && input) {
+                    input.value = "";
+                    input.placeholder = "Write a comment...";
+                    input.focus();
+                }
+            }
+        }
+
+        function toggleCommentInlineReplyForm(postId, targetCommentId, targetAuthor) {
+            const el = document.getElementById(`commentInputSection-${postId}`);
+            const input = document.getElementById(`newCommentText-${postId}`);
+            if(el) {
+                el.style.display = "block";
+                if(input) {
+                    input.value = `@${targetAuthor} `;
+                    input.focus();
+                }
+            }
+        }
+
+        function submitPostComment(postId) {
+            const txtInput = document.getElementById(`newCommentText-${postId}`);
+            if(!txtInput || !txtInput.value.trim()) return;
+
+            appPosts = appPosts.map(p => {
+                if(p.id === postId) {
+                    const commentsArr = p.comments ? [...p.comments] : [];
+                    commentsArr.push({
+                        id: Date.now(),
+                        author: currentSessionUser,
+                        text: txtInput.value.trim()
+                    });
+                    return { ...p, comments: commentsArr };
+                }
+                return p;
+            });
+
+            cloudPush('appPosts', appPosts);
+            txtInput.value = "";
+            const el = document.getElementById(`commentInputSection-${postId}`);
+            if(el) el.style.display = "none";
         }
 
         /* LIVE CHAT INTERACTION ENGINE */
@@ -603,7 +701,6 @@
                 const row = document.createElement("div");
                 row.className = `msg-row ${isMe ? 'msg-me' : 'msg-them'}`;
                 
-                // Constructing features
                 let parentMessageMarkup = "";
                 if (m.replyToId) {
                     const match = chatMessages.find(p => p.id === m.replyToId);
