@@ -164,6 +164,7 @@
 
         let currentUserId = null;
         let activeUserName = "";
+        let listsInitialized = false; // Prevents multiple attachment triggers
 
         const authScreen = document.getElementById('auth-screen');
         const portalScreen = document.getElementById('portal-screen');
@@ -180,7 +181,7 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // --- AUTH OBSERVER ---
+        // --- AUTH OBSERVER (CRITICAL FIX: LISTENERS RUN ONLY INSIDE HERE) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserId = user.uid;
@@ -207,8 +208,14 @@
                 authScreen.classList.add('hidden');
                 portalScreen.classList.remove('hidden');
 
-                set(ref(db, `users/${currentUserId}/status`), "active");
-                initLiveSyncStreams();
+                await set(ref(db, `users/${currentUserId}/status`), "active");
+                
+                // Securely start real-time sync streams after verifying credentials
+                if (!listsInitialized) {
+                    initLiveSyncStreams();
+                    initSocialFeedStream();
+                    listsInitialized = true;
+                }
             } else {
                 currentUserId = null;
                 portalScreen.classList.add('hidden');
@@ -227,12 +234,10 @@
             }
 
             try {
-                // First register the user entry inside the Authentication module
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 const cleanName = email.split('@')[0];
                 
-                // Write profile using safe authenticated UID context node path
                 await set(ref(db, `users/${user.uid}`), {
                     username: cleanName,
                     email: email,
@@ -389,20 +394,24 @@
             containerElement.innerHTML = html;
         }
 
-        const feedContainer = document.getElementById('feed-container');
-        onChildAdded(ref(db, 'social_feed'), (snap) => {
-            const card = createPostCardElement(snap.key, snap.val());
-            feedContainer.insertBefore(card, feedContainer.firstChild);
-        });
+        function initSocialFeedStream() {
+            const feedContainer = document.getElementById('feed-container');
+            feedContainer.innerHTML = ""; // Clear loader references
+            
+            onChildAdded(ref(db, 'social_feed'), (snap) => {
+                const card = createPostCardElement(snap.key, snap.val());
+                feedContainer.insertBefore(card, feedContainer.firstChild);
+            });
 
-        onChildChanged(ref(db, 'social_feed'), (snap) => {
-            const card = document.getElementById(`post-${snap.key}`);
-            if (card) {
-                const post = snap.val();
-                card.querySelector('.like-count').textContent = post.likes ? Object.keys(post.likes).length : 0;
-                if (post.comments) updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
-            }
-        });
+            onChildChanged(ref(db, 'social_feed'), (snap) => {
+                const card = document.getElementById(`post-${snap.key}`);
+                if (card) {
+                    const post = snap.val();
+                    card.querySelector('.like-count').textContent = post.likes ? Object.keys(post.likes).length : 0;
+                    if (post.comments) updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
+                }
+            });
+        }
 
         document.getElementById('btn-publish').addEventListener('click', async () => {
             const val = document.getElementById('update-text').value.trim();
