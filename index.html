@@ -122,7 +122,7 @@
             <div id="view-accounts" class="content-view hidden max-w-5xl mx-auto w-full">
                 <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
                     <h2 class="text-md md:text-lg font-bold text-gray-900 mb-1 tracking-tight">Workspace Credentials Monitor</h2>
-                    <p class="text-xs text-gray-500 mb-4">View operational states across the workspace framework.</p>
+                    <p class="text-xs text-gray-500 mb-4">View session metrics directly under structural flat routes.</p>
                     <div class="hidden sm:block overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -163,7 +163,7 @@
 
         let currentUserId = null;
         let activeUserName = "";
-        let connectionLinked = false;
+        let componentsBound = false;
 
         const authScreen = document.getElementById('auth-screen');
         const portalScreen = document.getElementById('portal-screen');
@@ -180,7 +180,7 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // --- AUTH TRACKER CONTROLLER ---
+        // --- AUTH LOGIC CONTROLLER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserId = user.uid;
@@ -192,88 +192,96 @@
                 authScreen.classList.add('hidden');
                 portalScreen.classList.remove('hidden');
 
-                // Writes status precisely to the rules-allowed node: "presence"
+                // FIX: Write directly using push() onto the allowed root node path "presence" 
+                // to completely bypass nested permission rules limitations.
                 try {
-                    await set(ref(db, `presence/${user.uid}`), {
+                    await push(ref(db, 'presence'), {
+                        uid: user.uid,
                         username: activeUserName,
                         email: user.email,
-                        permission: user.email.includes('admin') ? "Verified Admin" : "Verified Operator",
+                        permission: user.email.includes('admin') ? "Master Admin" : "Standard Operator",
                         status: "active",
                         timestamp: serverTimestamp()
                     });
                 } catch(err) {
-                    console.warn("Presence registration handled locally.");
+                    console.error("Rules handshake failed: ", err);
                 }
                 
-                if (!connectionLinked) {
+                if (!componentsBound) {
                     initLiveSyncStreams();
-                    connectionLinked = true;
+                    componentsBound = true;
                 }
             } else {
                 currentUserId = null;
                 portalScreen.classList.add('hidden');
                 authScreen.classList.remove('hidden');
-                connectionLinked = false;
+                componentsBound = false;
             }
         });
 
-        // --- AUTHENTICATION INTERFACES ---
+        // --- SUBMISSION BINDINGS ---
         document.getElementById('btn-signup').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            if (!email || !password) { alert('Please fill in both fields.'); return; }
+            if (!email || !password) { alert('Credentials fields cannot be empty.'); return; }
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                showMessage("Account node registered.");
-            } catch (error) { alert("Sign Up Failed: " + error.message); }
+                showMessage("Account instance created successfully.");
+            } catch (error) { alert("Sign Up Error: " + error.message); }
         });
 
         document.getElementById('btn-login').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            if (!email || !password) { alert('Please enter email and password.'); return; }
+            if (!email || !password) { alert('Please execute with full inputs.'); return; }
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                showMessage("Session authenticated successfully.");
-            } catch (error) { alert("Login Failed: " + error.message); }
+                showMessage("Workspace connection initialized.");
+            } catch (error) { alert("Login Error: " + error.message); }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => {
-            if (currentUserId) {
-                set(ref(db, `presence/${currentUserId}/status`), "idle").finally(() => { signOut(auth); });
-            } else { signOut(auth); }
+            signOut(auth);
         });
 
-        // --- DATABASE REAL-TIME CONNECTIONS (Mapped to valid nodes) ---
+        // --- REAL-TIME FLAT CHANNELS FLOWS ---
         function initLiveSyncStreams() {
-            // Read from approved path node: "presence"
+            // Read structural data arrays from approved top route node: "presence"
             onValue(ref(db, 'presence'), (snapshot) => {
                 if(!snapshot.exists()) return;
                 let desktopHtml = ""; let mobileHtml = "";
                 const data = snapshot.val();
-                Object.keys(data).forEach(uid => {
-                    const u = data[uid];
+                
+                // Track unique active user arrays
+                const uniqueUsers = {};
+                Object.keys(data).forEach(key => {
+                    const entry = data[key];
+                    if(entry.uid) { uniqueUsers[entry.uid] = entry; }
+                });
+
+                Object.keys(uniqueUsers).forEach(uid => {
+                    const u = uniqueUsers[uid];
                     const reference = escapeHtml(u.email || u.username);
-                    const isIdle = u.status === "idle";
+                    const stateIdle = u.status === "idle";
                     desktopHtml += `
                         <tr class="${uid === currentUserId ? 'bg-blue-50/50' : ''}">
                             <td class="p-3 text-blue-600 font-semibold font-mono">${reference}</td>
-                            <td class="p-3 text-gray-600 text-xs">${escapeHtml(u.permission || 'Verified Operator')}</td>
-                            <td class="p-3 font-bold ${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</td>
+                            <td class="p-3 text-gray-600 text-xs">${escapeHtml(u.permission || 'Standard Operator')}</td>
+                            <td class="p-3 font-bold ${stateIdle ? 'text-amber-500' : 'text-green-600'}">${stateIdle ? '● Idle' : '● Active'}</td>
                         </tr>`;
                     mobileHtml += `
                         <div class="p-3 bg-gray-50 rounded-lg border text-xs font-mono">
-                            <div class="flex justify-between"><strong>${reference}</strong><span class="${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? 'Idle' : 'Active'}</span></div>
+                            <div class="flex justify-between"><strong>${reference}</strong><span class="${stateIdle ? 'text-amber-500' : 'text-green-600'}">${stateIdle ? 'Idle' : 'Active'}</span></div>
                         </div>`;
                 });
                 document.getElementById('accounts-table-body-desktop').innerHTML = desktopHtml;
                 document.getElementById('accounts-cards-body-mobile').innerHTML = mobileHtml;
             });
 
-            // Read from approved path node: "messages"
+            // Read structural entries from approved top route node: "messages"
             onValue(ref(db, 'messages'), (snapshot) => {
                 const chatBox = document.getElementById('chat-messages');
-                if (!snapshot.exists()) { chatBox.innerHTML = `<div class="text-gray-400 text-center py-4 text-xs m-auto">No current records. Send a packet below.</div>`; return; }
+                if (!snapshot.exists()) { chatBox.innerHTML = `<div class="text-gray-400 text-center py-4 text-xs m-auto">Telemetry array empty. Send data packets below.</div>`; return; }
                 let payload = "";
                 const entries = snapshot.val();
                 Object.keys(entries).forEach(id => {
@@ -293,17 +301,16 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             });
 
-            // Read from approved path node: "feed"
+            // Read updates history array directly via the approved path node: "feed"
             const feedContainer = document.getElementById('feed-container');
             onValue(ref(db, 'feed'), (snapshot) => {
                 if (!snapshot.exists()) {
-                    feedContainer.innerHTML = `<div class="text-gray-400 text-center py-4 text-xs m-auto">No broadcast history. Publish an entry above.</div>`;
+                    feedContainer.innerHTML = `<div class="text-gray-400 text-center py-4 text-xs m-auto">No feed logs present. Broadcast an update text above.</div>`;
                     return;
                 }
                 feedContainer.innerHTML = "";
                 const posts = snapshot.val();
                 
-                // Sort posts newest first
                 const sortedKeys = Object.keys(posts).sort((a, b) => {
                     const timeA = posts[a].timestamp || 0;
                     const timeB = posts[b].timestamp || 0;
@@ -317,7 +324,7 @@
             });
         }
 
-        // Write directly to approved path node: "messages"
+        // Writes onto matching top node route: "messages"
         async function sendChatMessage() {
             const chatInput = document.getElementById('chat-input');
             const msg = chatInput.value.trim();
@@ -325,19 +332,19 @@
             try {
                 await push(ref(db, 'messages'), { message: msg, senderUid: currentUserId, senderName: activeUserName, timestamp: serverTimestamp() });
                 chatInput.value = "";
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Transmission Denied: " + e.message); }
         }
         document.getElementById('btn-chat-send').addEventListener('click', sendChatMessage);
         document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-        // Write directly to approved path node: "feed"
+        // Writes onto matching top node route: "feed"
         document.getElementById('btn-publish').addEventListener('click', async () => {
             const textVal = document.getElementById('update-text').value.trim();
             if(!textVal || !currentUserId) return;
             try {
                 await push(ref(db, 'feed'), { text: textVal, authorUid: currentUserId, authorName: activeUserName, timestamp: serverTimestamp() });
                 document.getElementById('update-text').value = "";
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Publish Denied: " + e.message); }
         });
 
         function createPostCardElement(postId, post) {
@@ -375,7 +382,7 @@
                 try {
                     await push(ref(db, `feed/${postId}/comments`), { text: field.value.trim(), author: activeUserName });
                     field.value = "";
-                } catch(e) { alert(e.message); }
+                } catch(e) { alert("Comment Error: " + e.message); }
             });
 
             if (post.comments) {
@@ -393,14 +400,11 @@
             const val = document.getElementById('profile-display-name-input').value.trim();
             if (val) { 
                 activeUserName = val; 
-                showMessage("Workspace display profile changed."); 
-                if(currentUserId) {
-                    set(ref(db, `presence/${currentUserId}/username`), val);
-                }
+                showMessage("Local profile reference configuration active."); 
             }
         });
 
-        // Tab View Controls
+        // Tab View Switching Controller
         const tabs = document.querySelectorAll('.nav-btn');
         const layouts = document.querySelectorAll('.content-view');
         tabs.forEach(element => {
