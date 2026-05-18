@@ -15,12 +15,12 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Username / ID</label>
-                    <input type="text" id="auth-username" placeholder="e.g., operator_01" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
-                </div>
-                <div>
                     <label class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Email Reference</label>
                     <input type="email" id="auth-email" placeholder="name@company.com" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Security Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
                 </div>
                 
                 <div class="pt-2 space-y-2">
@@ -143,7 +143,8 @@
 
     <script type="module">                
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";                
-        import { getDatabase, ref, push, set, get, onValue, onChildAdded, onChildChanged, onChildRemoved, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, get, onValue, onChildAdded, onChildChanged, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {                                    
             apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",                                    
@@ -158,6 +159,7 @@
 
         const app = initializeApp(firebaseConfig);                        
         const db = getDatabase(app);
+        const auth = getAuth(app);
 
         let currentUserId = null;
         let activeUserName = "";
@@ -177,109 +179,130 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // --- AUTHENTICATION FLOW: SIGN UP & LOGIN ENGINE ---
+        // --- AUTH TRACKING WATCHER ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                
+                // Get or set profile details inside RTDB node safely
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    activeUserName = snapshot.val().username || user.email.split('@')[0];
+                } else {
+                    activeUserName = user.email.split('@')[0];
+                    await set(userRef, {
+                        username: activeUserName,
+                        email: user.email,
+                        permission: "Operator Access",
+                        status: "active",
+                        timestamp: serverTimestamp()
+                    });
+                }
+
+                document.getElementById('session-badge').textContent = `ID: ${activeUserName}`;
+                document.getElementById('profile-display-name-input').value = activeUserName;
+
+                authScreen.classList.add('hidden');
+                portalScreen.classList.remove('hidden');
+
+                set(ref(db, `users/${currentUserId}/status`), "active");
+                initLiveSyncStreams();
+            } else {
+                currentUserId = null;
+                portalScreen.classList.add('hidden');
+                authScreen.classList.remove('hidden');
+            }
+        });
+
+        // --- ACCOUNT SIGN UP ACTION ---
         document.getElementById('btn-signup').addEventListener('click', async () => {
-            const username = document.getElementById('auth-username').value.trim().toLowerCase();
             const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
 
-            if (!username || !email) {
-                alert('Please fill out all credentials paths.');
+            if (!email || !password) {
+                alert('Please enter both an Email and Password.');
                 return;
             }
 
-            const userRef = ref(db, `users/${username}`);
-            const snapshot = await get(userRef);
-
-            if (snapshot.exists()) {
-                alert('This User ID already exists inside the system matrix.');
-                return;
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const cleanName = email.split('@')[0];
+                
+                await set(ref(db, `users/${user.uid}`), {
+                    username: cleanName,
+                    email: email,
+                    permission: email.includes('master') ? "Master Core Access" : "Operator Access",
+                    status: "active",
+                    timestamp: serverTimestamp()
+                });
+                
+                showMessage("Account node registered and connected successfully.");
+            } catch (error) {
+                alert("Sign Up Failed: " + error.message);
             }
-
-            // Write account profile to real-time node instantly
-            await set(userRef, {
-                username: username,
-                email: email,
-                permission: username === "xnk_master_node" ? "Master Core Access" : "Operator Access",
-                status: "active",
-                timestamp: serverTimestamp()
-            });
-
-            initializeAuthenticatedSession(username, username);
         });
 
+        // --- LOG IN ACTION ---
         document.getElementById('btn-login').addEventListener('click', async () => {
-            const username = document.getElementById('auth-username').value.trim().toLowerCase();
-            if (!username) {
-                alert('Enter your Account User ID to connect.');
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+
+            if (!email || !password) {
+                alert('Please enter both your Email and Password.');
                 return;
             }
 
-            const snapshot = await get(ref(db, `users/${username}`));
-            if (!snapshot.exists()) {
-                alert('Account ID not verified in system registry. Sign up instead.');
-                return;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage("Session established successfully.");
+            } catch (error) {
+                alert("Login Failed: " + error.message);
             }
-
-            const userData = snapshot.val();
-            initializeAuthenticatedSession(username, userData.username);
         });
 
-        function initializeAuthenticatedSession(uid, displayName) {
-            currentUserId = uid;
-            activeUserName = displayName;
-
-            document.getElementById('session-badge').textContent = `ID: ${uid}`;
-            document.getElementById('profile-display-name-input').value = displayName;
-
-            authScreen.classList.add('hidden');
-            portalScreen.classList.remove('hidden');
-
-            set(ref(db, `users/${currentUserId}/status`), "active");
-
-            initLiveSyncStreams();
-            showMessage(`Welcome back online, session node: ${uid}`);
-        }
-
+        // --- DISCONNECT/LOGOUT ---
         document.getElementById('btn-logout').addEventListener('click', () => {
             if (currentUserId) {
-                set(ref(db, `users/${currentUserId}/status`), "idle");
+                set(ref(db, `users/${currentUserId}/status`), "idle").then(() => {
+                    signOut(auth);
+                });
+            } else {
+                signOut(auth);
             }
-            currentUserId = null;
-            portalScreen.classList.add('hidden');
-            authScreen.classList.remove('hidden');
         });
 
         // --- REAL-TIME LIVE MODULE DATA STREAM ENGINE ---
         function initLiveSyncStreams() {
-            // Live Users Registry sync
             onValue(ref(db, 'users'), (snapshot) => {
                 if(!snapshot.exists()) return;
                 let desktopHtml = ""; let mobileHtml = "";
                 const users = snapshot.val();
                 Object.keys(users).forEach(uid => {
                     const user = users[uid];
-                    const accountName = escapeHtml(user.email || uid);
+                    const name = escapeHtml(user.username || 'Unknown Node');
                     const isIdle = user.status === "idle";
                     desktopHtml += `
                         <tr class="${uid === currentUserId ? 'bg-blue-50/50' : ''}">
-                            <td class="p-3 text-blue-600 font-semibold font-mono">${escapeHtml(uid)}</td>
-                            <td class="p-3 text-gray-600 text-xs">${user.permission || 'Operator Access'}</td>
+                            <td class="p-3 text-blue-600 font-semibold font-mono">${name}</td>
+                            <td class="p-3 text-gray-600 text-xs">${escapeHtml(user.permission || 'Operator Access')}</td>
                             <td class="p-3 font-bold ${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</td>
                         </tr>`;
                     mobileHtml += `
                         <div class="p-3 bg-gray-50 rounded-lg border text-xs font-mono">
-                            <div class="flex justify-between"><strong>${escapeHtml(uid)}</strong><span class="${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? 'Idle' : 'Active'}</span></div>
+                            <div class="flex justify-between"><strong>${name}</strong><span class="${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? 'Idle' : 'Active'}</span></div>
                         </div>`;
                 });
                 document.getElementById('accounts-table-body-desktop').innerHTML = desktopHtml;
                 document.getElementById('accounts-cards-body-mobile').innerHTML = mobileHtml;
             });
 
-            // Chat Messages sync
             onValue(ref(db, 'chat_messages'), (snapshot) => {
                 const chatMessages = document.getElementById('chat-messages');
                 if (!snapshot.exists()) {
-                    chatMessages.innerHTML = `<div class="text-gray-400 text-center py-4 italic text-xs m-auto">No logs.</div>`;
+                    chatMessages.innerHTML = `<div class="text-gray-400 text-center py-4 italic text-xs m-auto">No logged communication.</div>`;
                     return;
                 }
                 let chatPayload = "";
@@ -290,7 +313,7 @@
                     chatPayload += `
                         <div class="flex items-end gap-2 mb-1">
                             <div class="flex flex-col">
-                                <span class="text-[10px] text-gray-500 font-bold font-mono">${escapeHtml(entry.senderName)} <span class="text-gray-400 font-normal ml-1">${timeStr}</span></span>
+                                <span class="text-[10px] text-gray-500 font-bold font-mono">${escapeHtml(entry.senderName || 'Operator')} <span class="text-gray-400 font-normal ml-1">${timeStr}</span></span>
                                 <div class="bg-white border text-gray-800 rounded-xl px-3 py-1.5 text-xs max-w-xs shadow-sm mt-0.5">
                                     <p class="break-words">${escapeHtml(entry.message)}</p>
                                 </div>
@@ -302,7 +325,6 @@
             });
         }
 
-        // Send Chat Handling Actions
         async function sendChatMessage() {
             const chatInput = document.getElementById('chat-input');
             const msg = chatInput.value.trim();
@@ -322,7 +344,7 @@
             card.className = "bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
             card.innerHTML = `
                 <div class="flex justify-between items-center border-b pb-2 text-xs">
-                    <span class="font-bold text-blue-600 font-mono">${escapeHtml(post.authorName)}</span>
+                    <span class="font-bold text-blue-600 font-mono">${escapeHtml(post.authorName || 'Anonymous')}</span>
                     <span class="text-gray-400">${timeLabel}</span>
                 </div>
                 <p class="text-gray-800 text-xs md:text-sm break-words leading-relaxed">${escapeHtml(post.text)}</p>
@@ -338,10 +360,12 @@
                 </div>`;
 
             card.querySelector('.btn-like-toggle').addEventListener('click', () => {
+                if(!currentUserId) return;
                 runTransaction(ref(db, `social_feed/${postId}/likes/${currentUserId}`), (val) => val ? null : true);
             });
 
             card.querySelector('.btn-submit-comment').addEventListener('click', async () => {
+                if(!currentUserId) return;
                 const input = card.querySelector('.comment-input-field');
                 if(!input.value.trim()) return;
                 await push(ref(db, `social_feed/${postId}/comments`), { text: input.value.trim(), author: activeUserName });
@@ -356,7 +380,7 @@
             let html = "";
             Object.keys(commentsObj).forEach(cId => {
                 const c = commentsObj[cId];
-                html += `<div class="bg-gray-100 p-2 rounded text-[11px] border border-gray-200/60"><strong class="font-mono text-blue-600">${escapeHtml(c.author)}:</strong> <span class="text-gray-700">${escapeHtml(c.text)}</span></div>`;
+                html += `<div class="bg-gray-100 p-2 rounded text-[11px] border border-gray-200/60"><strong class="font-mono text-blue-600">${escapeHtml(c.author || 'User')}:</strong> <span class="text-gray-700">${escapeHtml(c.text)}</span></div>`;
             });
             containerElement.innerHTML = html;
         }
@@ -383,7 +407,6 @@
             document.getElementById('update-text').value = "";
         });
 
-        // Save Custom Name Profile Changes
         document.getElementById('btn-save-profile').addEventListener('click', () => {
             const updatedName = document.getElementById('profile-display-name-input').value.trim();
             if (updatedName) {
