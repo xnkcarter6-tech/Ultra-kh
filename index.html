@@ -8,7 +8,7 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 antialiased">
 
-    <div class="bg-green-600 text-white text-[10px] md:text-[11px] font-bold tracking-wider uppercase py-2 text-center shadow-sm px-4">
+    <div id="top-status-bar" class="bg-green-600 text-white text-[10px] md:text-[11px] font-bold tracking-wider uppercase py-2 text-center shadow-sm px-4">
         ✔ PORTAL CORE SYSTEM ACTIVE V2 (AUTHENTICATED SESSION)
     </div>
 
@@ -18,16 +18,16 @@
             <div>
                 <div class="flex items-center justify-between md:block mb-4 md:mb-8 px-2">
                     <h1 class="text-2xl font-bold tracking-tight">Ultra KH</h1>
-                    <span class="md:hidden text-[10px] bg-blue-700 px-2 py-1 rounded font-mono">Mobile Node</span>
+                    <span id="session-badge" class="text-[10px] bg-blue-700 px-2 py-1 rounded font-mono">Operator Node</span>
                 </div>
                 <nav class="grid grid-cols-2 gap-1 md:flex md:flex-col md:space-y-1" id="main-nav">
                     <button data-target="view-home" class="nav-btn text-left block px-3 md:px-4 py-2 rounded bg-blue-700 text-xs md:text-sm font-semibold shadow-inner transition">🏠 Home Feed</button>
-                    <button data-target="view-chat" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">💬 Chat Hub</button>
-                    <button data-target="view-profile" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">👤 Profile</button>
-                    <button data-target="view-accounts" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">🔑 Accounts</button>
+                    <button id="nav-chat-btn" data-target="view-chat" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">💬 Chat Hub</button>
+                    <button id="nav-profile-btn" data-target="view-profile" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">👤 Profile</button>
+                    <button id="nav-accounts-btn" data-target="view-accounts" class="nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition">🔑 Accounts</button>
                 </nav>
             </div>
-            <div class="hidden md:block text-xs opacity-75 border-t border-blue-500/30 pt-4 px-2 font-mono">
+            <div class="hidden md:block text-xs opacity-75 border-t border-blue-500/30 pt-4 px-2 font-mono" id="connection-string">
                 Status: Connected Matrix
             </div>
         </aside>
@@ -37,11 +37,18 @@
             
             <div id="view-home" class="content-view grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">                                                
                 <div class="xl:col-span-2 bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 self-start">
-                    <h2 class="text-md md:text-lg font-bold text-gray-900 mb-3 tracking-tight">Publish an Update</h2>
-                    <textarea id="update-text" rows="3" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 resize-none transition text-sm"></textarea>
-                    <button id="btn-publish" class="mt-2 w-full sm:w-auto px-6 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">Publish Post</button>
                     
-                    <h2 class="text-md md:text-lg font-bold text-gray-900 mt-6 md:text-lg mb-4 tracking-tight border-t border-gray-100 pt-4">Workspace Broadcast Feed</h2>
+                    <div id="publish-module" class="mb-6">
+                        <h2 class="text-md md:text-lg font-bold text-gray-900 mb-3 tracking-tight">Publish an Update</h2>
+                        <textarea id="update-text" rows="3" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50/50 resize-none transition text-sm"></textarea>
+                        <button id="btn-publish" class="mt-2 w-full sm:w-auto px-6 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">Publish Post</button>
+                    </div>
+
+                    <div id="guest-welcome-notice" class="hidden mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800">
+                        💡 <strong>Viewing as Guest:</strong> You can read all active platform updates live. To publish, comment, or access system channels, an authenticated operator account is required.
+                    </div>
+                    
+                    <h2 class="text-md md:text-lg font-bold text-gray-900 mt-2 mb-4 tracking-tight border-t border-gray-100 pt-4">Workspace Broadcast Feed</h2>
                     <div id="feed-container" class="space-y-4">
                         </div>
                 </div>
@@ -55,7 +62,7 @@
                         <h3 class="font-bold text-gray-900 mb-2 text-sm tracking-tight">System Connection Status</h3>
                         <div id="connection-status" class="text-xs flex items-center gap-2 text-green-700 font-semibold bg-green-50 px-3 py-2 rounded-lg border border-green-100">
                             <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                            Connected Live Cloud
+                            Public Cloud Link Active
                         </div>
                     </div>                                                
                 </div>
@@ -121,13 +128,11 @@
                                     <th class="p-3">Operational State</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700" id="accounts-table-body-desktop">
-                                </tbody>
+                            <tbody class="text-xs font-mono divide-y divide-gray-100 text-gray-700" id="accounts-table-body-desktop"></tbody>
                         </table>
                     </div>
 
-                    <div class="sm:hidden space-y-3" id="accounts-cards-body-mobile">
-                        </div>
+                    <div class="sm:hidden space-y-3" id="accounts-cards-body-mobile"></div>
                 </div>
             </div>
         </main>        
@@ -151,8 +156,11 @@
         const app = initializeApp(firebaseConfig);                        
         const db = getDatabase(app);
 
-        let currentUserId = "xnk_master_node";
+        // --- AUTOMATED ACCOUNT VERIFICATION MATRIX ---
+        // Change to null or false to completely simulate an unauthenticated stranger browsing your site
+        let currentUserId = "xnk_master_node"; 
         let activeUserName = "System Operator";
+        let isGuestUser = !currentUserId; 
 
         const updateTextArea = document.getElementById('update-text');                
         const feedContainer = document.getElementById('feed-container');                
@@ -170,63 +178,65 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
+        // Apply visual layout lockouts immediately if user has no account session
+        function verifyPermissionTheme() {
+            if (isGuestUser) {
+                document.getElementById('publish-module').classList.add('hidden');
+                document.getElementById('guest-welcome-notice').classList.remove('hidden');
+                document.getElementById('top-status-bar').className = "bg-amber-600 text-white text-[10px] md:text-[11px] font-bold tracking-wider uppercase py-2 text-center shadow-sm px-4";
+                document.getElementById('top-status-bar').textContent = "⚠️ VISITING SYSTEM IN PUBLIC READ-ONLY MODE (GUEST SESSION)";
+                document.getElementById('session-badge').textContent = "Guest Terminal";
+                document.getElementById('session-badge').className = "text-[10px] bg-amber-700 px-2 py-1 rounded font-mono";
+                document.getElementById('connection-string').textContent = "Status: Public Mirror";
+                
+                // Hide private operations tabs entirely from the public
+                document.getElementById('nav-chat-btn').classList.add('hidden');
+                document.getElementById('nav-profile-btn').classList.add('hidden');
+                document.getElementById('nav-accounts-btn').classList.add('hidden');
+            }
+        }
+        verifyPermissionTheme();
+
         document.getElementById('btn-save-profile').addEventListener('click', () => {
+            if(isGuestUser) return;
             activeUserName = document.getElementById('profile-display-name-input').value.trim() || "System Operator";
             alertBanner.textContent = "Profile display matrix metadata updated.";
             alertBanner.style.display = "block";
             setTimeout(() => { alertBanner.style.display = "none"; }, 3000);
         });
 
-        // LIVE MATRIX ACCOUNTS FEED MAPPING DIRECT FROM LIVE FIREBASE CORE NODE
         onValue(ref(db, 'users'), (snapshot) => {
-            if(!snapshot.exists()) return;
-            
+            if(!snapshot.exists() || isGuestUser) return;
             let desktopHtml = "";
             let mobileHtml = "";
             const users = snapshot.val();
-            
             Object.keys(users).forEach(uid => {
                 const user = users[uid];
-                
-                // Exact fallback parameters pulling native credential parameters safely 
                 const refAccount = escapeHtml(user.email || uid);
                 const permissionVector = escapeHtml(user.permission || (uid === "xnk_master_node" || refAccount.includes('carter') ? "Master Core Access" : "Operator Access"));
                 const tunnelPort = escapeHtml(user.tunnel || (uid === "xnk_master_node" ? "443 -> SSL" : "8080 -> Bypass"));
                 const isIdle = user.status === "idle" || user.isIdle;
-                const stateLabel = isIdle ? "● Idle" : "● Active";
-                const stateClass = isIdle ? "text-amber-600" : "text-green-600";
-                
-                // Desktop Row Format Builder Layout
                 desktopHtml += `
                     <tr class="${uid === currentUserId ? 'bg-blue-50/30' : ''}">
                         <td class="p-3 text-blue-600 font-semibold break-all">${refAccount}</td>
                         <td class="p-3 text-gray-700">${permissionVector}</td>
                         <td class="p-3 text-gray-500 font-mono">${tunnelPort}</td>
-                        <td class="p-3 font-bold ${stateClass}">${stateLabel}</td>
+                        <td class="p-3 font-bold ${isIdle ? 'text-amber-600' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</td>
                     </tr>`;
-                
-                // Mobile Card Stack Builder Layout
                 mobileHtml += `
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-200/80 space-y-1.5 font-mono text-xs ${uid === currentUserId ? 'border-blue-300 bg-blue-50/20' : ''}">
                         <div class="flex justify-between items-start border-b border-gray-200/50 pb-1.5">
                             <span class="text-blue-600 font-bold break-all pr-2">${refAccount}</span>
-                            <span class="font-bold shrink-0 ${stateClass}">${stateLabel}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-1 pt-1 text-gray-600 text-[11px]">
-                            <span class="text-gray-400 uppercase font-sans">Vector:</span>
-                            <span class="col-span-2 text-gray-800 font-sans">${permissionVector}</span>
-                            <span class="text-gray-400 uppercase font-sans">Port:</span>
-                            <span class="col-span-2 font-mono text-gray-700">${tunnelPort}</span>
+                            <span class="font-bold shrink-0 ${isIdle ? 'text-amber-600' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</span>
                         </div>
                     </div>`;
             });
-            
             accountsTableBody.innerHTML = desktopHtml;
             accountsCardsMobile.innerHTML = mobileHtml;
         });
 
-        // CHAT ENGINE CORES
         function initChatEngineStream() {
+            if(isGuestUser) return;
             onValue(ref(db, 'chat_messages'), (snapshot) => {
                 if (!snapshot.exists()) {
                     chatMessages.innerHTML = `<div class="text-gray-400 text-center py-8 italic text-xs m-auto">No logged communication down line.</div>`;
@@ -237,12 +247,11 @@
                 Object.keys(logs).forEach(key => {
                     const entry = logs[key];
                     const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
-                    
                     chatPayload += `
                         <div class="flex items-end gap-2 mb-1">
                             <div class="flex flex-col items-start">
                                 <span class="text-[9px] md:text-[10px] text-gray-500 font-semibold font-mono mb-0.5">${escapeHtml(entry.senderName || 'Operator')} <span class="text-gray-400 font-normal font-sans ml-1">${timeStr}</span></span>
-                                <div class="bg-white border border-gray-200 text-gray-800 rounded-xl rounded-bl-none px-3 py-1.5 text-xs md:text-sm max-w-xs md:w-md shadow-sm">
+                                <div class="bg-white border border-gray-200 text-gray-800 rounded-xl rounded-bl-none px-3 py-1.5 text-xs md:text-sm max-w-xs shadow-sm">
                                     <p class="break-words font-normal leading-snug">${escapeHtml(entry.message)}</p>
                                 </div>
                             </div>
@@ -255,20 +264,16 @@
         initChatEngineStream();
 
         async function sendChatMessage() {
+            if(isGuestUser) return;
             const msgContent = chatInput.value.trim();
             if(!msgContent) return;
-            await push(ref(db, 'chat_messages'), {
-                message: msgContent,
-                senderUid: currentUserId,
-                senderName: activeUserName,
-                timestamp: serverTimestamp()
-            });
+            await push(ref(db, 'chat_messages'), { message: msgContent, senderUid: currentUserId, senderName: activeUserName, timestamp: serverTimestamp() });
             chatInput.value = "";
         }
-        btnChatSend.addEventListener('click', sendChatMessage);
-        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+        if(btnChatSend) btnChatSend.addEventListener('click', sendChatMessage);
+        if(chatInput) chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-        // DYNAMIC GRANULAR FEED CONSTRUCTORS
+        // CREATE SINGLE BROADCAST CARD NODE (Intelligently manages guest vs operator views)
         function createPostCardElement(postId, post) {
             const timeLabel = post.timestamp ? new Date(post.timestamp).toLocaleString() : 'Recent';
             const postLikesCount = post.likes ? Object.keys(post.likes).length : 0;
@@ -276,6 +281,21 @@
             const card = document.createElement('div');
             card.id = `post-${postId}`;
             card.className = "bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
+            
+            // Adjust input blocks inside cards depending on guest authorization status
+            const interactionControls = isGuestUser 
+                ? `<div class="text-[11px] text-gray-400 font-medium italic bg-gray-100/50 p-2 rounded-lg text-center border border-gray-100">🔒 Account session required to react or comment</div>`
+                : `<div class="flex gap-4 items-center pt-2 border-t border-gray-100 text-xs">
+                    <button class="btn-like-toggle px-3 py-1 rounded-md bg-gray-100 font-bold hover:bg-red-50 hover:text-red-600 transition">👍 Like (<span class="like-count">${postLikesCount}</span>)</button>
+                   </div>
+                   <div class="space-y-2 pt-3 bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-200/70">
+                    <div class="comments-list-container space-y-1.5"></div>
+                    <div class="flex flex-col sm:flex-row gap-2 mt-2 pt-2 border-t border-gray-100/40">
+                        <input type="text" placeholder="Write a comment..." class="comment-input-field flex-1 p-2 border border-gray-200 bg-white rounded-lg text-xs focus:outline-none">
+                        <button class="btn-submit-comment w-full sm:w-auto px-4 py-2 bg-gray-800 text-white font-bold rounded-lg text-[11px] hover:bg-gray-900 transition shrink-0">Comment</button>
+                    </div>
+                   </div>`;
+
             card.innerHTML = `
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 w-full border-b border-gray-100 pb-2">
                     <span class="font-bold text-xs md:text-sm text-blue-600 font-mono">${escapeHtml(post.authorName)}</span>
@@ -284,36 +304,31 @@
                 <div class="py-1">
                     <p class="text-gray-800 text-xs md:text-sm font-normal break-words whitespace-pre-wrap leading-relaxed">${escapeHtml(post.text)}</p>
                 </div>
-                <div class="flex gap-4 items-center pt-2 border-t border-gray-100 text-xs">
-                    <button class="btn-like-toggle px-3 py-1 rounded-md bg-gray-100 font-bold hover:bg-red-50 hover:text-red-600 transition">👍 Like (<span class="like-count">${postLikesCount}</span>)</button>
-                </div>
-                <div class="space-y-2 pt-3 bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-200/70">
-                    <div class="comments-list-container space-y-1.5"></div>
-                    <div class="flex flex-col sm:flex-row gap-2 mt-2 pt-2 border-t border-gray-100/40">
-                        <input type="text" placeholder="Write a comment..." class="comment-input-field flex-1 p-2 border border-gray-200 bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        <button class="btn-submit-comment w-full sm:w-auto px-4 py-2 bg-gray-800 text-white font-bold rounded-lg text-[11px] hover:bg-gray-900 transition shadow-sm shrink-0">Comment</button>
-                    </div>
-                </div>`;
+                ${interactionControls}`;
 
-            card.querySelector('.btn-like-toggle').addEventListener('click', () => {
-                runTransaction(ref(db, `social_feed/${postId}/likes/${currentUserId}`), (currentValue) => {
-                    return currentValue ? null : true;
+            if (!isGuestUser) {
+                card.querySelector('.btn-like-toggle').addEventListener('click', () => {
+                    runTransaction(ref(db, `social_feed/${postId}/likes/${currentUserId}`), (currentValue) => {
+                        return currentValue ? null : true;
+                    });
                 });
-            });
 
-            card.querySelector('.btn-submit-comment').addEventListener('click', async () => {
-                const input = card.querySelector('.comment-input-field');
-                if(!input.value.trim()) return;
-                await push(ref(db, `social_feed/${postId}/comments`), {
-                    text: input.value.trim(),
-                    author: activeUserName,
-                    authorUid: currentUserId
+                card.querySelector('.btn-submit-comment').addEventListener('click', async () => {
+                    const input = card.querySelector('.comment-input-field');
+                    if(!input.value.trim()) return;
+                    await push(ref(db, `social_feed/${postId}/comments`), { text: input.value.trim(), author: activeUserName, authorUid: currentUserId });
+                    input.value = "";
                 });
-                input.value = "";
-            });
 
-            if (post.comments) {
-                updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
+                if (post.comments) {
+                    updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
+                }
+            } else if (isGuestUser && post.comments) {
+                // Guests still get to read comments, just without input controls
+                const wrapper = document.createElement('div');
+                wrapper.className = "space-y-1.5 pt-2 border-t border-gray-50";
+                card.appendChild(wrapper);
+                updateCommentsUIContainer(wrapper, post.comments);
             }
             return card;
         }
@@ -324,16 +339,13 @@
                 const comment = commentsObj[cId];
                 html += `
                     <div class="bg-gray-100 p-2 rounded-lg text-[11px] md:text-xs border border-gray-200/60">
-                        <div class="flex justify-between items-center mb-0.5">
-                            <span class="font-bold font-mono text-blue-600">${escapeHtml(comment.author)}</span>
-                        </div>
+                        <span class="font-bold font-mono text-blue-600 block mb-0.5">${escapeHtml(comment.author)}</span>
                         <p class="text-gray-700 font-normal break-words">${escapeHtml(comment.text)}</p>
                     </div>`;
             });
             containerElement.innerHTML = html;
         }
 
-        // MOUNT CHILD TIMELINE REFRESH MATRIX ENGINE HOOKS
         const socialFeedRef = ref(db, 'social_feed');
         onChildAdded(socialFeedRef, (snapshot) => {
             const card = createPostCardElement(snapshot.key, snapshot.val());
@@ -344,10 +356,10 @@
             const targetCard = document.getElementById(`post-${snapshot.key}`);
             if (targetCard) {
                 const postData = snapshot.val();
-                targetCard.querySelector('.like-count').textContent = postData.likes ? Object.keys(postData.likes).length : 0;
+                const countNode = targetCard.querySelector('.like-count');
+                if(countNode) countNode.textContent = postData.likes ? Object.keys(postData.likes).length : 0;
                 const commentsContainer = targetCard.querySelector('.comments-list-container');
-                if (postData.comments) updateCommentsUIContainer(commentsContainer, postData.comments);
-                else commentsContainer.innerHTML = "";
+                if (commentsContainer && postData.comments) updateCommentsUIContainer(commentsContainer, postData.comments);
             }
         });
 
@@ -356,21 +368,18 @@
             if (targetCard) targetCard.remove();
         });
 
-        btnPublish.addEventListener('click', async () => {
-            const val = updateTextArea.value.trim();
-            if(!val) return;
-            btnPublish.disabled = true;
-            await push(ref(db, 'social_feed'), {
-                text: val,
-                authorUid: currentUserId,
-                authorName: activeUserName,
-                timestamp: serverTimestamp()
+        if(btnPublish) {
+            btnPublish.addEventListener('click', async () => {
+                if(isGuestUser) return;
+                const val = updateTextArea.value.trim();
+                if(!val) return;
+                btnPublish.disabled = true;
+                await push(ref(db, 'social_feed'), { text: val, authorUid: currentUserId, authorName: activeUserName, timestamp: serverTimestamp() });
+                updateTextArea.value = "";
+                btnPublish.disabled = false;
             });
-            updateTextArea.value = "";
-            btnPublish.disabled = false;
-        });
+        }
 
-        // VIEW NAVIGATION HANDLERS
         const navButtons = document.querySelectorAll('.nav-btn');
         const contentViews = document.querySelectorAll('.content-view');
         navButtons.forEach(btn => {
