@@ -3,15 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra KH Firebase Chat FIXED</title>
+<title>Ultra KH Telegram Pro</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#eef2ff}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#eef2ff;
+}
 
+/* TOP BAR */
 .top{
   background:#1E50FF;
   color:white;
@@ -20,83 +25,139 @@ body{margin:0;font-family:Arial;background:#eef2ff}
   justify-content:space-between;
 }
 
-.container{display:flex;height:100vh}
+/* LAYOUT */
+.container{
+  display:flex;
+  height:100vh;
+}
 
+/* SIDEBAR */
 .sidebar{
-  width:200px;
+  width:260px;
   background:#1E50FF;
   color:white;
   padding:10px;
 }
 
-.main{flex:1;padding:10px}
+.user{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.2);
+  cursor:pointer;
+}
 
-.card{background:white;padding:10px;border-radius:10px;margin-bottom:10px}
+.user:hover{
+  background:#143fd1;
+}
 
-.post{border:1px solid #ddd;padding:10px;margin-top:10px;border-radius:8px}
+/* CHAT AREA */
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
 
-.msg{padding:6px;margin:5px 0;background:#dbeafe;border-radius:6px}
+.chatBox{
+  flex:1;
+  overflow:auto;
+  padding:10px;
+}
 
-.me{background:#1E50FF;color:white;text-align:right}
+.msg{
+  background:#dbeafe;
+  padding:8px;
+  margin:6px;
+  border-radius:8px;
+  max-width:60%;
+}
 
-input,button{padding:8px;margin:5px;width:100%}
+.me{
+  background:#1E50FF;
+  color:white;
+  margin-left:auto;
+  text-align:right;
+}
 
-button{background:#1E50FF;color:white;border:none;cursor:pointer}
+/* INPUT */
+.inputBox{
+  display:flex;
+  padding:10px;
+  gap:10px;
+}
+
+input,button{
+  padding:10px;
+  width:100%;
+  border-radius:6px;
+  border:none;
+}
+
+button{
+  background:#1E50FF;
+  color:white;
+  cursor:pointer;
+}
+
+/* AUTH */
+.auth{
+  width:300px;
+  margin:100px auto;
+  background:white;
+  padding:15px;
+  border-radius:10px;
+}
 
 .hidden{display:none}
+
+/* MOBILE */
+@media(max-width:768px){
+  .container{flex-direction:column}
+  .sidebar{width:100%;display:flex;overflow:auto}
+  .user{flex:1;text-align:center}
+}
 </style>
 </head>
 
 <body>
 
 <div class="top">
-  <div>Ultra KH Firebase</div>
-  <div id="user"></div>
+  <div>Ultra KH Telegram Pro</div>
+  <div id="me"></div>
 </div>
 
 <!-- AUTH -->
-<div id="auth" class="card" style="width:300px;margin:80px auto;">
+<div id="auth" class="auth">
   <h3>Login</h3>
   <input id="email" placeholder="Email">
   <input id="pass" type="password" placeholder="Password">
-  <button onclick="signup()">Register</button>
   <button onclick="login()">Login</button>
+  <button onclick="signup()">Register</button>
 </div>
 
 <!-- APP -->
 <div id="app" class="container hidden">
 
+  <!-- USERS -->
   <div class="sidebar">
-    <h3>Menu</h3>
-    <button onclick="show('home')">Home</button>
-    <button onclick="show('chat')">Chat</button>
+    <h3>Online Users</h3>
+    <div id="users"></div>
     <button onclick="logout()">Logout</button>
   </div>
 
+  <!-- CHAT -->
   <div class="main">
 
-    <!-- HOME -->
-    <div id="home">
-      <div class="card">
-        <input id="postInput" placeholder="What's happening?">
-        <button onclick="post()">Post</button>
-      </div>
-      <div id="feed"></div>
-    </div>
+    <div id="chatBox" class="chatBox"></div>
 
-    <!-- CHAT -->
-    <div id="chat" class="hidden">
-      <div class="card">
-        <input id="msg" placeholder="Message">
-        <button onclick="send()">Send</button>
-      </div>
-      <div id="chatBox"></div>
+    <div class="inputBox">
+      <input id="msg" placeholder="Message...">
+      <button onclick="send()">Send</button>
     </div>
 
   </div>
 </div>
 
 <script>
+
 /* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "YOUR_KEY",
@@ -112,13 +173,18 @@ const db = firebase.firestore();
 /* ELEMENTS */
 const email = document.getElementById("email");
 const pass = document.getElementById("pass");
-const postInput = document.getElementById("postInput");
-const feed = document.getElementById("feed");
 const msg = document.getElementById("msg");
-const chatBox = document.getElementById("chatBox");
-const userText = document.getElementById("user");
 
-/* AUTH */
+const chatBox = document.getElementById("chatBox");
+const usersBox = document.getElementById("users");
+const me = document.getElementById("me");
+
+/* STATE */
+let currentUser = null;
+let activeChat = "global";
+
+/* ================= AUTH ================= */
+
 function signup(){
   auth.createUserWithEmailAndPassword(email.value, pass.value)
   .catch(e=>alert(e.message));
@@ -136,60 +202,60 @@ function logout(){
 /* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
-    userText.innerText = user.email;
+    currentUser = user.email;
+    me.innerText = currentUser;
 
     document.getElementById("auth").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
 
-    listenPosts();
-    listenChat();
+    setOnline();
+    loadUsers();
+    listenMessages();
   } else {
     document.getElementById("auth").classList.remove("hidden");
     document.getElementById("app").classList.add("hidden");
   }
 });
 
-/* NAV */
-function show(page){
-  document.getElementById("home").style.display = page==="home"?"block":"none";
-  document.getElementById("chat").style.display = page==="chat"?"block":"none";
-}
+/* ================= ONLINE USERS ================= */
 
-/* POSTS */
-function post(){
-  if(!postInput.value) return;
-
-  db.collection("posts").add({
-    user: auth.currentUser.email,
-    text: postInput.value,
-    time: Date.now()
+function setOnline(){
+  db.collection("users").doc(currentUser).set({
+    email: currentUser,
+    online: true
   });
-
-  postInput.value="";
 }
 
-function listenPosts(){
-  db.collection("posts").orderBy("time","desc")
+function loadUsers(){
+  db.collection("users")
   .onSnapshot(snap=>{
-    feed.innerHTML="";
-    snap.forEach(doc=>{
-      let d = doc.data();
-      feed.innerHTML += `
-        <div class="post">
-          <b>${d.user}</b>
-          <p>${d.text}</p>
-        </div>
-      `;
+    usersBox.innerHTML="";
+    snap.forEach(u=>{
+      let d=u.data();
+
+      let div=document.createElement("div");
+      div.className="user";
+      div.innerText=d.email;
+      div.onclick=()=>openChat(d.email);
+
+      usersBox.appendChild(div);
     });
   });
 }
 
-/* CHAT */
+function openChat(user){
+  activeChat = user;
+  chatBox.innerHTML="";
+}
+
+/* ================= CHAT ================= */
+
 function send(){
   if(!msg.value) return;
 
   db.collection("messages").add({
-    user: auth.currentUser.email,
+    from: currentUser,
+    to: activeChat,
     text: msg.value,
     time: Date.now()
   });
@@ -197,20 +263,29 @@ function send(){
   msg.value="";
 }
 
-function listenChat(){
-  db.collection("messages").orderBy("time")
+function listenMessages(){
+  db.collection("messages")
+  .orderBy("time")
   .onSnapshot(snap=>{
     chatBox.innerHTML="";
+
     snap.forEach(doc=>{
       let d = doc.data();
-      chatBox.innerHTML += `
-        <div class="msg ${d.user===auth.currentUser.email?'me':''}">
-          ${d.user}: ${d.text}
-        </div>
-      `;
+
+      if(d.to !== activeChat && d.to !== "global") return;
+
+      let div=document.createElement("div");
+      div.className="msg "+(d.from===currentUser?"me":"");
+
+      div.innerText = d.from + ": " + d.text;
+
+      chatBox.appendChild(div);
     });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
   });
 }
+
 </script>
 
 </body>
