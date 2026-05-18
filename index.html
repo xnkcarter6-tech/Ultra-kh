@@ -107,6 +107,15 @@
       cursor: pointer;
       font-weight: 500;
     }
+    .btn-danger {
+      background: var(--bit-danger);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
     .chat-messages-box {
       height: 350px;
       border: 1px solid #E5E9F2;
@@ -186,6 +195,14 @@
     .feed-delete:hover {
       opacity: 1;
     }
+    .auth-toggle-text {
+      font-size: 13px;
+      color: var(--bit-blue-primary);
+      cursor: pointer;
+      text-align: center;
+      display: block;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -197,15 +214,16 @@
     <div class="nav-item active" onclick="switchView('page-home')">🏠 Home</div>
     <div class="nav-item" onclick="switchView('page-chat')">💬 Chat</div>
     <div class="nav-item" onclick="switchView('page-profile')">👤 Profile</div>
-    <div class="nav-item" onclick="switchView('page-auth')">🔑 Accounts</div>
+    <div class="nav-item" id="nav-auth" onclick="switchView('page-auth')">🔑 Login / Register</div>
   </div>
 
   <main class="main-layout">
     <div class="top-bar">
       <div style="font-weight: 500; color: var(--bit-text-light);">Dashboard / Workspace</div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 8px; height: 8px; background: #13CE66; border-radius: 50%;"></span>
-        <span id="topBarUserHandle" style="font-weight: 600; color: var(--bit-text-them);">Admin</span>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="userStatusDot" style="width: 8px; height: 8px; background: #FF4949; border-radius: 50%;"></span>
+        <span id="topBarUserHandle" style="font-weight: 600; color: var(--bit-text-them);">Guest</span>
+        <button id="btnTopLogout" class="btn-danger" style="padding: 4px 10px; font-size: 11px; display: none;">Logout</button>
       </div>
     </div>
 
@@ -213,7 +231,7 @@
       <div class="page-view active" id="page-home">
         <div style="display: flex; gap: 24px; align-items: flex-start;">
           <div style="flex: 2;">
-            <div class="card">
+            <div class="card" id="homePublishCard" style="display: none;">
               <h3 style="margin-top: 0;">Publish an Update</h3>
               <div class="form-group">
                 <textarea id="feedUpdateText" rows="3" placeholder="What is happening within your workspace channels?"></textarea>
@@ -236,14 +254,22 @@
             </div>
             <div class="card">
               <h4>System Connection Status</h4>
-              <p style="font-size: 13px; font-weight: 500;"><span style="color: #13CE66;">●</span> Connected Live Cloud</p>
+              <p style="font-size: 13px; font-weight: 500;" id="cloudConnectionStatus"><span style="color: #13CE66;">●</span> Connected Live Cloud</p>
             </div>
           </div>
         </div>
       </div>
 
       <div class="page-view" id="page-chat">
-        <div class="card">
+        <div class="card" id="chatLockedCard">
+          <div style="text-align: center; padding: 40px 20px;">
+            <h2>🔒 Access Restrained</h2>
+            <p style="color: var(--bit-text-light);">Please login or create an operator account to participate in the live chat stream.</p>
+            <button class="btn-submit" onclick="switchView('page-auth')">Go to Authentication</button>
+          </div>
+        </div>
+
+        <div class="card" id="chatActiveCard" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h3 style="margin: 0;">Live Operational Chat Stream</h3>
             <button id="btnVoiceRecord" style="background: none; border: none; font-size: 20px; cursor: pointer; transition: transform 0.1s ease;">🎙️</button>
@@ -282,28 +308,63 @@
       </div>
 
       <div class="page-view" id="page-profile">
-        <div class="card" style="max-width: 450px; margin: 0 auto;">
-          <h3 style="margin-bottom: 15px;">Local Account Handle Profile</h3>
+        <div class="card" style="max-width: 450px; margin: 0 auto; text-align: center;" id="profileLockedCard">
+          <h3>🔒 Profile Access Restricted</h3>
+          <p style="color: var(--bit-text-light);">Please sign in to view your profile settings.</p>
+        </div>
+        <div class="card" style="max-width: 450px; margin: 0 auto; display: none;" id="profileActiveCard">
+          <h3 style="margin-bottom: 15px;">Operator Profile</h3>
+          <div class="form-group">
+            <label class="form-label">Account Email Address</label>
+            <input type="text" class="form-input" id="profEmailDisplay" readonly style="background:#F1F3F5; cursor:not-allowed;">
+          </div>
           <form id="profileUpdateForm">
             <div class="form-group">
-              <label class="form-label">Active Operator Username</label>
-              <input type="text" class="form-input" id="profUserHandle" required value="Admin">
+              <label class="form-label">Display Nickname Handle</label>
+              <input type="text" class="form-input" id="profUserHandle" required placeholder="Enter handle name...">
             </div>
-            <button type="submit" class="btn-submit">Save Changes</button>
+            <button type="submit" class="btn-submit">Save Profile Handle</button>
           </form>
         </div>
       </div>
 
       <div class="page-view" id="page-auth">
-        <div class="card" style="max-width: 450px; margin: 0 auto;">
-          <h3 style="margin-bottom: 20px; text-align: center;">Register Global System Operator</h3>
+        <div class="card" style="max-width: 450px; margin: 0 auto;" id="authLoginCard">
+          <h3 style="margin-bottom: 20px; text-align: center;">Sign In Operator</h3>
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" id="loginEmail" required placeholder="Enter account email...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="loginPassword" required placeholder="Enter password...">
+            </div>
+            <button type="submit" class="btn-submit" style="width: 100%;">Login</button>
+          </form>
+          <span class="auth-toggle-text" onclick="toggleAuthForms(false)">Don't have an account? Register here</span>
+        </div>
+
+        <div class="card" style="max-width: 450px; margin: 0 auto; display: none;" id="authRegisterCard">
+          <h3 style="margin-bottom: 20px; text-align: center;">Register Workspace Operator</h3>
           <form id="signUpSystemForm">
             <div class="form-group">
-              <label class="form-label">Global Identity Handle</label>
-              <input type="text" class="form-input" id="signUpUser" required placeholder="Choose operator handle...">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" id="signUpEmail" required placeholder="Enter working email...">
             </div>
-            <button type="submit" class="btn-submit">Register Globally</button>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="signUpPassword" required minlength="6" placeholder="Create password (6+ chars)...">
+            </div>
+            <button type="submit" class="btn-submit" style="width: 100%;">Create Account</button>
           </form>
+          <span class="auth-toggle-text" onclick="toggleAuthForms(true)">Already registered? Login here</span>
+        </div>
+
+        <div class="card" style="max-width: 450px; margin: 0 auto; display: none; text-align: center;" id="authWelcomeCard">
+          <h3>Welcome Back!</h3>
+          <p id="authWelcomeUserText" style="color: var(--bit-text-light); margin-bottom: 20px;"></p>
+          <button id="btnMainLogout" class="btn-danger" style="width: 100%;">Disconnect Session (Logout)</button>
         </div>
       </div>
     </div>
@@ -317,7 +378,8 @@
       const targetView = document.getElementById(viewId);
       if(targetView) targetView.classList.add('active');
             
-      const clickedNav = Array.from(document.querySelectorAll('.nav-item')).find(item => item.getAttribute('onclick').includes(viewId));
+      const clickedNav = document.getElementById(viewId === 'page-auth' ? 'nav-auth' : '') || 
+                         Array.from(document.querySelectorAll('.nav-item')).find(item => item.getAttribute('onclick')?.includes(viewId));
       if(clickedNav) clickedNav.classList.add('active');
     }
 
@@ -333,6 +395,11 @@
       setTimeout(() => toast.remove(), 3500);
     }
 
+    function toggleAuthForms(showLogin) {
+      document.getElementById('authLoginCard').style.display = showLogin ? 'block' : 'none';
+      document.getElementById('authRegisterCard').style.display = showLogin ? 'none' : 'block';
+    }
+
     const emojiToggle = document.getElementById('btnEmojiToggle');
     const emojiDrawer = document.getElementById('emojiDrawer');
     if(emojiToggle && emojiDrawer) {
@@ -346,18 +413,12 @@
         });
       });
     }
-
-    document.getElementById('profileUpdateForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const val = document.getElementById('profUserHandle').value;
-      document.getElementById('topBarUserHandle').innerText = val;
-      showToast('Profile sync configuration saved.', 'success');
-    });
   </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyc7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
@@ -371,7 +432,8 @@
 
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app, "https://ultra-kh-default-rtdb.firebaseio.com");
-    
+    const auth = getAuth(app);
+
     const chatMessagesBox = document.getElementById('chatMessagesBox');
     const workspaceFeedBox = document.getElementById('workspaceFeedBox');
 
@@ -388,15 +450,116 @@
     }
 
     // =================================================================
+    // AUTHENTICATION MANAGEMENT
+    // =================================================================
+    onAuthStateChanged(auth, (user) => {
+      const topBarName = document.getElementById('topBarUserHandle');
+      const statusDot = document.getElementById('userStatusDot');
+      const topLogoutBtn = document.getElementById('btnTopLogout');
+
+      if (user) {
+        // User logged in
+        const nameToShow = user.displayName || user.email.split('@')[0];
+        topBarName.innerText = nameToShow;
+        statusDot.style.backgroundColor = '#13CE66';
+        topLogoutBtn.style.display = 'inline-block';
+
+        // Update profile tab inputs
+        document.getElementById('profEmailDisplay').value = user.email;
+        document.getElementById('profUserHandle').value = user.displayName || '';
+
+        // Toggle UI component visibilities
+        document.getElementById('homePublishCard').style.display = 'block';
+        document.getElementById('chatLockedCard').style.display = 'none';
+        document.getElementById('chatActiveCard').style.display = 'block';
+        document.getElementById('profileLockedCard').style.display = 'none';
+        document.getElementById('profileActiveCard').style.display = 'block';
+
+        // Set Auth Page status display
+        document.getElementById('authLoginCard').style.display = 'none';
+        document.getElementById('authRegisterCard').style.display = 'none';
+        document.getElementById('authWelcomeUserText').innerText = `Logged in as: ${user.email}`;
+        document.getElementById('authWelcomeCard').style.display = 'block';
+        document.getElementById('nav-auth').innerText = "🔑 Session Profile";
+      } else {
+        // User logged out
+        topBarName.innerText = "Guest";
+        statusDot.style.backgroundColor = '#FF4949';
+        topLogoutBtn.style.display = 'none';
+
+        document.getElementById('homePublishCard').style.display = 'none';
+        document.getElementById('chatLockedCard').style.display = 'block';
+        document.getElementById('chatActiveCard').style.display = 'none';
+        document.getElementById('profileLockedCard').style.display = 'block';
+        document.getElementById('profileActiveCard').style.display = 'none';
+
+        document.getElementById('authLoginCard').style.display = 'block';
+        document.getElementById('authWelcomeCard').style.display = 'none';
+        document.getElementById('nav-auth').innerText = "🔑 Login / Register";
+      }
+    });
+
+    // Sign Up Event
+    document.getElementById('signUpSystemForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signUpEmail').value.trim();
+      const password = document.getElementById('signUpPassword').value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          showToast("Account registration completed successfully!", "success");
+          switchView('page-home');
+        })
+        .catch((err) => showToast(err.message, "error"));
+    });
+
+    // Login Event
+    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          showToast("Session successfully authenticated.", "success");
+          switchView('page-home');
+        })
+        .catch((err) => showToast("Login Error: " + err.message, "error"));
+    });
+
+    // Logout Trigger Functions
+    const executeSignOut = () => {
+      signOut(auth).then(() => {
+        showToast("Session closed.", "info");
+        switchView('page-auth');
+      }).catch(err => showToast(err.message, "error"));
+    };
+    document.getElementById('btnTopLogout')?.addEventListener('click', executeSignOut);
+    document.getElementById('btnMainLogout')?.addEventListener('click', executeSignOut);
+
+    // Profile Metadata Custom Handle Modification Event
+    document.getElementById('profileUpdateForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      const newHandle = document.getElementById('profUserHandle').value.trim();
+
+      if (user && newHandle) {
+        updateProfile(user, { displayName: newHandle })
+          .then(() => {
+            document.getElementById('topBarUserHandle').innerText = newHandle;
+            showToast("Display nickname synced successfully.", "success");
+          })
+          .catch(err => showToast(err.message, "error"));
+      }
+    });
+
+    // =================================================================
     // HOME WORKSPACE BROADCAST FEED LOGIC
     // =================================================================
     document.getElementById('btnPublishPost')?.addEventListener('click', () => {
       const feedTextEl = document.getElementById('feedUpdateText');
       const text = feedTextEl.value.trim();
-      if (!text) {
-        showToast("Please write a post content update first.", "error");
-        return;
-      }
+      if (!text) return;
 
       const currentUser = document.getElementById("topBarUserHandle").innerText;
       const feedRef = ref(database, 'feed');
@@ -418,13 +581,12 @@
       const data = snapshot.val();
 
       if (!data) {
-        workspaceFeedBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No dashboard updates found. Use the box above to publish one.</div>';
+        workspaceFeedBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No dashboard updates found.</div>';
         return;
       }
 
       const currentUser = document.getElementById("topBarUserHandle").innerText;
 
-      // Render posts in reverse order (newest first)
       Object.keys(data).reverse().forEach((key) => {
         const post = data[key];
         const isOwner = post.sender === currentUser;
@@ -449,7 +611,6 @@
           .catch(err => showToast("Removal error: " + err.message, "error"));
       }
     });
-
 
     // =================================================================
     // OPERATIONAL LIVE CHAT STREAM LOGIC
@@ -494,7 +655,7 @@
       const data = snapshot.val();
             
       if (!data) {
-        chatMessagesBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No operational messages in feed database block.</div>';
+        chatMessagesBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No operational messages in conversation timeline.</div>';
         return;
       }
 
@@ -508,9 +669,9 @@
         const textColor = isMe ? '#FFFFFF' : 'var(--bit-text-them, #1F2D3D)';
         const alignSide = isMe ? 'flex-end' : 'flex-start';
 
-        const deleteBtn = isMe ? `<span class="delete-msg" style="color:var(--bit-danger); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;" data-key="${key}">Delete</span>` : '';
+        const deleteBtn = isMe ? `<span class="delete-msg" style="color:var(--bit-danger);" data-key="${key}">Delete</span>` : '';
         const escapedText = msg.text.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-        const replyBtn = `<span class="reply-trigger" style="color:var(--bit-blue-primary); font-size:11px; cursor:pointer; margin-left:8px; opacity:0.6;" data-key="${key}" data-sender="${msg.sender}" data-text="${escapedText}">Reply</span>`;
+        const replyBtn = `<span class="reply-trigger" style="color:var(--bit-blue-primary);" data-key="${key}" data-sender="${msg.sender}" data-text="${escapedText}">Reply</span>`;
 
         const msgRow = document.createElement('div');
         msgRow.className = 'msg-row';
@@ -552,8 +713,8 @@
       if (e.target.classList.contains('delete-msg')) {
         const key = e.target.getAttribute('data-key');
         remove(ref(database, 'messages/' + key))
-          .then(() => showToast("Message dropped successfully.", "success"))
-          .catch(err => showToast("Eviction error: " + err.message, "error"));
+          .then(() => showToast("Message deleted.", "success"))
+          .catch(err => showToast(err.message, "error"));
       }
 
       if (e.target.classList.contains('reply-trigger')) {
@@ -604,7 +765,7 @@
             btnVoiceRecord.style.transform = "scale(1.3)";
             showToast("Recording audio...", "info");
           } catch (err) {
-            showToast("Microphone access denied or unavailable.", "error");
+            showToast("Microphone access unavailable.", "error");
           }
         } else {
           if (mediaRecorder) {
@@ -614,7 +775,7 @@
           isRecording = false;
           btnVoiceRecord.innerText = "🎙️";
           btnVoiceRecord.style.transform = "scale(1)";
-          showToast("Processing audio transmission...", "success");
+          showToast("Sending audio transmission...", "success");
         }
       });
     }
