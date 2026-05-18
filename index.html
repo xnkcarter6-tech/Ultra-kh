@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gray-100 p-4" style="display: flex;">
         <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full border border-gray-200">
             <h2 class="text-xl font-bold text-center mb-6 text-gray-900">Register / Login Workspace Operator</h2>
             <div class="space-y-4">
@@ -37,6 +37,7 @@
                     <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700 font-semibold bg-blue-800">🏠 Home</a>
                     <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">💬 Chat</a>
                     <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">👤 Profile</a>
+                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">🔑 Accounts</a>
                     <button id="btn-logout" class="w-full text-left block px-4 py-2 rounded hover:bg-red-700 transition mt-4 text-sm text-red-200">🚪 Sign Out</button>
                 </nav>
             </div>
@@ -44,11 +45,12 @@
         </aside>
 
         <main class="flex-1 p-6 relative">
-            <div id="alert-banner" class="hidden mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm bg-red-500 transition"></div>
+            <div id="alert-banner" style="display: none;" class="mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm bg-red-500 transition"></div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">                
                 <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold mb-4">Publish an Update</h2>
-                    <textarea id="update-text" rows="5" placeholder="Test" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <textarea id="update-text" rows="5" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
                     <button id="btn-publish" class="mt-4 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">Publish Post</button>
                 </div>
 
@@ -81,6 +83,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // Verified working database keys
         const firebaseConfig = {            
             apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",            
             authDomain: "ultra-kh.firebaseapp.com",            
@@ -113,20 +116,21 @@
         const btnLogout = document.getElementById('btn-logout');        
         const btnPublish = document.getElementById('btn-publish');
 
+        // Explicitly reading and writing directly to your allowed node path rule
         const databaseFeedRef = ref(db, 'feed');
 
         function displayAlert(msg, errorMode = true) {            
             if (!msg) {                
-                alertBanner.classList.add('hidden');                
+                alertBanner.style.display = 'none';                
                 return;            
             }            
             alertBanner.className = `mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm transition ${errorMode ? 'bg-red-500' : 'bg-gray-800'}`;            
             alertBanner.textContent = msg;            
-            alertBanner.classList.remove('hidden');            
+            alertBanner.style.display = 'block';            
             window.scrollTo({ top: 0, behavior: 'smooth' });        
         }
 
-        // Fixed Dynamic Screen Rendering State logic
+        // Reliable display state management using direct style parameters
         onAuthStateChanged(auth, (user) => {            
             displayAlert(null);            
             if (user) {                
