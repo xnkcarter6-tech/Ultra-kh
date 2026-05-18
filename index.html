@@ -4,54 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultra KH - Workspace Portal</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        .sidebar { background-color: #2563eb; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <div class="bg-green-600 text-white text-center py-2 text-xs font-bold tracking-wide shadow-sm">
+        ✔ PORTAL CORE SYSTEM ACTIVE V2 (NO AUTH REQUIRED)
+    </div>
 
     <div id="workspace-screen" class="min-h-screen flex">
-        <aside class="w-64 sidebar text-white flex flex-col justify-between p-4 shadow-lg">
+        <aside class="w-64 bg-blue-600 text-white flex flex-col justify-between p-4 shadow-lg">
             <div>
-                <h1 class="text-2xl font-bold mb-8 px-2">Ultra KH</h1>
-                <nav class="space-y-2">
-                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700 font-semibold bg-blue-800">🏠 Home</a>
-                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">💬 Chat</a>
-                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">👤 Profile</a>
-                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">🔑 Accounts</a>
+                <h1 class="text-2xl font-bold mb-8 px-2 tracking-tight">Ultra KH</h1>
+                <nav class="space-y-1">
+                    <a href="#" class="block px-4 py-2.5 rounded bg-blue-700 font-semibold shadow-inner">🏠 Home</a>
+                    <a href="#" class="block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">💬 Chat</a>
+                    <a href="#" class="block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">👤 Profile</a>
+                    <a href="#" class="block px-4 py-2.5 rounded hover:bg-blue-700/50 transition">🔑 Accounts</a>
                 </nav>
             </div>
-            <div class="text-xs opacity-70 px-2">Operator Panel Active</div>
+            <div class="text-xs opacity-75 border-t border-blue-500/30 pt-4 px-2 font-mono">
+                Status: Bypass Engine Active
+            </div>
         </aside>
 
-        <main class="flex-1 p-6 relative">
-            <div id="alert-banner" style="display: none;" class="mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm transition bg-red-500"></div>
+        <main class="flex-1 p-6">
+            <div id="alert-banner" style="display: none;" class="mb-4 p-4 text-white text-sm font-medium rounded-lg shadow-sm bg-red-500"></div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">                
-                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold mb-4">Publish an Update</h2>
-                    <textarea id="update-text" rows="5" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-                    <button id="btn-publish" class="mt-4 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">Publish Post</button>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 tracking-tight">Publish an Update</h2>
+                    <textarea id="update-text" rows="5" placeholder="Type your broadcast update here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50/50 resize-none transition shadow-inner text-sm"></type-area></textarea>
+                    <button id="btn-publish" class="mt-4 px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition active:scale-95 shadow-md shadow-blue-600/10">Publish Post</button>
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 mb-2">Welcome to Ultra KH 🚀</h3>
-                        <p class="text-sm text-gray-500">Welcome to our official platform tracker feed updates.</p>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-gray-900 mb-1 text-sm tracking-tight">Welcome to Ultra KH 🚀</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">Welcome to our official platform tracker feed updates.</p>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 mb-4">System Connection Status</h3>
-                        <div id="connection-status" class="text-sm flex items-center gap-2 text-amber-600 font-medium">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-gray-900 mb-3 text-sm tracking-tight">System Connection Status</h3>
+                        <div id="connection-status" class="text-xs flex items-center gap-2 text-amber-600 font-semibold bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
                             <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
                             Syncing Live Cloud...
                         </div>
                     </div>                
                 </div>
 
-                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold mb-4">Workspace Broadcast Feed</h2>
-                    <div id="feed-container" class="text-sm text-gray-400 text-center py-8 border border-dashed border-gray-100 rounded-lg">
+                <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 tracking-tight">Workspace Broadcast Feed</h2>
+                    <div id="feed-container" class="text-xs text-gray-400 text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/30 font-medium">
                         Syncing latest workspace updates...
                     </div>
                 </div>            
@@ -63,6 +66,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // Verified open path database rules matching project databaseURL
         const firebaseConfig = {            
             apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",            
             authDomain: "ultra-kh.firebaseapp.com",            
@@ -98,30 +102,30 @@
         const connectedRef = ref(db, ".info/connected");            
         onValue(connectedRef, (snap) => {                
             if (snap.val() === true) {                    
-                connectionStatus.className = "text-sm flex items-center gap-2 text-green-600 font-medium";                    
+                connectionStatus.className = "text-xs flex items-center gap-2 text-green-700 font-semibold bg-green-50 px-3 py-2 rounded-lg border border-green-100";                    
                 connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-green-500"></span> Connected Live Cloud`;                
             } else {                    
-                connectionStatus.className = "text-sm flex items-center gap-2 text-amber-600 font-medium";                    
+                connectionStatus.className = "text-xs flex items-center gap-2 text-amber-600 font-semibold bg-amber-50 px-3 py-2 rounded-lg border border-amber-100";                    
                 connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span> Syncing Live Cloud...`;                
             }            
         });
 
         onValue(databaseFeedRef, (snapshot) => {            
             if (!snapshot.exists()) {                
-                feedContainer.className = "text-sm text-gray-400 text-center py-8 border border-dashed border-gray-100 rounded-lg";                
+                feedContainer.className = "text-xs text-gray-400 text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/30";                
                 feedContainer.textContent = "No broadcast updates posted yet.";                
                 return;            
             }
 
-            let htmlPayload = `<div class="space-y-4">`;            
+            let htmlPayload = `<div class="space-y-3">`;            
             const records = snapshot.val();                            
             Object.keys(records).reverse().forEach(key => {                
                 const row = records[key];                
                 const timestampLabel = row.timestamp ? new Date(row.timestamp).toLocaleString() : 'Recent';                
                 htmlPayload += `                    
-                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-left">                        
-                        <p class="text-gray-800 font-normal break-words">${row.text || ''}</p>                        
-                        <span class="text-xs text-gray-400 block mt-2">${timestampLabel}</span>                    
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 text-left shadow-sm">                        
+                        <p class="text-gray-800 font-normal break-words text-sm">${row.text || ''}</p>                        
+                        <span class="text-[10px] text-gray-400 font-mono block mt-2">${timestampLabel}</span>                    
                     </div>                
                 `;            
             });            
@@ -129,8 +133,8 @@
             feedContainer.className = "block";            
             feedContainer.innerHTML = htmlPayload;        
         }, (err) => {            
-            feedContainer.className = "text-sm text-red-500 text-center py-8 font-medium";            
-            feedContainer.textContent = `Database syncing error: ${err.message}`;        
+            feedContainer.className = "text-sm text-red-500 text-center py-12 font-medium";            
+            feedContainer.textContent = `Database sync layer dropped: ${err.message}`;        
         });
 
         btnPublish.addEventListener('click', async () => {            
