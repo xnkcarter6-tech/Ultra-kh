@@ -1,899 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultra KH - Workspace</title>
-  <style>
-    :root {
-      --bit-blue-primary: #1E50FF;
-      --bit-bg-card: #FFFFFF;
-      --bit-text-them: #1F2D3D;
-      --bit-text-light: #8492A6;
-      --bit-danger: #FF4949;
-      --chat-bubble-me: #1E50FF;
-      --chat-bubble-them: #F1F3F5;
-    }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #F8F9FA;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .sidebar {
-      width: 240px;
-      background-color: #1E50FF;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      padding: 20px 0;
-    }
-    .sidebar-brand {
-      font-size: 22px;
-      font-weight: bold;
-      padding: 0 24px 30px 24px;
-    }
-    .nav-item {
-      padding: 12px 24px;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-    }
-    .nav-item:hover, .nav-item.active {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-weight: 600;
-    }
-    .main-layout {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow-y: auto;
-    }
-    .top-bar {
-      background: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #E5E9F2;
-    }
-    .content-area {
-      padding: 30px;
-      flex: 1;
-    }
-    .page-view {
-      display: none;
-    }
-    .page-view.active {
-      display: block;
-    }
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 24px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: var(--bit-text-them);
-    }
-    .form-input, .chat-input, textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #D3DCE6;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
-    .btn-submit, .btn-send {
-      background: var(--bit-blue-primary);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .btn-danger {
-      background: var(--bit-danger);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .chat-messages-box {
-      height: 350px;
-      border: 1px solid #E5E9F2;
-      border-radius: 6px;
-      background: #F8F9FA;
-      padding: 15px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-    }
-    .msg-row {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 12px;
-      width: 100%;
-    }
-    .msg-container {
-      display: flex;
-      align-items: center;
-      max-width: 75%;
-    }
-    .msg-bubble {
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      word-break: break-word;
-    }
-    .delete-msg, .reply-trigger {
-      font-size: 11px;
-      cursor: pointer;
-      margin-left: 8px;
-      opacity: 0.6;
-    }
-    .delete-msg:hover, .reply-trigger:hover {
-      opacity: 1;
-    }
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .toast {
-      padding: 12px 24px;
-      background: #333;
-      color: white;
-      border-radius: 4px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      animation: fadeIn 0.2s ease forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .feed-container {
-      max-height: 400px;
-      overflow-y: auto;
-      margin-top: 15px;
-    }
-    .feed-item {
-      border-left: 4px solid var(--bit-blue-primary);
-      background: #F8F9FA;
-      padding: 12px 16px;
-      border-radius: 0 6px 6px 0;
-      margin-bottom: 12px;
-      position: relative;
-    }
-    .feed-meta {
-      font-size: 11px;
-      color: var(--bit-text-light);
-      margin-bottom: 4px;
-    }
-    .feed-delete {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      color: var(--bit-danger);
-      font-size: 11px;
-      cursor: pointer;
-      opacity: 0.6;
-    }
-    .feed-delete:hover {
-      opacity: 1;
-    }
-    .feed-tag {
-      display: inline-block;
-      background: #E5E9F2;
-      color: var(--bit-text-them);
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-right: 4px;
-      margin-top: 6px;
-    }
-    .auth-toggle-text {
-      font-size: 13px;
-      color: var(--bit-blue-primary);
-      cursor: pointer;
-      text-align: center;
-      display: block;
-      margin-top: 15px;
-    }
-    .operators-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    .operators-table th, .operators-table td {
-      text-align: left;
-      padding: 8px 4px;
-      border-bottom: 1px solid #E5E9F2;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra KH - Workspace</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .sidebar { background-color: #2563eb; }
+        .error-banner { background-color: #ef4444; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 font-sans text-gray-800">
 
-  <div class="toast-container" id="toastContainer"></div>
+    <div class="flex min-h-screen">
+        <aside class="w-64 sidebar text-white flex flex-col justify-between p-4">
+            <div>
+                <h1 class="text-2xl font-bold mb-8 px-2">Ultra KH</h1>
+                <nav class="space-y-2">
+                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">🏠 Home</a>
+                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">💬 Chat</a>
+                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700">👤 Profile</a>
+                    <a href="#" class="block px-4 py-2 rounded hover:bg-blue-700 font-semibold bg-blue-800">🔑 Accounts</a>
+                </nav>
+            </div>
+            <div class="text-xs opacity-70 px-2">Dashboard / Workspace</div>
+        </aside>
 
-  <div class="sidebar">
-    <div class="sidebar-brand">Ultra KH</div>
-    <div class="nav-item active" onclick="switchView('page-home')">🏠 Home</div>
-    <div class="nav-item" onclick="switchView('page-chat')">💬 Chat</div>
-    <div class="nav-item" onclick="switchView('page-profile')">👤 Profile</div>
-    <div class="nav-item" id="nav-auth" onclick="switchView('page-auth')">🔑 Login / Register</div>
-  </div>
+        <main class="flex-1 p-6 relative">
+            <div id="notification-zone" class="absolute top-4 right-4 z-50 space-y-2 w-96"></div>
 
-  <main class="main-layout">
-    <div class="top-bar">
-      <div style="font-weight: 500; color: var(--bit-text-light);">Dashboard / Workspace</div>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="userStatusDot" style="width: 8px; height: 8px; background: #FF4949; border-radius: 50%;"></span>
-        <span id="topBarUserHandle" style="font-weight: 600; color: var(--bit-text-them);">Guest</span>
-        <button id="btnTopLogout" class="btn-danger" style="padding: 4px 10px; font-size: 11px; display: none;">Logout</button>
-      </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold mb-4">Publish an Update</h2>
+                    <textarea id="update-text" rows="5" placeholder="Write your update details here..." class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <button id="btn-publish" class="mt-4 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">Publish Post</button>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="font-bold flex items-center gap-2 text-gray-900 mb-2">Welcome to Ultra KH 🚀</h3>
+                        <p class="text-sm text-gray-500">Welcome to our official platform tracker feed updates.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-900 mb-4">System Connection Status</h3>
+                        <div id="connection-status" class="text-sm flex items-center gap-2 text-amber-600 font-medium">
+                            <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            Connecting to System...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold mb-4">Workspace Broadcast Feed</h2>
+                    <div id="feed-container" class="text-sm text-gray-400 text-center py-8">
+                        Syncing latest workspace updates...
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="content-area">
-      <div class="page-view active" id="page-home">
-        <div style="display: flex; gap: 24px; align-items: flex-start;">
-          <div style="flex: 2;">
-            <div class="card" id="homePublishCard" style="display: none;">
-              <h3 style="margin-top: 0;">Publish an Update</h3>
-              <div class="form-group">
-                <textarea id="feedUpdateText" rows="3" placeholder="What is happening within your workspace channels?"></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Add Tags (comma separated)</label>
-                <input type="text" id="feedUpdateTags" class="form-input" placeholder="e.g. general, announcement, urgent">
-              </div>
-              <button id="btnPublishPost" class="btn-submit">Publish Post</button>
-            </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-            <div class="card">
-              <h3 style="margin-top: 0;">Workspace Broadcast Feed</h3>
-              <div class="feed-container" id="workspaceFeedBox">
-                <div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Syncing latest workspace updates...</div>
-              </div>
-            </div>
-          </div>
-
-          <div style="flex: 1;">
-            <div class="card">
-              <h4>Welcome to Ultra KH 🚀</h4>
-              <p style="font-size: 13px; color: var(--bit-text-light); line-height: 1.5;">Welcome to our official platform tracker feed updates.</p>
-            </div>
-            
-            <div class="card">
-              <h4 style="margin-top: 0; margin-bottom: 5px;">Active Operators</h4>
-              <table class="operators-table">
-                <thead>
-                  <tr>
-                    <th>Operator Handle</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="activeOperatorsList">
-                  <tr>
-                    <td colspan="2" style="color: var(--bit-text-light); font-size: 12px; text-align: center;">Connecting sync stream...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="card">
-              <h4>System Connection Status</h4>
-              <p style="font-size: 13px; font-weight: 500;" id="cloudConnectionStatus"><span style="color: #13CE66;">●</span> Connected Live Cloud</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="page-view" id="page-chat">
-        <div class="card" id="chatLockedCard">
-          <div style="text-align: center; padding: 40px 20px;">
-            <h2>🔒 Access Restrained</h2>
-            <p style="color: var(--bit-text-light);">Please login or create an operator account to participate in the live chat stream.</p>
-            <button class="btn-submit" onclick="switchView('page-auth')">Go to Authentication</button>
-          </div>
-        </div>
-
-        <div class="card" id="chatActiveCard" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0;">Live Operational Chat Stream</h3>
-            <button id="btnVoiceRecord" style="background: none; border: none; font-size: 20px; cursor: pointer; transition: transform 0.1s ease;">🎙️</button>
-          </div>
-                    
-          <div class="chat-messages-box" id="chatMessagesBox">
-            <div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Connecting workspace synchronization stream...</div>
-          </div>
-
-          <div class="chat-input-area" style="position: relative;">
-            <div id="emojiDrawer" style="display: none; position: absolute; bottom: 65px; left: 10px; background: var(--bit-bg-card); z-index: 1000; padding: 8px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #E5E9F2;">
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">👍</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">❤️</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">😂</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">🔥</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">👏</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">🚀</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">💥</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">🙏</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">😮</span>
-              <span class="emoji-select" style="cursor:pointer; font-size:18px; margin: 2px;">🎉</span>
-            </div>
-
-            <div id="replyReferenceContainer" style="display: none; background: #E5E9F2; padding: 6px 12px; font-size: 12px; border-left: 3px solid var(--bit-blue-primary); justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div id="replyReferenceText" style="color: var(--bit-text-them); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
-              <span id="btnCancelReply" style="cursor: pointer; color: var(--bit-danger); font-weight: bold; margin-left: 10px;">✕</span>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
-              <button type="button" id="btnEmojiToggle" style="background: none; border: none; font-size: 20px; cursor: pointer;">😀</button>
-              <input type="text" id="chatTextInput" class="chat-input" placeholder="Type a message..." style="flex: 1;">
-              <button id="btnChatSend" class="btn-send">Send</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="page-view" id="page-profile">
-        <div class="card" style="max-width: 450px; margin: 0 auto; text-align: center;" id="profileLockedCard">
-          <h3>🔒 Profile Access Restricted</h3>
-          <p style="color: var(--bit-text-light);">Please sign in to view your profile settings.</p>
-        </div>
-        <div class="card" style="max-width: 450px; margin: 0 auto; display: none;" id="profileActiveCard">
-          <h3 style="margin-bottom: 15px;">Operator Profile</h3>
-          <div class="form-group">
-            <label class="form-label">Account Email Address</label>
-            <input type="text" class="form-input" id="profEmailDisplay" readonly style="background:#F1F3F5; cursor:not-allowed;">
-          </div>
-          <form id="profileUpdateForm">
-            <div class="form-group">
-              <label class="form-label">Display Nickname Handle</label>
-              <input type="text" class="form-input" id="profUserHandle" required placeholder="Enter handle name...">
-            </div>
-            <button type="submit" class="btn-submit">Save Profile Handle</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="page-view" id="page-auth">
-        <div class="card" style="max-width: 450px; margin: 0 auto;" id="authLoginCard">
-          <h3 style="margin-bottom: 20px; text-align: center;">Sign In Operator</h3>
-          <form id="loginForm">
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-input" id="loginEmail" required placeholder="Enter account email...">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-input" id="loginPassword" required placeholder="Enter password...">
-            </div>
-            <button type="submit" class="btn-submit" style="width: 100%;">Login</button>
-          </form>
-          <span class="auth-toggle-text" onclick="toggleAuthForms(false)">Don't have an account? Register here</span>
-        </div>
-
-        <div class="card" style="max-width: 450px; margin: 0 auto; display: none;" id="authRegisterCard">
-          <h3 style="margin-bottom: 20px; text-align: center;">Register Workspace Operator</h3>
-          <form id="signUpSystemForm">
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-input" id="signUpEmail" required placeholder="Enter working email...">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-input" id="signUpPassword" required minlength="6" placeholder="Create password (6+ chars)...">
-            </div>
-            <button type="submit" class="btn-submit" style="width: 100%;">Create Account</button>
-          </form>
-          <span class="auth-toggle-text" onclick="toggleAuthForms(true)">Already registered? Login here</span>
-        </div>
-
-        <div class="card" style="max-width: 450px; margin: 0 auto; display: none; text-align: center;" id="authWelcomeCard">
-          <h3>Welcome Back!</h3>
-          <p id="authWelcomeUserText" style="color: var(--bit-text-light); margin-bottom: 20px;"></p>
-          <button id="btnMainLogout" class="btn-danger" style="width: 100%;">Disconnect Session (Logout)</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <script>
-    function switchView(viewId) {
-      document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-      const targetView = document.getElementById(viewId);
-      if(targetView) targetView.classList.add('active');
-            
-      const clickedNav = document.getElementById(viewId === 'page-auth' ? 'nav-auth' : '') || 
-                         Array.from(document.querySelectorAll('.nav-item')).find(item => item.getAttribute('onclick')?.includes(viewId));
-      if(clickedNav) clickedNav.classList.add('active');
-    }
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      if(!container) return;
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      if(type === 'error') toast.style.backgroundColor = '#FF4949';
-      if(type === 'success') toast.style.backgroundColor = '#13CE66';
-      toast.innerText = message;
-      container.appendChild(toast);
-      
-      // Auto-removal script avoids blocking interface layouts over time
-      setTimeout(() => {
-        toast.style.animation = 'fadeIn 0.2s ease reverse forwards';
-        setTimeout(() => toast.remove(), 200);
-      }, 3500);
-    }
-
-    function toggleAuthForms(showLogin) {
-      document.getElementById('authLoginCard').style.display = showLogin ? 'block' : 'none';
-      document.getElementById('authRegisterCard').style.display = showLogin ? 'none' : 'block';
-    }
-
-    const emojiToggle = document.getElementById('btnEmojiToggle');
-    const emojiDrawer = document.getElementById('emojiDrawer');
-    if(emojiToggle && emojiDrawer) {
-      emojiToggle.addEventListener('click', () => {
-        emojiDrawer.style.display = emojiDrawer.style.display === 'none' ? 'block' : 'none';
-      });
-      document.querySelectorAll('.emoji-select').forEach(el => {
-        el.addEventListener('click', () => {
-          document.getElementById('chatTextInput').value += el.innerText;
-          emojiDrawer.style.display = 'none';
-        });
-      });
-    }
-  </script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyc7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-      authDomain: "ultra-kh.firebaseapp.com",
-      databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-      projectId: "ultra-kh",
-      storageBucket: "ultra-kh.appspot.com",
-      messagingSenderId: "4141518365494",
-      appId: "1:4141518365494:web:accf5fa772831d1459b797a73f7dc53b"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app, "https://ultra-kh-default-rtdb.firebaseio.com");
-    const auth = getAuth(app);
-
-    const chatMessagesBox = document.getElementById('chatMessagesBox');
-    const workspaceFeedBox = document.getElementById('workspaceFeedBox');
-    const activeOperatorsList = document.getElementById('activeOperatorsList');
-
-    let activeReplyTarget = null;
-    const containerReply = document.getElementById('replyReferenceContainer');
-    const textReply = document.getElementById('replyReferenceText');
-    const btnCancelReply = document.getElementById('btnCancelReply');
-
-    if (btnCancelReply) {
-      btnCancelReply.addEventListener('click', () => {
-        activeReplyTarget = null;
-        containerReply.style.display = 'none';
-      });
-    }
-
-    // =================================================================
-    // AUTHENTICATION & PRESENCE MANAGEMENT
-    // =================================================================
-    onAuthStateChanged(auth, (user) => {
-      const topBarName = document.getElementById('topBarUserHandle');
-      const statusDot = document.getElementById('userStatusDot');
-      const topLogoutBtn = document.getElementById('btnTopLogout');
-
-      if (user) {
-        const nameToShow = user.displayName || user.email.split('@')[0];
-        topBarName.innerText = nameToShow;
-        statusDot.style.backgroundColor = '#13CE66';
-        topLogoutBtn.style.display = 'inline-block';
-
-        // Write real-time presence logging tracking object
-        const userPresenceRef = ref(database, 'presence/' + user.uid);
-        set(userPresenceRef, {
-          handle: nameToShow,
-          status: "Online"
-        });
-        onDisconnect(userPresenceRef).remove();
-
-        document.getElementById('profEmailDisplay').value = user.email;
-        document.getElementById('profUserHandle').value = user.displayName || '';
-
-        document.getElementById('homePublishCard').style.display = 'block';
-        document.getElementById('chatLockedCard').style.display = 'none';
-        document.getElementById('chatActiveCard').style.display = 'block';
-        document.getElementById('profileLockedCard').style.display = 'none';
-        document.getElementById('profileActiveCard').style.display = 'block';
-
-        document.getElementById('authLoginCard').style.display = 'none';
-        document.getElementById('authRegisterCard').style.display = 'none';
-        document.getElementById('authWelcomeUserText').innerText = `Logged in as: ${user.email}`;
-        document.getElementById('authWelcomeCard').style.display = 'block';
-        document.getElementById('nav-auth').innerText = "🔑 Session Profile";
-      } else {
-        topBarName.innerText = "Guest";
-        statusDot.style.backgroundColor = '#FF4949';
-        topLogoutBtn.style.display = 'none';
-
-        document.getElementById('homePublishCard').style.display = 'none';
-        document.getElementById('chatLockedCard').style.display = 'block';
-        document.getElementById('chatActiveCard').style.display = 'none';
-        document.getElementById('profileLockedCard').style.display = 'block';
-        document.getElementById('profileActiveCard').style.display = 'none';
-
-        document.getElementById('authLoginCard').style.display = 'block';
-        document.getElementById('authWelcomeCard').style.display = 'none';
-        document.getElementById('nav-auth').innerText = "🔑 Login / Register";
-      }
-    });
-
-    // Sync Live Active Operators Table Card Node Stream
-    onValue(ref(database, 'presence'), (snapshot) => {
-      if (!activeOperatorsList) return;
-      activeOperatorsList.innerHTML = '';
-      const data = snapshot.val();
-      if (!data) {
-        activeOperatorsList.innerHTML = `<tr><td colspan="2" style="color: var(--bit-text-light); text-align:center;">No operators active</td></tr>`;
-        return;
-      }
-      Object.keys(data).forEach(uid => {
-        const op = data[uid];
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${op.handle}</strong></td>
-          <td><span style="color: #13CE66;">●</span> ${op.status}</td>
-        `;
-        activeOperatorsList.appendChild(tr);
-      });
-    });
-
-    // Sign Up Event
-    document.getElementById('signUpSystemForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('signUpEmail').value.trim();
-      const password = document.getElementById('signUpPassword').value;
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          showToast("Account registration completed successfully!", "success");
-          switchView('page-home');
-        })
-        .catch((err) => showToast(err.message, "error"));
-    });
-
-    // Login Event
-    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          showToast("Session successfully authenticated.", "success");
-          switchView('page-home');
-        })
-        .catch((err) => showToast("Login Error: " + err.message, "error"));
-    });
-
-    // Logout Trigger Functions
-    const executeSignOut = () => {
-      if(auth.currentUser) {
-        remove(ref(database, 'presence/' + auth.currentUser.uid));
-      }
-      signOut(auth).then(() => {
-        showToast("Session closed.", "info");
-        switchView('page-auth');
-      }).catch(err => showToast(err.message, "error"));
-    };
-    document.getElementById('btnTopLogout')?.addEventListener('click', executeSignOut);
-    document.getElementById('btnMainLogout')?.addEventListener('click', executeSignOut);
-
-    // Profile Custom Handle Setup Update
-    document.getElementById('profileUpdateForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      const newHandle = document.getElementById('profUserHandle').value.trim();
-
-      if (user && newHandle) {
-        updateProfile(user, { displayName: newHandle })
-          .then(() => {
-            document.getElementById('topBarUserHandle').innerText = newHandle;
-            set(ref(database, 'presence/' + user.uid), {
-              handle: newHandle,
-              status: "Online"
-            });
-            showToast("Display nickname synced successfully.", "success");
-          })
-          .catch(err => showToast(err.message, "error"));
-      }
-    });
-
-    // =================================================================
-    // HOME WORKSPACE BROADCAST FEED LOGIC
-    // =================================================================
-    document.getElementById('btnPublishPost')?.addEventListener('click', () => {
-      const feedTextEl = document.getElementById('feedUpdateText');
-      const feedTagsEl = document.getElementById('feedUpdateTags');
-      const text = feedTextEl.value.trim();
-      
-      if (!text) return;
-
-      const tagArray = feedTagsEl ? feedTagsEl.value.split(',')
-                        .map(t => t.trim())
-                        .filter(t => t.length > 0) : [];
-
-      const currentUser = document.getElementById("topBarUserHandle").innerText;
-      const feedRef = ref(database, 'feed');
-      const newPostRef = push(feedRef);
-
-      set(newPostRef, {
-        sender: currentUser,
-        text: text,
-        tags: tagArray,
-        timestamp: new Date().toLocaleString()
-      }).then(() => {
-        feedTextEl.value = '';
-        if (feedTagsEl) feedTagsEl.value = '';
-        showToast("Dashboard broadcast feed updated live!", "success");
-      }).catch(err => showToast("Broadcast Fail: " + err.message, "error"));
-    });
-
-    onValue(ref(database, 'feed'), (snapshot) => {
-      if (!workspaceFeedBox) return;
-      workspaceFeedBox.innerHTML = '';
-      const data = snapshot.val();
-
-      if (!data) {
-        workspaceFeedBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No dashboard updates found.</div>';
-        return;
-      }
-
-      const currentUser = document.getElementById("topBarUserHandle").innerText;
-
-      Object.keys(data).reverse().forEach((key) => {
-        const post = data[key];
-        const isOwner = post.sender === currentUser;
-        const deleteHTML = isOwner ? `<span class="feed-delete" data-key="${key}">✕ Remove</span>` : '';
-
-        let tagsHTML = '';
-        if(post.tags && post.tags.length > 0) {
-          tagsHTML = '<div>' + post.tags.map(t => `<span class="feed-tag">#${t}</span>`).join('') + '</div>';
-        }
-
-        const postItem = document.createElement('div');
-        postItem.className = 'feed-item';
-        postItem.innerHTML = `
-          ${deleteHTML}
-          <div class="feed-meta">🛡️ <strong>${post.sender}</strong> • ${post.timestamp}</div>
-          <div style="color: var(--bit-text-them); font-size: 14px; white-space: pre-wrap;">${post.text}</div>
-          ${tagsHTML}
-        `;
-        workspaceFeedBox.appendChild(postItem);
-      });
-    });
-
-    workspaceFeedBox?.addEventListener('click', (e) => {
-      if (e.target.classList.contains('feed-delete')) {
-        const key = e.target.getAttribute('data-key');
-        remove(ref(database, 'feed/' + key))
-          .then(() => showToast("Broadcast post dropped successfully.", "success"))
-          .catch(err => showToast("Removal error: " + err.message, "error"));
-      }
-    });
-
-    // =================================================================
-    // OPERATIONAL LIVE CHAT STREAM LOGIC
-    // =================================================================
-    function triggerSendMessage() {
-      const textInput = document.getElementById('chatTextInput');
-      const text = textInput.value.trim();
-      if (!text) return;
-
-      const currentUser = document.getElementById("topBarUserHandle").innerText;
-      const chatRef = ref(database, 'messages');
-      const newMessageRef = push(chatRef);
-
-      const messagePayload = {
-        sender: currentUser,
-        text: text,
-        timestamp: new Date().toISOString()
-      };
-
-      if (activeReplyTarget) {
-        messagePayload.replyTo = {
-          user: activeReplyTarget.sender,
-          quote: activeReplyTarget.text
+        // Verified Configuration block
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
+            authDomain: "ultra-kh.firebaseapp.com",
+            databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
+            projectId: "ultra-kh",
+            storageBucket: "ultra-kh.firebasestorage.app",
+            messagingSenderId: "414518365494",
+            appId: "1:414518365494:web:accf5fa772831d1459b797",
+            measurementId: "G-6RXJMQF7HZ"
         };
-      }
 
-      set(newMessageRef, messagePayload).then(() => {
-        textInput.value = '';
-        activeReplyTarget = null;
-        if (containerReply) containerReply.style.display = 'none';
-      }).catch(err => showToast("Message Fail: " + err.message, "error"));
-    }
+        // Initialize App & Database instances
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    document.getElementById('btnChatSend')?.addEventListener('click', triggerSendMessage);
-    document.getElementById('chatTextInput')?.addEventListener('keypress', (e) => {
-      if(e.key === 'Enter') triggerSendMessage();
-    });
+        // UI Element References
+        const btnPublish = document.getElementById('btn-publish');
+        const updateTextArea = document.getElementById('update-text');
+        const feedContainer = document.getElementById('feed-container');
+        const connectionStatus = document.getElementById('connection-status');
+        const notificationZone = document.getElementById('notification-zone');
 
-    onValue(ref(database, 'messages'), (snapshot) => {
-      if (!chatMessagesBox) return;
-      chatMessagesBox.innerHTML = '';
-      const data = snapshot.val();
+        // Helper for displaying native notifications matching UI
+        function showNotification(message, isError = false) {
+            const banner = document.createElement('div');
+            banner.className = `p-3 text-sm text-white font-medium rounded shadow-md ${isError ? 'bg-red-500' : 'bg-gray-800'}`;
+            banner.textContent = message;
+            notificationZone.appendChild(banner);
+            setTimeout(() => banner.remove(), 4000);
+        }
+
+        // Monitor Realtime Database Connection state
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                connectionStatus.className = "text-sm flex items-center gap-2 text-green-600 font-medium";
+                connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-green-500"></span> Connected Live Cloud`;
+            } else {
+                connectionStatus.className = "text-sm flex items-center gap-2 text-amber-600 font-medium";
+                connectionStatus.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span> Syncing Live Cloud...`;
+            }
+        });
+
+        // FIXED: Targeted path explicitly changed from 'broadcast' to 'feed' to match your rules JSON
+        const databaseFeedRef = ref(db, 'feed');
+
+        // Handle Form Submissions
+        btnPublish.addEventListener('click', async () => {
+            const content = updateTextArea.value.trim();
+            if (!content) {
+                showNotification("Please type a status message before pushing.", true);
+                return;
+            }
+
+            btnPublish.disabled = true;
+            btnPublish.textContent = "Publishing...";
+
+            try {
+                await push(databaseFeedRef, {
+                    text: content,
+                    timestamp: serverTimestamp()
+                });
+                updateTextArea.value = "";
+                showNotification("Post broadcast updated successfully.");
+            } catch (error) {
+                console.error(error);
+                // Displays the specific permission error string if data formatting goes out of bounds
+                showNotification(`Broadcast Fail: ${error.message}`, true);
+            } finally {
+                btnPublish.disabled = false;
+                btnPublish.textContent = "Publish Post";
+            }
+        });
+
+        // Stream modifications down into the workspace container UI
+        onValue(databaseFeedRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                feedContainer.className = "text-sm text-gray-400 text-center py-8";
+                feedContainer.textContent = "No broadcast updates posted yet.";
+                return;
+            }
+
+            let htmlPayload = `<div class="space-y-4">`;
+            const data = snapshot.val();
             
-      if (!data) {
-        chatMessagesBox.innerHTML = '<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">No operational messages in conversation timeline.</div>';
-        return;
-      }
-
-      const currentUser = document.getElementById("topBarUserHandle").innerText;
-
-      Object.keys(data).forEach((key) => {
-        const msg = data[key];
-        const isMe = msg.sender === currentUser;
-
-        const bubbleBg = isMe ? 'var(--chat-bubble-me, #1E50FF)' : 'var(--chat-bubble-them, #F1F3F5)';
-        const textColor = isMe ? '#FFFFFF' : 'var(--bit-text-them, #1F2D3D)';
-        const alignSide = isMe ? 'flex-end' : 'flex-start';
-
-        const deleteBtn = isMe ? `<span class="delete-msg" style="color:var(--bit-danger);" data-key="${key}">Delete</span>` : '';
-        const escapedText = msg.text.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-        const replyBtn = `<span class="reply-trigger" style="color:var(--bit-blue-primary);" data-key="${key}" data-sender="${msg.sender}" data-text="${escapedText}">Reply</span>`;
-
-        const msgRow = document.createElement('div');
-        msgRow.className = 'msg-row';
-        msgRow.style.alignItems = alignSide;
-
-        let replyContextHTML = "";
-        if (msg.replyTo) {
-          replyContextHTML = `
-            <div style="background: rgba(0,0,0,0.05); border-left: 3px solid var(--bit-blue-primary); padding: 4px 8px; font-size: 11px; margin-bottom: 4px; border-radius: 4px; color: ${isMe ? '#EEE' : '#555'}">
-              <strong>@${msg.replyTo.user}</strong>: ${msg.replyTo.quote}
-            </div>`;
-        }
-
-        let audioHtml = '';
-        if (msg.audio) {
-          audioHtml = `<audio controls src="${msg.audio}" style="max-width:200px; display:block; margin-top:4px;"></audio>`;
-        }
-
-        msgRow.innerHTML = `
-          <div style="font-size: 11px; color: var(--bit-text-light); margin-bottom: 2px;">${msg.sender}</div>
-          <div class="msg-container" style="flex-direction: ${isMe ? 'row-reverse' : 'row'};">
-            <div class="msg-bubble" style="background: ${bubbleBg}; color: ${textColor};">
-              ${replyContextHTML}
-              <div>${msg.text}</div>
-              ${audioHtml}
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-              ${replyBtn}
-              ${deleteBtn}
-            </div>
-          </div>
-        `;
-        chatMessagesBox.appendChild(msgRow);
-      });
-      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
-    });
-
-    chatMessagesBox.addEventListener('click', (e) => {
-      if (e.target.classList.contains('delete-msg')) {
-        const key = e.target.getAttribute('data-key');
-        remove(ref(database, 'messages/' + key))
-          .then(() => showToast("Message deleted.", "success"))
-          .catch(err => showToast(err.message, "error"));
-      }
-
-      if (e.target.classList.contains('reply-trigger')) {
-        const sender = e.target.getAttribute('data-sender');
-        const text = e.target.getAttribute('data-text');
-                
-        activeReplyTarget = { sender, text };
-        if (containerReply && textReply) {
-          textReply.innerText = `Replying to @${sender}: "${text}"`;
-          containerReply.style.display = 'flex';
-        }
-        document.getElementById('chatTextInput').focus();
-      }
-    });
-
-    // =================================================================
-    // VOICE NOTE RECORDING ENGINE
-    // =================================================================
-    const btnVoiceRecord = document.getElementById("btnVoiceRecord");
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let isRecording = false;
-
-    if (btnVoiceRecord) {
-      btnVoiceRecord.addEventListener("click", async () => {
-        if (!isRecording) {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.addEventListener("dataavailable", event => {
-              audioChunks.push(event.data);
+            // Loop through entries chronologically reverse
+            Object.keys(data).reverse().forEach(key => {
+                const item = data[key];
+                const dateString = item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Recent';
+                htmlPayload += `
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <p class="text-gray-800 font-normal break-words">${item.text}</p>
+                        <span class="text-xs text-gray-400 block mt-2">${dateString}</span>
+                    </div>
+                `;
             });
-
-            mediaRecorder.addEventListener("stop", () => {
-              const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-              const reader = new FileReader();
-              reader.readAsDataURL(audioBlob);
-              reader.onloadend = () => {
-                sendVoiceMessage(reader.result);
-              };
-            });
-
-            mediaRecorder.start();
-            isRecording = true;
-            btnVoiceRecord.innerText = "🛑";
-            btnVoiceRecord.style.transform = "scale(1.3)";
-            showToast("Recording audio...", "info");
-          } catch (err) {
-            showToast("Microphone access unavailable.", "error");
-          }
-        } else {
-          if (mediaRecorder) {
-            mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-          }
-          isRecording = false;
-          btnVoiceRecord.innerText = "🎙️";
-          btnVoiceRecord.style.transform = "scale(1)";
-          showToast("Sending audio transmission...", "success");
-        }
-      });
-    }
-
-    function sendVoiceMessage(audioDataString) {
-      const currentUser = document.getElementById("topBarUserHandle")?.innerText || "Admin";
-      const chatRef = ref(database, 'messages');
-      const newMessageRef = push(chatRef);
+            htmlPayload += `</div>`;
             
-      set(newMessageRef, {
-        sender: currentUser,
-        text: "[Voice Note]",
-        audio: audioDataString,
-        timestamp: new Date().toISOString()
-      }).catch(err => {
-        showToast("Voice Sync Error: " + err.message, "error");
-      });
-    }
-  </script>
+            feedContainer.className = "text-left";
+            feedContainer.innerHTML = htmlPayload;
+        }, (error) => {
+            feedContainer.className = "text-sm text-red-500 text-center py-8";
+            feedContainer.textContent = `Failed to read workspace tracker feed: ${error.message}`;
+        });
+    </script>
 </body>
 </html>
