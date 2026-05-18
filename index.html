@@ -358,488 +358,74 @@
             </div>
         </div>
  </main>
+    </script>
     // ==========================================
-// VOICE NOTE RECORDING & STREAMING ENGINE
-// ==========================================
-const btnVoiceRecord = document.getElementById("btnVoiceRecord");
-let mediaRecorder = null;
-let audioChunks = [];
-let isRecording = false;
+// ... upper emoji and chat code elements ...
 
-if (btnVoiceRecord) {
-    btnVoiceRecord.addEventListener("click", async () => {
-        if (!isRecording) {
-            try {
-                // Request mic hardware access
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.addEventListener("dataavailable", event => {
-                    audioChunks.push(event.data);
-                });
-
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    
-                    // Convert raw audio blob to Base64 string for direct Firebase RTDB storage
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result;
-                        sendVoiceMessage(base64Audio);
-                    };
-                });
-
-                mediaRecorder.start();
-                isRecording = true;
-                btnVoiceRecord.innerText = "🛑"; // Switch icon to stop mode
-                btnVoiceRecord.style.transform = "scale(1.3)";
-                showToast("Recording audio...", "info");
-            } catch (err) {
-                showToast("Microphone access denied or unavailable.", "error");
-            }
-        } else {
-            // Stop recording process
-            mediaRecorder.stop();
-            // Release the microphone hardware completely
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            isRecording = false;
-            btnVoiceRecord.innerText = "🎙️"; // Reset icon back to mic
-            btnVoiceRecord.style.transform = "scale(1)";
-            showToast("Processing audio transmission...", "success");
-        }
-    });
-}
-
-// Push audio string payload directly to your Firebase database path
-function sendVoiceMessage(audioDataString) {
-    const currentUser = document.getElementById("topBarUserHandle").innerText;
-    const chatRef = ref(database, 'messages');
-    const newMessageRef = push(chatRef);
-
-    set(newMessageRef, {
-        sender: currentUser,
-        text: "[Voice Note]", // Fallback placeholder text
-        audio: audioDataString, 
-        timestamp: new Date().toISOString()
-    }).catch((err) => {
-        showToast("Voice Sync Error: " + err.message, "error");
-    });
-}
     // ==========================================
-// VOICE NOTE RECORDING & STREAMING ENGINE
-// ==========================================
-const btnVoiceRecord = document.getElementById("btnVoiceRecord");
-let mediaRecorder = null;
-let audioChunks = [];
-let isRecording = false;
+    // VOICE NOTE RECORDING & STREAMING ENGINE
+    // ==========================================
+    const btnVoiceRecord = document.getElementById("btnVoiceRecord");
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
-if (btnVoiceRecord) {
-    btnVoiceRecord.addEventListener("click", async () => {
-        if (!isRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+    if (btnVoiceRecord) {
+        btnVoiceRecord.addEventListener("click", async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
 
-                mediaRecorder.addEventListener("dataavailable", event => {
-                    audioChunks.push(event.data);
-                });
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
 
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result;
-                        sendVoiceMessage(base64Audio);
-                    };
-                });
+                    mediaRecorder.addEventListener("stop", () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            const base64Audio = reader.result;
+                            sendVoiceMessage(base64Audio);
+                        };
+                    });
 
-                mediaRecorder.start();
-                isRecording = true;
-                btnVoiceRecord.innerText = "🛑"; 
-                btnVoiceRecord.style.transform = "scale(1.3)";
-                showToast("Recording audio...", "info");
-            } catch (err) {
-                showToast("Microphone access denied or unavailable.", "error");
-            }
-        } else {
-            mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            isRecording = false;
-            btnVoiceRecord.innerText = "🎙️"; 
-            btnVoiceRecord.style.transform = "scale(1)";
-            showToast("Processing audio transmission...", "success");
-        }
-    });
-}
-
-function sendVoiceMessage(audioDataString) {
-    const currentUser = document.getElementById("topBarUserHandle").innerText;
-    const chatRef = ref(database, 'messages');
-    const newMessageRef = push(chatRef);
-
-    set(newMessageRef, {
-        sender: currentUser,
-        text: "[Voice Note]", 
-        audio: audioDataString, 
-        timestamp: new Date().toISOString()
-    }).catch((err) => {
-        showToast("Voice Sync Error: " + err.message, "error");
-    });
-}
-</script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-// Your exact verified configuration keys
-const firebaseConfig = {
-    apiKey: "AIzaSyC7L_QlM3o7BkUDZSACRsxzJuSqXdXb2c8",
-    authDomain: "ultra-kh.firebaseapp.com",
-    databaseURL: "https://ultra-kh-default-rtdb.firebaseio.com",
-    projectId: "ultra-kh",
-    storageBucket: "ultra-kh.firebasestorage.app",
-    messagingSenderId: "414518365494",
-    appId: "1:414518365494:web:accf5fa772831d1459b797",
-    measurementId: "G-6RXJMQF7HZ"
-};
-
-// Initialize Firebase Connection
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-
-// DOM Targets
-const systemUserTableBody = document.getElementById("systemUserTableBody");
-const metUserCount = document.getElementById("metUserCount");
-const homeFeedStream = document.getElementById("homeFeedStream");
-const liveStatusIndicator = document.getElementById("liveStatusIndicator");
-const chatMessagesBox = document.querySelector(".chat-messages-box");
-const chatInput = document.querySelector(".chat-input");
-const btnSend = document.querySelector(".btn-send");
-
-function showToast(message, type = 'success') {
-    const container = document.getElementById("toastHub");
-    if (!container) return;
-    const element = document.createElement("div");
-    element.className = `toast-card ${type}`;
-    element.innerHTML = `<span class="toast-message">${message}</span>`;
-    container.appendChild(element);
-    setTimeout(() => { element.remove(); }, 3500);
-}
-
-// Live Publishing Event Handler (Home Feed)
-document.getElementById("homePublishForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const postText = document.getElementById("postText").value.trim();
-    const postTags = document.getElementById("postTags").value.trim();
-    const userHandle = document.getElementById("topBarUserHandle").innerText;
-
-    if (!postText) return;
-
-    const postsRef = ref(database, 'posts');
-    const newPostRef = push(postsRef);
-    const tagsArray = postTags ? postTags.split(',').map(t => t.trim()) : [];
-
-    set(newPostRef, {
-        author: userHandle,
-        content: postText,
-        tags: tagsArray,
-        timestamp: new Date().toISOString()
-    }).then(() => {
-        showToast("Post updated to Firebase feed!", "success");
-        document.getElementById("homePublishForm").reset();
-    }).catch((err) => {
-        showToast("Error: " + err.message, "error");
-    });
-});
-
-// Global Account Registration
-document.getElementById("signUpSystemForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const username = document.getElementById("signUpUser").value.trim();
-    
-    if (username) {
-        const targetUserRef = ref(database, 'users/' + username);
-        set(targetUserRef, {
-            username: username,
-            status: "Online",
-            timestamp: new Date().toISOString()
-        }).then(() => {
-            showToast(`@${username} registered!`, "success");
-            document.getElementById("topBarUserHandle").innerText = username;
-            document.getElementById("profUserHandle").value = username;
-            document.getElementById("signUpSystemForm").reset();
-        }).catch((err) => {
-            showToast("Sync Error: " + err.message, "error");
-        });
-    }
-});
-
-// Cloud Connection Indicator
-const connectionRef = ref(database, '.info/connected');
-onValue(connectionRef, (snap) => {
-    if (snap.val() === true) {
-        liveStatusIndicator.innerHTML = `
-            <span class="dot-pulse" style="background-color: var(--bit-success);"></span>
-            <span style="color: var(--bit-success); font-weight: bold;">Operational / Connected</span>
-        `;
-    } else {
-        liveStatusIndicator.innerHTML = `
-            <span class="dot-pulse" style="background-color: var(--bit-danger);"></span>
-            <span style="color: var(--bit-danger);">Offline / Disconnected</span>
-        `;
-    }
-});
-
-// Active Operators Stream
-const userDatabaseRef = ref(database, 'users');
-onValue(userDatabaseRef, (snapshot) => {
-    const data = snapshot.val();
-    systemUserTableBody.innerHTML = "";
-    if (data) {
-        const userKeys = Object.keys(data);
-        metUserCount.innerText = userKeys.length;
-        userKeys.forEach((key) => {
-            const currentUser = data[key];
-            systemUserTableBody.innerHTML += `
-                <tr>
-                    <td><strong>@${currentUser.username}</strong></td>
-                    <td><span class="dot-pulse" style="background-color: var(--bit-success);"></span> ${currentUser.status || 'Online'}</td>
-                </tr>
-            `;
-        });
-    } else {
-        metUserCount.innerText = "0";
-        systemUserTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--bit-text-light);">No operators registered yet.</td></tr>`;
-    }
-});
-
-// Updates Feed Stream
-const postsDatabaseRef = ref(database, 'posts');
-onValue(postsDatabaseRef, (snapshot) => {
-    const data = snapshot.val();
-    homeFeedStream.innerHTML = "";
-    if (data) {
-        Object.keys(data).reverse().forEach((key) => {
-            const post = data[key];
-            let tagsHTML = "";
-            if (post.tags && Array.isArray(post.tags)) {
-                post.tags.forEach(t => { if(t) tagsHTML += `<span class="tag-badge">#${t}</span>`; });
-            }
-            const postDate = new Date(post.timestamp).toLocaleString();
-            homeFeedStream.innerHTML += `
-                <div class="post-card">
-                    <div class="post-header">
-                        <span class="post-author">@${post.author}</span>
-                        <span class="post-time">${postDate}</span>
-                    </div>
-                    <div class="post-content-text">${post.content}</div>
-                    <div style="margin-bottom: 12px;">${tagsHTML}</div>
-                </div>
-            `;
-        });
-    } else {
-        homeFeedStream.innerHTML = `<p style="text-align:center; color:var(--bit-text-light); padding:20px;">No updates published yet.</p>`;
-    }
-});
-
-// ==========================================
-// REAL-TIME CHAT ENGINE FUNCTIONALITY
-// ==========================================
-function sendChatMessage() {
-    const messageText = chatInput.value.trim();
-    const currentUser = document.getElementById("topBarUserHandle").innerText;
-
-    if (!messageText) return;
-
-    const chatRef = ref(database, 'messages');
-    const newMessageRef = push(chatRef);
-
-    set(newMessageRef, {
-        sender: currentUser,
-        text: messageText,
-        timestamp: new Date().toISOString()
-    }).then(() => {
-        chatInput.value = "";
-    }).catch((err) => {
-        showToast("Chat Error: " + err.message, "error");
-    });
-}
-
-if (btnSend) { btnSend.addEventListener("click", sendChatMessage); }
-if (chatInput) {
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendChatMessage();
-    });
-}
-
-// ==========================================
-// UPGRADED CHAT ENGINE (REPLIES & VOICE)
-// ==========================================
-let selectedReplyTarget = null; // Holds target message details for thread reply
-
-// Trigger Send Actions
-function sendChatMessage() {
-    const messageText = chatInput.value.trim();
-    const currentUser = document.getElementById("topBarUserHandle").innerText;
-
-    if (!messageText) return;
-
-    const chatRef = ref(database, 'messages');
-    const newMessageRef = push(chatRef);
-
-    const messagePayload = {
-        sender: currentUser,
-        text: messageText,
-        timestamp: new Date().toISOString()
-    };
-
-    // If replying to someone, attach the reference data
-    if (selectedReplyTarget) {
-        messagePayload.replyTo = selectedReplyTarget;
-    }
-
-    set(newMessageRef, messagePayload).then(() => {
-        chatInput.value = "";
-        clearReplyContext(); // Clear reply banner after sending
-    }).catch((err) => {
-        showToast("Chat Error: " + err.message, "error");
-    });
-}
-
-if (btnSend) { btnSend.addEventListener("click", sendChatMessage); }
-if (chatInput) {
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendChatMessage();
-    });
-}
-
-// Listen for incoming chat messages in real-time
-const chatDatabaseRef = ref(database, 'messages');
-onValue(chatDatabaseRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!chatMessagesBox) return;
-    
-    chatMessagesBox.innerHTML = `<div style="text-align: center; color: var(--bit-text-light); font-size: 12px;">Channel initialized</div>`;
-    
-    if (data) {
-        const currentUser = document.getElementById("topBarUserHandle").innerText;
-
-        Object.keys(data).forEach((key) => {
-            const msg = data[key];
-            const isMe = msg.sender === currentUser;
-            
-            const bubbleBg = isMe ? 'var(--chat-bubble-me, #1E50FF)' : 'var(--chat-bubble-them, #F1F3F5)';
-            const textColor = isMe ? '#FFFFFF' : 'var(--chat-text-them, #1F2D3D)';
-            const alignSide = isMe ? 'flex-end' : 'flex-start';
-            
-           const deleteBtn = isMe ? `<span class="delete-msg" data-key="${key}" ...` : '';
-const replyBtn = `<span class="reply-trigger" data-sender="${msg.sender}" ...`;
-            // Evaluate if message data includes an audio string or basic text string
-            let messageBodyHTML = "";
-            if (msg.audio) {
-                messageBodyHTML = `<audio controls src="${msg.audio}" style="max-width: 100%; height: 32px; display: block; margin-top: 4px;"></audio>`;
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btnVoiceRecord.innerText = "🛑"; 
+                    btnVoiceRecord.style.transform = "scale(1.3)";
+                    showToast("Recording audio...", "info");
+                } catch (err) {
+                    showToast("Microphone access denied or unavailable.", "error");
+                }
             } else {
-                messageBodyHTML = msg.text;
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+                btnVoiceRecord.innerText = "🎙️"; 
+                btnVoiceRecord.style.transform = "scale(1)";
+                showToast("Processing audio transmission...", "success");
             }
-            // Build Reply context block if message quotes another message
-            let replyContextHTML = "";
-            if (msg.replyTo) {
-                replyContextHTML = `
-                    <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
-    ${messageBodyHTML}
-</div>
-                `;
-            }
-
-            chatMessagesBox.innerHTML += `
-                <div style="display: flex; flex-direction: column; align-items: ${alignSide}; width: 100%; margin-bottom: 10px;">
-                    <div style="font-size: 11px; color: var(--bit-text-light); margin-bottom: 2px;">@${msg.sender}</div>
-                    <div style="display: flex; flex-direction: column; align-items: ${alignSide}; max-width: 75%;">
-                        ${replyContextHTML}
-                        <div style="display: flex; align-items: center; width: 100%;">
-                            <div style="background: ${bubbleBg}; color: ${textColor}; padding: 8px 14px; border-radius: 8px; font-size: 13px; word-break: break-word;">
-                                ${msg.text}
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 2px;">
-                                ${replyBtn}
-                                ${deleteBtn}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
         });
-        chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
-    }
-});
-
-// Event Catch Engine for Replies and Deletes
-document.body.addEventListener('click', function(e) {
-    // Handle Delete Event
-    if (e.target.classList.contains('delete-msg')) {
-        const msgKey = e.target.getAttribute('data-key');
-        if (confirm("Delete this message permanently?")) {
-            const msgRef = ref(database, 'messages/' + msgKey);
-            remove(msgRef).then(() => { showToast("Message deleted.", "success"); });
-        }
     }
 
-    // Handle Reply Target Click Event
-    if (e.target.classList.contains('reply-trigger')) {
-        const targetUser = e.target.getAttribute('data-sender');
-        const targetText = e.target.getAttribute('data-text');
-        
-        selectedReplyTarget = { user: targetUser, quote: targetText };
-        
-        // Show active reply context UI box directly over the input bar
-        let replyBanner = document.getElementById("chatReplyBanner");
-        if (!replyBanner) {
-            replyBanner = document.createElement("div");
-            replyBanner.id = "chatReplyBanner";
-            replyBanner.style = "background:var(--bit-bg-main); padding:6px 12px; font-size:12px; border-left:4px solid var(--bit-blue-primary); display:flex; justify-content:space-between; align-items:center;";
-            document.querySelector(".chat-input-area").insertBefore(replyBanner, document.querySelector(".chat-input-area").firstChild);
-        }
-        replyBanner.innerHTML = `<span>Replying to <strong>@${targetUser}</strong>: "${targetText.substring(0, 20)}..."</span><span id="closeReplyBtn" style="cursor:pointer; font-weight:bold; color:var(--bit-danger);">×</span>`;
-        chatInput.focus();
+    function sendVoiceMessage(audioDataString) {
+        const currentUser = document.getElementById("topBarUserHandle").innerText;
+        const chatRef = ref(database, 'messages');
+        const newMessageRef = push(chatRef);
+
+        set(newMessageRef, {
+            sender: currentUser,
+            text: "[Voice Note]", 
+            audio: audioDataString, 
+            timestamp: new Date().toISOString()
+        }).catch((err) => {
+            showToast("Voice Sync Error: " + err.message, "error");
+        });
     }
 
-    // Clear Reply Context Trigger
-    if (e.target.id === 'closeReplyBtn') { clearReplyContext(); }
-});
-
-function clearReplyContext() {
-    selectedReplyTarget = null;
-    const replyBanner = document.getElementById("chatReplyBanner");
-    if (replyBanner) replyBanner.remove();
-}
-
-// ==========================================
-// EMOJI DRAWER TOGGLE & SELECTION LOGIC
-// ==========================================
-const btnEmojiToggle = document.getElementById("btnEmojiToggle");
-const emojiDrawer = document.getElementById("emojiDrawer");
-
-if (btnEmojiToggle && emojiDrawer && chatInput) {
-    btnEmojiToggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        emojiDrawer.style.display = (emojiDrawer.style.display === "none" || emojiDrawer.style.display === "") ? "grid" : "none";
-    });
-
-    emojiDrawer.addEventListener("click", (e) => {
-        if (e.target.classList.contains("emoji-select")) {
-            chatInput.value += e.target.innerText;
-            chatInput.focus();
-            emojiDrawer.style.display = "none";
-        }
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!emojiDrawer.contains(e.target) && !btnEmojiToggle.contains(e.target)) {
-            emojiDrawer.style.display = "none";
-        }
-    });
-}
+</script>
+</body>
+</html>
