@@ -1,364 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra KH - Login System</title>
+<title>Ultra KH Firebase Chat</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-:root{
-  --blue:#1E50FF;
-  --bg:#eef2ff;
-}
-
-*{box-sizing:border-box;font-family:Arial}
-
-body{
-  margin:0;
-  background:var(--bg);
-}
-
-/* LOGIN */
-.login-box{
-  width:320px;
-  margin:120px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-
-button{
-  width:100%;
-  padding:10px;
-  background:var(--blue);
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  border-radius:6px;
-}
-
-/* APP */
-.app{display:none;height:100vh;flex-direction:column}
-
-.topbar{
-  background:#fff;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid #ddd;
-}
-
-.container{
-  display:flex;
-  flex:1;
-}
-
-/* SIDEBAR */
-.sidebar{
-  width:220px;
-  background:var(--blue);
-  color:#fff;
-}
-
-.sidebar div{
-  padding:12px;
-  cursor:pointer;
-}
-
-.sidebar div:hover{
-  background:#143fd1;
-}
-
-/* MAIN */
-.main{
-  flex:1;
-  padding:10px;
-}
-
-/* CARD */
-.card{
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-/* POST */
-.post{
-  border:1px solid #ddd;
-  padding:10px;
-  margin-top:10px;
-  border-radius:8px;
-}
-
-.actions button{
-  width:auto;
-  padding:5px 8px;
-  margin-right:5px;
-  font-size:12px;
-}
-
-/* CHAT */
-.chat{
-  display:flex;
-  gap:10px;
-}
-
-.users{
-  width:160px;
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-}
-
-.user{
-  padding:8px;
-  cursor:pointer;
-  border-bottom:1px solid #eee;
-}
-
-.box{
-  flex:1;
-  background:#fff;
-  padding:10px;
-  border-radius:10px;
-  height:300px;
-  overflow:auto;
-}
-
-.msg{
-  padding:6px;
-  margin:5px 0;
-  border-radius:6px;
-  background:#dbeafe;
-}
-
-.me{
-  background:#1E50FF;
-  color:#fff;
-  text-align:right;
-}
+body{margin:0;font-family:Arial;background:#eef2ff}
+.top{background:#1E50FF;color:#fff;padding:10px;display:flex;justify-content:space-between}
+.container{display:flex;height:100vh}
+.sidebar{width:200px;background:#1E50FF;color:#fff;padding:10px}
+.main{flex:1;padding:10px}
+.card{background:#fff;padding:10px;border-radius:10px;margin-bottom:10px}
+.post{border:1px solid #ddd;padding:10px;margin-top:10px;border-radius:8px}
+.msg{padding:6px;margin:5px 0;background:#dbeafe;border-radius:6px}
+.me{background:#1E50FF;color:#fff;text-align:right}
+input,button{padding:8px;margin:5px;width:100%}
+button{background:#1E50FF;color:#fff;border:none;cursor:pointer}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="login-box" id="loginBox">
-  <h3>Login / Register</h3>
-  <input id="user" placeholder="Username">
+<div class="top">
+  <div>Ultra KH Firebase</div>
+  <div id="user"></div>
+</div>
+
+<div id="auth" class="card" style="width:300px;margin:80px auto;">
+  <h3>Login</h3>
+  <input id="email" placeholder="Email">
   <input id="pass" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
+  <button onclick="signup()">Register</button>
 </div>
 
-<!-- APP -->
-<div class="app" id="app">
+<div id="app" class="container hidden">
 
-<div class="topbar">
-  <div>Ultra KH</div>
-  <div>
-    <span id="currentUser"></span>
-    <button onclick="logout()" style="width:auto">Logout</button>
-  </div>
-</div>
-
-<div class="container">
-
-<!-- SIDEBAR -->
 <div class="sidebar">
-  <div onclick="show('home')">Home</div>
-  <div onclick="show('chat')">Chat</div>
+  <h3>Menu</h3>
+  <button onclick="show('home')">Home</button>
+  <button onclick="show('chat')">Chat</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
 <!-- HOME -->
 <div id="home">
-
-<div class="card">
-<h3>Create Post</h3>
-<input id="postInput" placeholder="What's happening?">
-<button onclick="addPost()">Post</button>
-</div>
-
-<div class="card">
-<h3>Feed</h3>
-<div id="feed"></div>
-</div>
-
+  <div class="card">
+    <input id="postInput" placeholder="What's happening?">
+    <button onclick="post()">Post</button>
+  </div>
+  <div id="feed"></div>
 </div>
 
 <!-- CHAT -->
-<div id="chat" style="display:none">
-
-<div class="chat">
-
-<div class="users">
-<h4>Users</h4>
-<div onclick="openChat('Sophia')" class="user">Sophia</div>
-<div onclick="openChat('Rath')" class="user">Rath</div>
-<div onclick="openChat('Dara')" class="user">Dara</div>
-</div>
-
-<div style="flex:1">
-
-<div class="box" id="box"></div>
-
-<input id="msg" placeholder="Message...">
-<button onclick="send()">Send</button>
-
+<div id="chat" class="hidden">
+  <div class="card">
+    <input id="msg" placeholder="Message">
+    <button onclick="send()">Send</button>
+  </div>
+  <div id="chatBox"></div>
 </div>
 
 </div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 
 <script>
 
-/* STORAGE */
-let usersDB = JSON.parse(localStorage.getItem("users")||"{}");
-let posts = JSON.parse(localStorage.getItem("posts")||"[]");
-let chats = JSON.parse(localStorage.getItem("chats")||"{}");
+/* 🔥 FIREBASE CONFIG (REPLACE THIS) */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
 
-let currentUser = localStorage.getItem("currentUser");
+firebase.initializeApp(firebaseConfig);
 
-/* CHECK LOGIN */
-if(currentUser){
-  document.getElementById("loginBox").style.display="none";
-  document.getElementById("app").style.display="flex";
-  document.getElementById("currentUser").innerText=currentUser;
-  render();
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* STATE */
+let currentUser=null;
+
+/* AUTH */
+function signup(){
+  auth.createUserWithEmailAndPassword(email.value, pass.value);
 }
 
-/* LOGIN */
 function login(){
-  let u=document.getElementById("user").value;
-  let p=document.getElementById("pass").value;
-
-  if(!u||!p)return;
-
-  if(!usersDB[u]){
-    usersDB[u]=p;
-  }
-
-  if(usersDB[u]!==p){
-    alert("Wrong password");
-    return;
-  }
-
-  localStorage.setItem("users",JSON.stringify(usersDB));
-  localStorage.setItem("currentUser",u);
-
-  location.reload();
+  auth.signInWithEmailAndPassword(email.value, pass.value);
 }
 
-/* LOGOUT */
 function logout(){
-  localStorage.removeItem("currentUser");
-  location.reload();
+  auth.signOut();
 }
+
+/* AUTH LISTENER */
+auth.onAuthStateChanged(user=>{
+  if(user){
+    currentUser=user.email;
+    document.getElementById("user").innerText=currentUser;
+    document.getElementById("auth").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    listenPosts();
+    listenChat();
+  }else{
+    document.getElementById("auth").classList.remove("hidden");
+    document.getElementById("app").classList.add("hidden");
+  }
+});
 
 /* NAV */
 function show(page){
-  document.getElementById("home").style.display=page==="home"?"block":"none";
-  document.getElementById("chat").style.display=page==="chat"?"block":"none";
+  home.style.display=page==="home"?"block":"none";
+  chat.style.display=page==="chat"?"block":"none";
 }
 
 /* POSTS */
-function addPost(){
-  let text=document.getElementById("postInput").value;
-  if(!text)return;
-
-  posts.unshift({
+function post(){
+  db.collection("posts").add({
     user:currentUser,
-    text,
-    likes:0
+    text:postInput.value,
+    time:Date.now()
   });
+  postInput.value="";
+}
 
-  localStorage.setItem("posts",JSON.stringify(posts));
-  render();
+function listenPosts(){
+  db.collection("posts").orderBy("time","desc")
+  .onSnapshot(snap=>{
+    feed.innerHTML="";
+    snap.forEach(doc=>{
+      let d=doc.data();
+      feed.innerHTML+=`
+        <div class="post">
+          <b>${d.user}</b>
+          <p>${d.text}</p>
+        </div>
+      `;
+    });
+  });
 }
 
 /* CHAT */
-let activeChat=null;
-
-function openChat(user){
-  activeChat=user;
-  render();
-}
-
 function send(){
-  let t=document.getElementById("msg").value;
-  if(!t||!activeChat)return;
-
-  if(!chats[activeChat])chats[activeChat]=[];
-
-  chats[activeChat].push({
-    from:currentUser,
-    text:t
+  db.collection("messages").add({
+    user:currentUser,
+    text:msg.value,
+    time:Date.now()
   });
-
-  localStorage.setItem("chats",JSON.stringify(chats));
-  document.getElementById("msg").value="";
-  render();
+  msg.value="";
 }
 
-/* RENDER */
-function render(){
-
-  /* FEED */
-  let feed=document.getElementById("feed");
-  if(feed){
-    feed.innerHTML="";
-    posts.forEach(p=>{
-      let d=document.createElement("div");
-      d.className="post";
-
-      d.innerHTML=`
-        <b>${p.user}</b>
-        <p>${p.text}</p>
-        <div class="actions">
-          <button onclick="likePost(${posts.indexOf(p)})">Like ❤️</button>
+function listenChat(){
+  db.collection("messages").orderBy("time")
+  .onSnapshot(snap=>{
+    chatBox.innerHTML="";
+    snap.forEach(doc=>{
+      let d=doc.data();
+      chatBox.innerHTML+=`
+        <div class="msg ${d.user===currentUser?'me':''}">
+          ${d.user}: ${d.text}
         </div>
       `;
-
-      feed.appendChild(d);
     });
-  }
-
-  /* CHAT */
-  let box=document.getElementById("box");
-  if(box){
-    box.innerHTML="";
-    let msgs=chats[activeChat]||[];
-
-    msgs.forEach(m=>{
-      let d=document.createElement("div");
-      d.className="msg "+(m.from===currentUser?"me":"");
-      d.innerText=m.from+": "+m.text;
-      box.appendChild(d);
-    });
-  }
-}
-
-/* LIKE */
-function likePost(i){
-  posts[i].likes++;
-  localStorage.setItem("posts",JSON.stringify(posts));
-  render();
+  });
 }
 
 </script>
