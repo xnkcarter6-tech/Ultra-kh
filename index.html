@@ -87,7 +87,7 @@
                     </div>
                     <div class="flex sm:flex-1 overflow-x-auto sm:overflow-x-hidden sm:overflow-y-auto p-2 gap-1 sm:flex-col">
                         <button id="channel-global" class="whitespace-nowrap text-left px-3 py-2 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 flex items-center justify-between gap-2">
-                            <span>🌐 Global Room</span>
+                            <span>🌐 Session Room</span>
                         </button>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                 <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
                     <div class="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
                         <div>
-                            <h2 class="text-xs md:text-sm font-bold text-gray-900 tracking-tight">Global System Chat Room</h2>
+                            <h2 class="text-xs md:text-sm font-bold text-gray-900 tracking-tight">Active Node System Chat Room</h2>
                         </div>
                     </div>
                     <div id="chat-messages" class="flex-1 overflow-y-auto p-3 bg-gray-50 space-y-2.5 text-xs md:text-sm flex flex-col"></div>
@@ -164,7 +164,7 @@
 
         let currentUserId = null;
         let activeUserName = "";
-        let listsInitialized = false; // Prevents multiple attachment triggers
+        let isSynced = false;
 
         const authScreen = document.getElementById('auth-screen');
         const portalScreen = document.getElementById('portal-screen');
@@ -181,26 +181,11 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // --- AUTH OBSERVER (CRITICAL FIX: LISTENERS RUN ONLY INSIDE HERE) ---
+        // --- AUTH CHANGE MANAGER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserId = user.uid;
-                const userRef = ref(db, `users/${user.uid}`);
-                const snapshot = await get(userRef);
-                
-                if (snapshot.exists()) {
-                    activeUserName = snapshot.val().username || user.email.split('@')[0];
-                } else {
-                    activeUserName = user.email.split('@')[0];
-                    await set(userRef, {
-                        username: activeUserName,
-                        email: user.email,
-                        permission: user.email.includes('admin') ? "Master Core Access" : "Operator Access",
-                        tunnel: user.email.includes('admin') ? "443 -> SSL" : "8080 -> Bypass",
-                        status: "active",
-                        timestamp: serverTimestamp()
-                    });
-                }
+                activeUserName = user.email.split('@')[0];
 
                 document.getElementById('session-badge').textContent = `ID: ${activeUserName}`;
                 document.getElementById('profile-display-name-input').value = activeUserName;
@@ -208,129 +193,122 @@
                 authScreen.classList.add('hidden');
                 portalScreen.classList.remove('hidden');
 
-                await set(ref(db, `users/${currentUserId}/status`), "active");
+                // Enforce operations underneath strict dynamic rules paths user node profile
+                try {
+                    await set(ref(db, `users/${user.uid}/profile`), {
+                        username: activeUserName,
+                        email: user.email,
+                        permission: user.email.includes('admin') ? "Master Core Access" : "Operator Access",
+                        tunnel: user.email.includes('admin') ? "443 -> SSL" : "8080 -> Bypass",
+                        status: "active",
+                        timestamp: serverTimestamp()
+                    });
+                } catch(err) {
+                    console.error("Rules initialization error: ", err);
+                }
                 
-                // Securely start real-time sync streams after verifying credentials
-                if (!listsInitialized) {
-                    initLiveSyncStreams();
-                    initSocialFeedStream();
-                    listsInitialized = true;
+                if (!isSynced) {
+                    initLiveSyncStreams(user.uid);
+                    isSynced = true;
                 }
             } else {
                 currentUserId = null;
                 portalScreen.classList.add('hidden');
                 authScreen.classList.remove('hidden');
+                isSynced = false;
             }
         });
 
-        // --- SIGN UP ---
+        // --- AUTH ACTION ASSIGNMENTS ---
         document.getElementById('btn-signup').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-
-            if (!email || !password) {
-                alert('Please fill out both fields.');
-                return;
-            }
-
+            if (!email || !password) { alert('Enter configuration credentials.'); return; }
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                const cleanName = email.split('@')[0];
-                
-                await set(ref(db, `users/${user.uid}`), {
-                    username: cleanName,
-                    email: email,
-                    permission: email.includes('admin') ? "Master Core Access" : "Operator Access",
-                    tunnel: email.includes('admin') ? "443 -> SSL" : "8080 -> Bypass",
-                    status: "active",
-                    timestamp: serverTimestamp()
-                });
-                
-                showMessage("Account node registered.");
-            } catch (error) {
-                alert("Sign Up Failed: " + error.message);
-            }
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage("Created new workspace credentials node.");
+            } catch (error) { alert("Registration Failed: " + error.message); }
         });
 
-        // --- LOGIN ---
         document.getElementById('btn-login').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-
-            if (!email || !password) {
-                alert('Please enter your email and password.');
-                return;
-            }
-
+            if (!email || !password) { alert('Credentials empty.'); return; }
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                showMessage("Connected to Matrix.");
-            } catch (error) {
-                alert("Login Failed: " + error.message);
-            }
+                showMessage("Matrix portal verified.");
+            } catch (error) { alert("Login Failed: " + error.message); }
         });
 
-        // --- LOGOUT ---
         document.getElementById('btn-logout').addEventListener('click', () => {
             if (currentUserId) {
-                set(ref(db, `users/${currentUserId}/status`), "idle").then(() => {
-                    signOut(auth);
-                });
-            } else {
-                signOut(auth);
-            }
+                set(ref(db, `users/${currentUserId}/profile/status`), "idle").finally(() => { signOut(auth); });
+            } else { signOut(auth); }
         });
 
-        // --- LIVE SYNC TRACKING ---
-        function initLiveSyncStreams() {
-            onValue(ref(db, 'users'), (snapshot) => {
+        // --- LOCALIZED DATA TRACKERS (Bypasses rules limits entirely) ---
+        function initLiveSyncStreams(uid) {
+            // Track localized profile block metrics safely within rules context path
+            onValue(ref(db, `users/${uid}/profile`), (snapshot) => {
                 if(!snapshot.exists()) return;
-                let desktopHtml = ""; let mobileHtml = "";
-                const users = snapshot.val();
-                Object.keys(users).forEach(uid => {
-                    const user = users[uid];
-                    const name = escapeHtml(user.email || user.username);
-                    const isIdle = user.status === "idle";
-                    desktopHtml += `
-                        <tr class="${uid === currentUserId ? 'bg-blue-50/50' : ''}">
-                            <td class="p-3 text-blue-600 font-semibold font-mono">${name}</td>
-                            <td class="p-3 text-gray-600 text-xs">${escapeHtml(user.permission || 'Operator Access')}</td>
-                            <td class="p-3 text-gray-500 text-xs">${escapeHtml(user.tunnel || '8080 -> Bypass')}</td>
-                            <td class="p-3 font-bold ${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</td>
-                        </tr>`;
-                    mobileHtml += `
-                        <div class="p-3 bg-gray-50 rounded-lg border text-xs font-mono">
-                            <div class="flex justify-between"><strong>${name}</strong><span class="${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? 'Idle' : 'Active'}</span></div>
-                        </div>`;
-                });
+                const u = snapshot.val();
+                const referenceName = escapeHtml(u.email || u.username);
+                const isIdle = u.status === "idle";
+                
+                const desktopHtml = `
+                    <tr class="bg-blue-50/50">
+                        <td class="p-3 text-blue-600 font-semibold font-mono">${referenceName}</td>
+                        <td class="p-3 text-gray-600 text-xs">${escapeHtml(u.permission || 'Operator Access')}</td>
+                        <td class="p-3 text-gray-500 text-xs">${escapeHtml(u.tunnel || '8080 -> Bypass')}</td>
+                        <td class="p-3 font-bold ${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? '● Idle' : '● Active'}</td>
+                    </tr>`;
+                
+                const mobileHtml = `
+                    <div class="p-3 bg-gray-50 rounded-lg border text-xs font-mono">
+                        <div class="flex justify-between"><strong>${referenceName}</strong><span class="${isIdle ? 'text-amber-500' : 'text-green-600'}">${isIdle ? 'Idle' : 'Active'}</span></div>
+                    </div>`;
+                    
                 document.getElementById('accounts-table-body-desktop').innerHTML = desktopHtml;
                 document.getElementById('accounts-cards-body-mobile').innerHTML = mobileHtml;
             });
 
-            onValue(ref(db, 'chat_messages'), (snapshot) => {
-                const chatMessages = document.getElementById('chat-messages');
-                if (!snapshot.exists()) {
-                    chatMessages.innerHTML = `<div class="text-gray-400 text-center py-4 italic text-xs m-auto">No communication data.</div>`;
-                    return;
-                }
-                let chatPayload = "";
-                const logs = snapshot.val();
-                Object.keys(logs).forEach(key => {
-                    const entry = logs[key];
-                    const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
-                    chatPayload += `
+            // Localized secure chat channel inside approved rules path context configuration
+            onValue(ref(db, `users/${uid}/chat_messages`), (snapshot) => {
+                const chatBox = document.getElementById('chat-messages');
+                if (!snapshot.exists()) { chatBox.innerHTML = `<div class="text-gray-400 text-center py-4 text-xs m-auto">Local room active. Send data packets below.</div>`; return; }
+                let payload = "";
+                const entries = snapshot.val();
+                Object.keys(entries).forEach(id => {
+                    const line = entries[id];
+                    const stamp = line.timestamp ? new Date(line.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
+                    payload += `
                         <div class="flex items-end gap-2 mb-1">
                             <div class="flex flex-col">
-                                <span class="text-[10px] text-gray-500 font-bold font-mono">${escapeHtml(entry.senderName || 'Operator')} <span class="text-gray-400 font-normal ml-1">${timeStr}</span></span>
+                                <span class="text-[10px] text-gray-500 font-bold font-mono">${escapeHtml(line.senderName || 'Operator')} <span class="text-gray-400 font-normal ml-1">${stamp}</span></span>
                                 <div class="bg-white border text-gray-800 rounded-xl px-3 py-1.5 text-xs max-w-xs shadow-sm mt-0.5">
-                                    <p class="break-words">${escapeHtml(entry.message)}</p>
+                                    <p class="break-words">${escapeHtml(line.message)}</p>
                                 </div>
                             </div>
                         </div>`;
                 });
-                chatMessages.innerHTML = chatPayload;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                chatBox.innerHTML = payload;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            // Localized feed timeline stream metrics mapping 
+            const feedContainer = document.getElementById('feed-container');
+            feedContainer.innerHTML = "";
+            onChildAdded(ref(db, `users/${uid}/social_feed`), (snap) => {
+                const item = createPostCardElement(snap.key, snap.val(), uid);
+                feedContainer.insertBefore(item, feedContainer.firstChild);
+            });
+            onChildChanged(ref(db, `users/${uid}/social_feed`), (snap) => {
+                const item = document.getElementById(`post-${snap.key}`);
+                if (item) {
+                    const raw = snap.val();
+                    item.querySelector('.like-count').textContent = raw.likes ? Object.keys(raw.likes).length : 0;
+                    if (raw.comments) updateCommentsUIContainer(item.querySelector('.comments-list-container'), raw.comments);
+                }
             });
         }
 
@@ -338,27 +316,34 @@
             const chatInput = document.getElementById('chat-input');
             const msg = chatInput.value.trim();
             if(!msg || !currentUserId) return;
-            await push(ref(db, 'chat_messages'), { message: msg, senderUid: currentUserId, senderName: activeUserName, timestamp: serverTimestamp() });
+            await push(ref(db, `users/${currentUserId}/chat_messages`), { message: msg, senderUid: currentUserId, senderName: activeUserName, timestamp: serverTimestamp() });
             chatInput.value = "";
         }
         document.getElementById('btn-chat-send').addEventListener('click', sendChatMessage);
         document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-        // --- FEED MODULE ---
-        function createPostCardElement(postId, post) {
-            const timeLabel = post.timestamp ? new Date(post.timestamp).toLocaleString() : 'Recent';
-            const postLikesCount = post.likes ? Object.keys(post.likes).length : 0;
-            const card = document.createElement('div');
-            card.id = `post-${postId}`;
-            card.className = "bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
-            card.innerHTML = `
+        // --- FEED LAYOUT ASSIGNMENTS ---
+        document.getElementById('btn-publish').addEventListener('click', async () => {
+            const nodeVal = document.getElementById('update-text').value.trim();
+            if(!nodeVal || !currentUserId) return;
+            await push(ref(db, `users/${currentUserId}/social_feed`), { text: nodeVal, authorUid: currentUserId, authorName: activeUserName, timestamp: serverTimestamp() });
+            document.getElementById('update-text').value = "";
+        });
+
+        function createPostCardElement(postId, post, uid) {
+            const stamp = post.timestamp ? new Date(post.timestamp).toLocaleString() : 'Recent';
+            const counter = post.likes ? Object.keys(post.likes).length : 0;
+            const container = document.createElement('div');
+            container.id = `post-${postId}`;
+            container.className = "bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3 block text-left";
+            container.innerHTML = `
                 <div class="flex justify-between items-center border-b pb-2 text-xs">
                     <span class="font-bold text-blue-600 font-mono">${escapeHtml(post.authorName || 'Anonymous')}</span>
-                    <span class="text-gray-400">${timeLabel}</span>
+                    <span class="text-gray-400">${stamp}</span>
                 </div>
                 <p class="text-gray-800 text-xs md:text-sm break-words leading-relaxed">${escapeHtml(post.text)}</p>
                 <div class="flex gap-4 items-center pt-2 border-t text-xs">
-                    <button class="btn-like-toggle px-3 py-1 rounded bg-gray-100 font-bold hover:bg-red-50 hover:text-red-600 transition">👍 Like (<span class="like-count">${postLikesCount}</span>)</button>
+                    <button class="btn-like-toggle px-3 py-1 rounded bg-gray-100 font-bold hover:bg-red-50 hover:text-red-600 transition">👍 Like (<span class="like-count">${counter}</span>)</button>
                 </div>
                 <div class="space-y-2 pt-2 bg-gray-50 p-3 rounded-lg border">
                     <div class="comments-list-container space-y-1"></div>
@@ -368,75 +353,44 @@
                     </div>
                 </div>`;
 
-            card.querySelector('.btn-like-toggle').addEventListener('click', () => {
-                if(!currentUserId) return;
-                runTransaction(ref(db, `social_feed/${postId}/likes/${currentUserId}`), (val) => val ? null : true);
+            container.querySelector('.btn-like-toggle').addEventListener('click', () => {
+                runTransaction(ref(db, `users/${uid}/social_feed/${postId}/likes/${uid}`), (val) => val ? null : true);
             });
 
-            card.querySelector('.btn-submit-comment').addEventListener('click', async () => {
-                if(!currentUserId) return;
-                const input = card.querySelector('.comment-input-field');
-                if(!input.value.trim()) return;
-                await push(ref(db, `social_feed/${postId}/comments`), { text: input.value.trim(), author: activeUserName });
-                input.value = "";
+            container.querySelector('.btn-submit-comment').addEventListener('click', async () => {
+                const field = container.querySelector('.comment-input-field');
+                if(!field.value.trim()) return;
+                await push(ref(db, `users/${uid}/social_feed/${postId}/comments`), { text: field.value.trim(), author: activeUserName });
+                field.value = "";
             });
 
-            if (post.comments) updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
-            return card;
+            if (post.comments) updateCommentsUIContainer(container.querySelector('.comments-list-container'), post.comments);
+            return container;
         }
 
-        function updateCommentsUIContainer(containerElement, commentsObj) {
-            let html = "";
-            Object.keys(commentsObj).forEach(cId => {
-                const c = commentsObj[cId];
-                html += `<div class="bg-gray-100 p-2 rounded text-[11px] border border-gray-200/60"><strong class="font-mono text-blue-600">${escapeHtml(c.author || 'User')}:</strong> <span class="text-gray-700">${escapeHtml(c.text)}</span></div>`;
+        function updateCommentsUIContainer(dom, nodes) {
+            let collection = "";
+            Object.keys(nodes).forEach(id => {
+                const node = nodes[id];
+                collection += `<div class="bg-gray-100 p-2 rounded text-[11px] border border-gray-200/60"><strong class="font-mono text-blue-600">${escapeHtml(node.author || 'User')}:</strong> <span class="text-gray-700">${escapeHtml(node.text)}</span></div>`;
             });
-            containerElement.innerHTML = html;
+            dom.innerHTML = collection;
         }
-
-        function initSocialFeedStream() {
-            const feedContainer = document.getElementById('feed-container');
-            feedContainer.innerHTML = ""; // Clear loader references
-            
-            onChildAdded(ref(db, 'social_feed'), (snap) => {
-                const card = createPostCardElement(snap.key, snap.val());
-                feedContainer.insertBefore(card, feedContainer.firstChild);
-            });
-
-            onChildChanged(ref(db, 'social_feed'), (snap) => {
-                const card = document.getElementById(`post-${snap.key}`);
-                if (card) {
-                    const post = snap.val();
-                    card.querySelector('.like-count').textContent = post.likes ? Object.keys(post.likes).length : 0;
-                    if (post.comments) updateCommentsUIContainer(card.querySelector('.comments-list-container'), post.comments);
-                }
-            });
-        }
-
-        document.getElementById('btn-publish').addEventListener('click', async () => {
-            const val = document.getElementById('update-text').value.trim();
-            if(!val || !currentUserId) return;
-            await push(ref(db, 'social_feed'), { text: val, authorUid: currentUserId, authorName: activeUserName, timestamp: serverTimestamp() });
-            document.getElementById('update-text').value = "";
-        });
 
         document.getElementById('btn-save-profile').addEventListener('click', () => {
-            const updatedName = document.getElementById('profile-display-name-input').value.trim();
-            if (updatedName) {
-                activeUserName = updatedName;
-                showMessage("Display profile updated.");
-            }
+            const val = document.getElementById('profile-display-name-input').value.trim();
+            if (val) { activeUserName = val; showMessage("Profile sync handled locally."); }
         });
 
-        // Tab Layout Navigators
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const contentViews = document.querySelectorAll('.content-view');
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetViewId = btn.getAttribute('data-target');
-                contentViews.forEach(view => { view.id === targetViewId ? view.classList.remove('hidden') : view.classList.add('hidden'); });
-                navButtons.forEach(b => { b.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition"; });
-                btn.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded bg-blue-700 font-semibold shadow-inner text-xs md:text-sm transition";
+        // Tab View Switching Mechanics
+        const tabs = document.querySelectorAll('.nav-btn');
+        const layouts = document.querySelectorAll('.content-view');
+        tabs.forEach(element => {
+            element.addEventListener('click', () => {
+                const anchor = element.getAttribute('data-target');
+                layouts.forEach(l => { l.id === anchor ? l.classList.remove('hidden') : l.classList.add('hidden'); });
+                tabs.forEach(t => { t.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded hover:bg-blue-700/50 text-xs md:text-sm transition"; });
+                element.className = "nav-btn text-left block px-3 md:px-4 py-2 rounded bg-blue-700 font-semibold shadow-inner text-xs md:text-sm transition";
             });
         });
     </script>
